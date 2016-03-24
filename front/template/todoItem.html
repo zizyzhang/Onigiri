@@ -1,0 +1,19 @@
+
+
+    <div class="view">
+
+        <!--<input class='toggle'  type=checkbox id= 'check_<%= id %>'-->
+               <!--onclick="selectTodo( '<%= id %>' ) "/>-->
+        <img src="" alt=""/>
+        <div>
+            <button id="<%= metId%>"></button>
+            <label>團長:<%= grpHostId%></label>
+            <label>剩餘時間:<%= grpTime%></label>
+            <label>取餐地點<%= grpAddr%></label>
+        </div>
+        <label style='font-size: 16pt;'>
+            <%= content %>
+        </label>
+
+        <button class='destroy' onclick='deleteTodo("<%= id %>")'> </button>
+    </div>
