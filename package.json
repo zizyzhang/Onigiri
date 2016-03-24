@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/zizyzhang/Onigiri/issues"
   },
-  "homepage": "https://github.com/zizyzhang/Onigiri#readme"
+  "homepage": "https://github.com/zizyzhang/Onigiri#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.6"
+  }
 }
