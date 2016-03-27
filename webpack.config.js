@@ -4,16 +4,15 @@
 module.exports = {
     entry: './front/js/main.js',
     output: {
-        filename: './front/dist/bundle.js'
+        filename: './front/dist/js/bundle.js'
     },
     module: {
         loaders: [
-            { test: /\.coffee$/, loader: 'coffee-loader' },
-            {
+             {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['es2015', 'react']
+                    presets: ['es2015']
                 }
             }
         ]

@@ -20,12 +20,17 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.2.0",
     "bootstrap": "^3.3.6",
+    "express": "^4.13.4",
     "react": "^0.14.7",
     "react-dom": "^0.14.7"
   },
   "devDependencies": {
     "babel-core": "^6.7.4",
     "babel-loader": "^6.2.4",
+    "body-parser": "^1.15.0",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "jquery": "^2.2.2",
     "webpack": "^1.12.14"
   }

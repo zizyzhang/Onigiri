@@ -1,0 +1,41 @@
+.login-screen-content{
+    background-image:url("../assets/img/login-bg.jpg") ;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-big{
+    text-align: center;
+}
+
+.usrName,.usrPwd{
+     color: rgba(255, 255, 255, 0.5)!important;
+}
+
+.item-input-field:after,
+.input-field:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    top: auto;
+    height: 1px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: block;
+    z-index: 15;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+}
+
+
+.demo-card-header-pic .card-header {
+    background-size: cover;
+    background-position: center;
+}
+
+.card-header{
+    min-height:170px!important;
+    height:170px!important;
+}
