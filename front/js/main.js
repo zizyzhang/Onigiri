@@ -16,6 +16,22 @@ var mainView = myApp.addView('.view-main', {
     //dynamicNavbar: true,
 });
 
+// Show/hide preloader for remote ajax loaded pages
+// Probably should be removed on a production/local app
+$$(document).on('ajaxStart', function (e) {
+    if (e.detail.xhr.requestUrl.indexOf('autocomplete-languages.json') >= 0) {
+        // Don't show preloader for autocomplete demo requests
+        return;
+    }
+    myApp.showIndicator();
+});
+$$(document).on('ajaxComplete', function (e) {
+    if (e.detail.xhr.requestUrl.indexOf('autocomplete-languages.json') >= 0) {
+        // Don't show preloader for autocomplete demo requests
+        return;
+    }
+    myApp.hideIndicator();
+});
 
 //myApp.onPageInit('about', function (page) {
 //    // Do something here for "about" page
@@ -30,13 +46,16 @@ myApp.onPageBeforeInit('group', function () {
     console.log('before group init')
 });
 
+// TODO CHEAT
+(function(){
+    //myApp.closeModal('.login-screen');
+    //mainView.router.loadPage('group-detail.html');
+})();
 
-$$('#cheat').click(function () {
-    myApp.closeModal('.login-screen');
-
-    mainView.router.loadPage('group.html');
-
+$$('#txtUsrName').on('focus',function(){
+    $$('.usrName').css('color', 'white !important');
 });
+
 
 $$('#btn-sign-up').click(function () {
     if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
@@ -69,19 +88,19 @@ function addUser() {
 }
 
 function userAuth() {
-    var usrName = $$('#txtUsrName').val();
-    var usrPwd = $$('#txtUsrPwd').val();
-
-    console.log(usrName, usrPwd);
-
-    $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-        result = JSON.parse(result);
-        console.log(result.success);
-        if (result.success == 1) {
+    //var usrName = $$('#txtUsrName').val();
+    //var usrPwd = $$('#txtUsrPwd').val();
+    //
+    //console.log(usrName, usrPwd);
+    //
+    //$$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
+    //    result = JSON.parse(result);
+    //    console.log(result.success);
+    //    if (result.success == 1) {
             myApp.closeModal();
             mainView.router.loadPage({url: 'group.html'});
-        }
-    });
+    //    }
+    //});
 
 }
 

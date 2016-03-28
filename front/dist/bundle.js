@@ -18176,8 +18176,8 @@
 	  DOMAttributeNames: {
 	    clipPath: 'clip-path',
 	    fillOpacity: 'fill-opacity',
-	    fontFamily: 'font-family',
-	    fontSize: 'font-size',
+	    fontFamily: 'font-tello-family',
+	    fontSize: 'font-tello-size',
 	    gradientTransform: 'gradientTransform',
 	    gradientUnits: 'gradientUnits',
 	    markerEnd: 'marker-end',
