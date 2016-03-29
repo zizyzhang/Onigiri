@@ -8,11 +8,24 @@
     text-align: center;
 }
 
+.icon-usr-pwd {
+    font-size: 16pt !important;
+
+}
+
+.icon-usr-name {
+    font-size: 11pt !important;
+
+}
+
 .usrName, .usrPwd {
     color: rgba(255, 255, 255, 0.5) !important;
 }
 
+.login-input {
+    color: white !important;
 
+}
 
 .item-input-field:after,
 .input-field:after {
@@ -37,8 +50,9 @@
 }
 
 .card-header {
-    min-height: 170px !important;
-    height: 170px !important;
+    /*min-height: 170px !important;*/
+    /*height: 170px !important;*/
+    height: auto !important;
 }
 
 .card-img-text {
@@ -46,7 +60,7 @@
     font-size: 20px;
     height: 1.7em;
     line-height: 1.7em;
-    width: 100%;
+    width: auto;
     background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -57,6 +71,8 @@
 
 .card-img {
     padding: 0px;
+    background-size: cover;
+    background-position: center;
 }
 
 .group-detail-img {
