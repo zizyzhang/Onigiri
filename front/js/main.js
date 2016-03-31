@@ -71,7 +71,7 @@ myApp.onPageBeforeInit('order', function () {
 (function(){
     myApp.closeModal('.login-screen');
 
-    mainView.router.loadPage('select-merchant.html');
+    mainView.router.loadPage('group-setting.html');
 
 })();
 
