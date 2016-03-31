@@ -70,7 +70,9 @@ myApp.onPageBeforeInit('order', function () {
 // TODO CHEAT
 (function(){
     myApp.closeModal('.login-screen');
+
     mainView.router.loadPage('select-merchant.html');
+
 })();
 
 $$('#txtUsrName').on('focus',function(){
