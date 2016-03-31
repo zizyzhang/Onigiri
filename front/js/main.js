@@ -49,7 +49,7 @@ myApp.onPageBeforeInit('group', function () {
 // TODO CHEAT
 (function(){
     myApp.closeModal('.login-screen');
-    mainView.router.loadPage('order.html');
+    mainView.router.loadPage('create-menu.html');
 })();
 
 $$('#txtUsrName').on('focus',function(){
