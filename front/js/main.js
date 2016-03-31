@@ -48,8 +48,8 @@ myApp.onPageBeforeInit('group', function () {
 
 // TODO CHEAT
 (function(){
-    //myApp.closeModal('.login-screen');
-    //mainView.router.loadPage('group-detail.html');
+    myApp.closeModal('.login-screen');
+    mainView.router.loadPage('order.html');
 })();
 
 $$('#txtUsrName').on('focus',function(){

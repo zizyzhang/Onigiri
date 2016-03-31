@@ -160,3 +160,36 @@
     line-height: 48px;
 
 }
+
+.btn-outline{
+    border-style: solid;
+    border-color: red;
+    border-width: 1px;
+    border-radius: 2pt;
+    /*padding: 0px !important;*/
+    height: 2em;
+    min-width: 0px;
+    width:3em;
+    margin:auto;
+    line-height: 2em;
+
+}
+
+.btn-round-sm {
+    border-radius: 50%;
+    min-width: 18px;
+    min-height: 18px;
+    line-height: 2em ;
+    height:2em !important;
+    width:2em  !important;
+    margin:0px;
+    padding:0px;
+ }
+
+.dish-price {
+    line-height: 2em;
+    margin: 0px ;
+    display: inline;
+}
+
+
