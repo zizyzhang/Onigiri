@@ -9,7 +9,7 @@ var myApp = new Framework7({
 
 // If we need to use custom DOM library, let's save it to $$ variable:
 var $$ = Dom7;
-var dish =1;
+var dish = 1;
 // Add view
 var mainView = myApp.addView('.view-main', {
     // Because we want to use dynamic navbar, we need to enable it for this view:
@@ -46,17 +46,25 @@ myApp.onPageBeforeInit('group', function () {
     console.log('before group init')
 });
 
+myApp.onPageBeforeInit('group-setting', function () {
+    $$('#btnFinish').on('click', function () {
+        myApp.alert('开团完成!', function () {
+            mainView.router.loadPage('group.html')
+        });
+    });
+});
+
 myApp.onPageBeforeInit('order', function () {
     console.log('before order init');
 
 
-    $$('#add').click(function(){
+    $$('#add').click(function () {
         $$('#dish').html(++dish);
         console.log("++");
 
     });
-    $$('#subtraction').click(function(){
-        if($$('#dish').html()>=1){
+    $$('#subtraction').click(function () {
+        if ($$('#dish').html() >= 1) {
             $$('#dish').html(--dish);
 
         }
@@ -68,14 +76,14 @@ myApp.onPageBeforeInit('order', function () {
 
 
 // TODO CHEAT
-(function(){
+(function () {
     //myApp.closeModal('.login-screen');
     //
     //mainView.router.loadPage('group-setting.html');
 
 })();
 
-$$('#txtUsrName').on('focus',function(){
+$$('#txtUsrName').on('focus', function () {
     $$('.usrName').css('color', 'white !important');
 });
 
@@ -93,7 +101,6 @@ $$('#btn-login').click(function () {
     console.log('here');
     userAuth();
 });
-
 
 
 //$$("#tpl").load('./template/todoItem.html', null, function () {
@@ -122,8 +129,8 @@ function userAuth() {
     //    result = JSON.parse(result);
     //    console.log(result.success);
     //    if (result.success == 1) {
-            myApp.closeModal();
-            mainView.router.loadPage({url: 'group.html'});
+    myApp.closeModal();
+    mainView.router.loadPage({url: 'group.html'});
     //    }
     //});
 
