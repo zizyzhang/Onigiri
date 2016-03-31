@@ -2,7 +2,9 @@
  * Created by User on 2016/3/24.
  */
 
+var Server = function () {
 
+    //let a = 0;
     var express = require('express');
     var bodyParser = require('body-parser');
 
@@ -12,7 +14,6 @@
     var GROUP = require('./mock-db').GROUP;
 
     var self = this;
-
 
 //
 //var group1 = [
@@ -34,7 +35,8 @@
             grpId: '6666'
         }
 
-    ]
+    ];
+
 
     var allowCrossDomain = function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -138,7 +140,7 @@
     }
 
 
-    exports.userAuth = function (usrName, usrPwd, callback) {
+    this.userAuth = function (usrName, usrPwd, callback) {
         var isSuccess = false;
         for (var index in USER) {
             if (USER[index].usrName == usrName && USER[index].usrPwd == usrPwd) {  //�P�_�O����� usrName    usrPwd
@@ -188,3 +190,6 @@
         return;
     };
 
+
+};
+module.exports = new Server();
