@@ -1,3 +1,4 @@
+
 <div data-page="order" class="page">
     <div class="navbar">
         <div class="navbar-inner">
@@ -6,6 +7,23 @@
             <div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars"></i></a></div>
         </div>
     </div>
+
+    <div class="toolbar toolbar-bottom">
+        <div class="toolbar-inner">
+
+            <a class="button button-fill button color-white  toolbar-button">
+                <div class="ficon" style="color:red">@</div>
+                <label id="price" style="color:black">$25</label>
+            </a>
+            <a class="button button-fill button color-green toolbar-button">
+                留言
+            </a>
+            <a onclick="myApp.alert('跟團成功!')" href="index.html" class="button button-fill color-red toolbar-button">
+                確認跟團
+            </a>
+        </div>
+    </div>
+
     <div class="page-content">
 
         <!--<div class="content-block-title">Data list, with icons</div>-->
@@ -34,15 +52,16 @@
                     </div>
                 </li>
                 <li>
+
                     <div class="item-content">
                         <!--<div class="item-media"><i class="icon icon-f7"></i></div>-->
                         <div class="item-inner">
                             <div class="item-title">烤鸡腿</div>
                             <div class="item-after">
-                                        <a href="#" class="button button-fill color-green  btn-round-sm" style="">
+                                        <a href="#" class="button button-fill color-green  btn-round-sm" id="subtraction" style="">
                                             - </a>
-                                        <div class="dish-price">1</div>
-                                        <a href="#" class="button button-fill color-green  btn-round-sm" style="">
+                                        <div class="dish-price" id="dish">1</div>
+                                        <a href="#" class="button button-fill color-green  btn-round-sm" id="add" style="">
                                             + </a>
 
                             </div>
@@ -52,6 +71,7 @@
                 </li>
 
             </ul>
+
         </div>
 
     </div>

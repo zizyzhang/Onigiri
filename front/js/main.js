@@ -9,7 +9,7 @@ var myApp = new Framework7({
 
 // If we need to use custom DOM library, let's save it to $$ variable:
 var $$ = Dom7;
-
+var dish =1;
 // Add view
 var mainView = myApp.addView('.view-main', {
     // Because we want to use dynamic navbar, we need to enable it for this view:
@@ -46,10 +46,31 @@ myApp.onPageBeforeInit('group', function () {
     console.log('before group init')
 });
 
+myApp.onPageBeforeInit('order', function () {
+    console.log('before order init');
+
+
+    $$('#add').click(function(){
+        $$('#dish').html(++dish);
+        console.log("++");
+
+    });
+    $$('#subtraction').click(function(){
+        if($$('#dish').html()>=1){
+            $$('#dish').html(--dish);
+
+        }
+        console.log("--");
+
+    });
+
+});
+
+
 // TODO CHEAT
 (function(){
     myApp.closeModal('.login-screen');
-    mainView.router.loadPage('order.html');
+    mainView.router.loadPage('select-merchant.html');
 })();
 
 $$('#txtUsrName').on('focus',function(){
@@ -70,6 +91,8 @@ $$('#btn-login').click(function () {
     console.log('here');
     userAuth();
 });
+
+
 
 //$$("#tpl").load('./template/todoItem.html', null, function () {
 //    allGroup();
@@ -149,3 +172,4 @@ function joinGroup() {
     //
     //});
 }
+
