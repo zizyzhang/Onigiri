@@ -132,7 +132,7 @@ function allMerchant() {
 
 function merchantById(id) {
     console.log(id);
-    $$.get(SERVER_ADS + "/merchantById" + id, function (data) {
+    $$.get(SERVER_ADS + "/getMerchantById" + id, function (data) {
         merchant = data;
     });
 }

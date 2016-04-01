@@ -2,11 +2,14 @@ var assert = require('chai').assert;
 var server = require('./../server');
 
 var USER = require('../mock-db').USER;
-var GROUP = require('../mock-db').GROUP;
+var ORDER = require('../mock-db').ORDER;
 var MERCHANT = require('../mock-db').MERCHANT;
-var GROUP_ORDER = require('../mock-db').GROUP_ORDER;
-var GROUP_MEMBER = require('../mock-db').GROUP_MEMBER;
+var DISH = require('../mock-db').DISH;
+
+var GROUP = require('../mock-db').GROUP;
 var GROUP_DISHES = require('../mock-db').GROUP_DISHES;
+var GROUP_MEMBER = require('../mock-db').GROUP_MEMBER;
+var GROUP_ORDER = require('../mock-db').GROUP_ORDER;
 
 
 describe('Server', function () {
@@ -17,6 +20,13 @@ describe('Server', function () {
                 assert.equal('Jack', USER[i].usrName);
                 assert.equal('qqq', USER[i].usrPwd);
                 assert.equal('02-1231212', USER[i].usrMobi);
+                assert.equal(1, result.success);
+                done();
+            })
+        });
+        it('should ', function (done) {
+            server.addUser('', '', '', function (result) {
+                assert.equal(0, result.success);
                 done();
             })
         });
@@ -43,6 +53,8 @@ describe('Server', function () {
         it('should return an array by allGroup', function (done) {
             server.allGroup(function (result) {
                 assert.typeOf(result, 'array');
+                assert.typeOf(result[0].grpOrder, 'array');
+                assert.typeOf(result[0].grpDishes, 'array');
                 done();
             })
         });
@@ -54,6 +66,7 @@ describe('Server', function () {
             server.allMerchant(function (result) {
                 //assert.equal(1 , result[0].metId );
                 assert.typeOf(result, 'array');
+                console.log(JSON.stringify(result));
                 done();
             })
         });
@@ -64,17 +77,38 @@ describe('Server', function () {
             })
         });
 
+        it('return a merchats name', function (done) {
+            server.allMerchant(function (result) {
+                assert.equal('a', result[0].metName);
+                done();
+            })
+        });
+
+        it('has menu with dihName defined', function (done) {
+            server.allMerchant(function (result) {
+                assert.isDefined(  result[0].menu[0].dihName);
+                done();
+            })
+        });
+
+        it('has menu with dihName defined', function (done) {
+            server.allMerchant(function (result) {
+                assert.isDefined(  result[0].menu[0].dihPrice);
+                done();
+            })
+        });
+
     });
 
     describe('#merchantById()', function () {
-        it('should return an object by merchantById', function (done) {
-            server.merchantById(2, function (result) {
+        it('should return an object by getMerchantById', function (done) {
+            server.getMerchantById(2, function (result) {
                 assert.typeOf(result, 'object');
                 done();
             })
         });
         it('should id equal to 2', function (done) {
-            server.merchantById(2, function (result) {
+            server.getMerchantById(2, function (result) {
                 assert.equal(2, result.metId);
                 done();
             })
@@ -85,19 +119,19 @@ describe('Server', function () {
 
     describe('#group()', function () {
         it('should insert a group ', function (done) {
-            server.group('c', [3, 5, 7, 9], '1000', 'daor', '00:00', function (result) {
+            server.group('1', [3, 5, 7, 9], '1', 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
                 var i = GROUP.length - 1;
-                assert.equal('c', GROUP[i].grpHostId);
-                assert.equal('1000', GROUP[i].metId);
+                assert.equal('1', GROUP[i].grpHostId);
+                assert.equal('1', GROUP[i].metId);
                 assert.equal('daor', GROUP[i].grpAddr);
                 assert.equal('00:00', GROUP[i].grpTime);
                 //assert.equal('-9999', GROUP[i].minAmount);
                 //assert.typeOf(GROUP_DISHES[i].dishes,'array');
 
-                assert.equal('1', GROUP_DISHES[0].gdeId);
-                assert.equal('3', GROUP_DISHES[0].dihId);
-                assert.equal('2', GROUP_DISHES[0].grpId);
+                assert.equal('3', GROUP_DISHES[2].gdeId);
+                assert.equal('3', GROUP_DISHES[2].dihId);
+                assert.equal('2', GROUP_DISHES[2].grpId);
 
                 assert.equal('1', result.success);
 
@@ -107,18 +141,19 @@ describe('Server', function () {
     });
     describe('#joinGroup()', function () {
         it('should insert a gorNum', function (done) {
-            server.joinGroup(1, [{dihId: 0, gorNum: 1}, {dihId: 1, gorNum: 1}], '1', function (result) {
-                assert.equal(1, GROUP_ORDER[0].grpId);
-                assert.equal(0, GROUP_ORDER[0].dihId);
-                assert.equal(1, GROUP_ORDER[0].gorNum);
+            server.joinGroup(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], '1', function (result) {
+                //(usrId, dishes, grpId, callback)
+                assert.equal(1, GROUP_ORDER[2].grpId);
+                assert.equal(0, GROUP_ORDER[2].dihId);
+                assert.equal(1, GROUP_ORDER[2].gorNum);
 
-                assert.equal(1, GROUP_ORDER[1].grpId);
-                assert.equal(1, GROUP_ORDER[1].dihId);
-                assert.equal(1, GROUP_ORDER[1].gorNum);
+                assert.equal(1, GROUP_ORDER[3].grpId);
+                assert.equal(1, GROUP_ORDER[3].dihId);
+                assert.equal(1, GROUP_ORDER[3].gorNum);
 
-                assert.equal(1, GROUP_MEMBER[0].gmrId);
-                assert.equal(1, GROUP_MEMBER[0].usrId);
-                assert.equal('1', GROUP_MEMBER[0].grpId);
+                assert.equal(3, GROUP_MEMBER[2].gmrId);//自動編號ID
+                assert.equal(1, GROUP_MEMBER[2].usrId);
+                assert.equal('1', GROUP_MEMBER[2].grpId);
 
                 assert.equal('1', result.success);
                 done();

@@ -71,7 +71,7 @@ function allMerchant() {
 
 function merchantById(id) {
     console.log(id);
-    $.get("http://localhost:3000/merchantById" + id, function (data) {
+    $.get("http://localhost:3000/getMerchantById" + id, function (data) {
         merchant = data;
     });
 }
