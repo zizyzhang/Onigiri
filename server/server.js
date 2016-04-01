@@ -13,6 +13,8 @@ var Server = function () {
     var GROUP = require('./mock-db').GROUP;
     var MERCHANT = require('./mock-db').MERCHANT;
     var GROUP_DISHES = require('./mock-db').GROUP_DISHES;
+    var GROUP_ORDER = require('./mock-db').GROUP_ORDER;
+    var GROUP_MEMBER = require('./mock-db').GROUP_MEMBER;
 
 
     var self = this;
@@ -150,19 +152,11 @@ var Server = function () {
             usrId = Number(usrId) + 1;
         }
 
-        //usrId=Number(usrId)+1;
-        //console.log(usrId);
-
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
-        //console.log(newUser);
-
-        //USER.concat(newUser);
         USER.push(newUser);
-        //console.log(USER);
 
         callback({success: 1});
-
 
         //if (!isSuccess) {
         //    callback({success: 0});
@@ -200,11 +194,10 @@ var Server = function () {
 
 
     this.merchantById = function (id, callback) {
-        //console.log("getMerchantById!");
         var isSuccess = false;
         for (var index in MERCHANT) {
             if (MERCHANT[index].metId == id) {
-                callback(MERCHANT);
+                callback(MERCHANT[index]);
                 return;
             }
         }
@@ -216,9 +209,8 @@ var Server = function () {
 
     };
 
-    this.group = function (grpHostId, dishes, metId, addr, gorTime, minAmount, callback) {
+    this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         var isSuccess = true;
-
 
         if (isSuccess) {
             var i = GROUP.length + 1;
@@ -228,14 +220,15 @@ var Server = function () {
                 //dishes: dishes,
                 metId: metId,
                 grpAddr: addr,
-                grpTime: gorTime,
-                minAmount: minAmount
+                grpTime: gorTime
+                //minAmount: minAmount
             };
 
             for (var index in dishes) {
                 var gdeId = GROUP_DISHES.length + 1;
                 var grpId = i;
                 var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
+                //console.log("dishesList:"+JSON.stringify(dishesList));
                 GROUP_DISHES.push(dishesList);
             }
 
@@ -257,15 +250,33 @@ var Server = function () {
         if (isSuccess) {
 
             var newGroupOrder = {};
-            var dihId = dishes.dishId;
-            var gorNum = dishes.num;
-            for (var index in GROUP_ORDER) {
-                if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
-                    GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + gorNum;
-                }
-                else {
+            var dihId;
+            var gorNum;
+
+            if (GROUP_ORDER.length == 0) {
+                for (var index in dishes) {
+                    dihId = dishes[index].dihId;
+                    gorNum = dishes[index].gorNum;
                     newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: gorNum};
                     GROUP_ORDER.push(newGroupOrder);
+                    //資料表沒有資料，直接新增
+                }
+
+            } else {
+                for (var index in GROUP_ORDER) {
+                    for (var index in dishes) {
+                        dihId = dishes[index].dihId;
+                        gorNum = dishes[index].gorNum;
+                        if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
+                            GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + gorNum;
+                            //尋找相同的<團號>及<商品ID>，有則Updata
+                        }
+                        else{
+                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: gorNum};
+                            GROUP_ORDER.push(newGroupOrder);
+                            //無，新增
+                        }
+                    }
                 }
             }
 

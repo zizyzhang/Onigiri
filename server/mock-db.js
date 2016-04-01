@@ -21,10 +21,12 @@ var MockDb = function () {
 
     ];
 
-    this.ORDER = [{
-        ordId: '',
-        grpId: ''
-    }];
+    this.ORDER = [
+    //    {
+    //    ordId: '',
+    //    grpId: ''
+    //}
+    ];
 
     this.MERCHANT = [
         {
@@ -39,47 +41,48 @@ var MockDb = function () {
     ];
 
     this.DISH = [
-        {
-            dihId: '',
-            metId: '',
-            dihType: ''
-        }
+        //{
+        //    dihId: '',
+        //    metId: '',
+        //    dihType: ''
+        //}
     ];
 
     this.GROUP = [
         {
-            grpId: "2",
+            grpId: '1',
             grpHostId: 'b',
             //dishes: [],
             metId: '999',
             grpAddr: 'road',
             grpTime: "13:33",
             minAmount: '9999'
-
         }
 
     ];
 
     this.GROUP_DISHES = [
-        {
-            gdeId: '',
-            dihId: '',
-            grpId: ''
-        }
+        //{
+            //gdeId: '',
+            //dihId: '',
+            //grpId: ''
+        //}
     ];
 
     this.GROUP_MEMBER = [
-        {
-            gmrId: '',
-            grpId: ''
-        }
+        //{
+        //    gmrId: '',
+        //    grpId: ''
+        //}
     ];
 
-    this.GROUP_ORDER = [{
-        grpId: '',
-        dihId: '',
-        gorNum: ''
-    }];
+    this.GROUP_ORDER = [
+    //    {
+    //    grpId: '',
+    //    dihId: '',
+    //    gorNum: ''
+    //}
+    ];
 
 };
 
