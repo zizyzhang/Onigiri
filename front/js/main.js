@@ -1,10 +1,11 @@
-var ajaxMethod  = require('./ajaxMethods.js');
+var ajaxMethod = require('./ajaxMethods.js');
 
 console.log(JSON.stringify(ajaxMethod));
 
 // Initialize app
 var myApp = new Framework7({
     modalTitle: 'Onigiri',
+    template7Pages: true,
     // Enable Material theme
     material: true
 });
@@ -90,10 +91,10 @@ myApp.onPageBeforeInit('order', function () {
 
 
 // TODO CHEAT
-(function () {
+(() => {
     //myApp.closeModal('.login-screen');
-    //
-    //mainView.router.loadPage('group-setting.html');
+
+    //mainView.router.loadPage('group.html');
 
 })();
 
@@ -112,8 +113,16 @@ $$('#btn-sign-up').click(function () {
 });
 
 $$('#btn-login').click(function () {
-    console.log('here');
-    ajaxMethod.userAuth();
+
+    ajaxMethod.userAuth().then(function () {
+        return ajaxMethod.getAllGroup();
+    }).then(function (groups) {
+        console.log(groups);
+
+        myApp.closeModal();
+        mainView.router.loadPage({url: 'group.html', context: {groups: groups}});
+    });
+
 });
 
 

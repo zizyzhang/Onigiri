@@ -1,5 +1,7 @@
+var $$ = Dom7;
+var SERVER_ADS = "http://localhost:3000";
+
 var AjaxMethods = function(){
-    this.SERVER_ADS = "http://localhost:3000";
 
     this.addUser= function() {
         var subname = $$('#subAccount').val();
@@ -13,41 +15,38 @@ var AjaxMethods = function(){
     }
 
    this.userAuth= function() {
-        //var usrName = $$('#txtUsrName').val();
-        //var usrPwd = $$('#txtUsrPwd').val();
-        //
-        //console.log(usrName, usrPwd);
-        //
-        //$$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-        //    result = JSON.parse(result);
-        //    console.log(result.success);
-        //    if (result.success == 1) {
-        myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
-        //    }
-        //});
+       return new Promise(function(resolve,reject){
+           var usrName = $$('#txtUsrName').val();
 
-    }
 
-    this.allGroup= function() {
+           var usrPwd = $$('#txtUsrPwd').val();
 
-        $$.get("http://localhost:3000/allGroup", function (data) {
-            allGroupList = data;
 
-            var GroupList = $$("#allGroupList");
-            GroupList.html("");
+           $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
+               if(JSON.parse(result).success == 1 ){
+                   console.log('login success');
 
-            for (var i = 0; i < data.length; i++) {
-                var compiled = _.template($$('#tpl').html());
-                GroupList.html(GroupList.html() + compiled({
-                        grpHostId: data[i].grpHostId,
-                        metId: data[i].metId,
-                        grpAddr: data[i].grpAddr,
-                        grpTime: data[i].grpTime
-                    }));
-            }
+                   resolve();
+               }else{
+                   reject();
+               }
+           });
+       });
+
+
+    };
+
+    this.getAllGroup = function() {
+        return new Promise(function (resolve, reject) {
+            $$.get(SERVER_ADS+"/allGroup", function (data) {
+                resolve(data);
+            });
+
         });
-    }
+
+
+    };
+
     this.allMerchant= function() {
 
         $$.get(SERVER_ADS + "/allMerchant", function (data) {
