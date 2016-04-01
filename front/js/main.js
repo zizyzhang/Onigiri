@@ -1,4 +1,6 @@
-var SERVER_ADS = "http://localhost:3000";
+var ajaxMethod  = require('./ajaxMethods.js');
+
+console.log(JSON.stringify(ajaxMethod));
 
 // Initialize app
 var myApp = new Framework7({
@@ -43,13 +45,25 @@ $$(document).on('pageInit', function (e) {
 });
 
 myApp.onPageBeforeInit('group', function () {
-    console.log('before group init')
+    console.log('before group init');
+    $$('#btnJoinInGroupPage').on('click', function () {
+        mainView.router.loadPage('order.html');
+    });
+
+});
+
+myApp.onPageBeforeInit('group-detail', function () {
+    console.log('before group init');
+    $$('#btnJoin').on('click', function () {
+        mainView.router.loadPage('order.html');
+    });
+
 });
 
 myApp.onPageBeforeInit('group-setting', function () {
     $$('#btnFinish').on('click', function () {
         myApp.alert('开团完成!', function () {
-            mainView.router.loadPage('group.html')
+            mainView.router.loadPage('group.html');
         });
     });
 });
@@ -90,7 +104,7 @@ $$('#txtUsrName').on('focus', function () {
 
 $$('#btn-sign-up').click(function () {
     if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-        addUser();
+        ajaxMethod.addUser();
     }
     else {
         console.log("error subSignUp");
@@ -99,7 +113,7 @@ $$('#btn-sign-up').click(function () {
 
 $$('#btn-login').click(function () {
     console.log('here');
-    userAuth();
+    ajaxMethod.userAuth();
 });
 
 
@@ -107,78 +121,4 @@ $$('#btn-login').click(function () {
 //    allGroup();
 //});
 
-
-function addUser() {
-    var subname = $$('#subAccount').val();
-    var subpwd = $$('#subPwd').val();
-    var submobile = $$('#subMobile').val();
-    $$.post(SERVER_ADS + "/addUser", {usrName: subname, usrPwd: subpwd, usrMobi: submobile}, function (result) {
-        if (result) {
-
-        }
-    });
-}
-
-function userAuth() {
-    //var usrName = $$('#txtUsrName').val();
-    //var usrPwd = $$('#txtUsrPwd').val();
-    //
-    //console.log(usrName, usrPwd);
-    //
-    //$$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-    //    result = JSON.parse(result);
-    //    console.log(result.success);
-    //    if (result.success == 1) {
-    myApp.closeModal();
-    mainView.router.loadPage({url: 'group.html'});
-    //    }
-    //});
-
-}
-
-function allGroup() {
-
-    $$.get("http://localhost:3000/allGroup", function (data) {
-        allGroupList = data;
-
-        var GroupList = $$("#allGroupList");
-        GroupList.html("");
-
-        for (var i = 0; i < data.length; i++) {
-            var compiled = _.template($$('#tpl').html());
-            GroupList.html(GroupList.html() + compiled({
-                    grpHostId: data[i].grpHostId,
-                    metId: data[i].metId,
-                    grpAddr: data[i].grpAddr,
-                    grpTime: data[i].grpTime
-                }));
-        }
-    });
-}
-function allMerchant() {
-
-    $$.get(SERVER_ADS + "/allMerchant", function (data) {
-        allMerchantList = data;
-    });
-}
-
-function merchantById(id) {
-    console.log(id);
-    $$.get(SERVER_ADS + "/merchantById" + id, function (data) {
-        merchant = data;
-    });
-}
-
-function group() {
-
-    //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
-    //
-    //});
-}
-
-function joinGroup() {
-    //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
-    //
-    //});
-}
 
