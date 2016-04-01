@@ -131,10 +131,9 @@
 
 	// TODO CHEAT
 	(function () {
-	    //myApp.closeModal('.login-screen');
-	    //
-	    //mainView.router.loadPage('group-setting.html');
+	    myApp.closeModal('.login-screen');
 
+	    mainView.router.loadPage('group.html');
 	})();
 
 	$$('#txtUsrName').on('focus', function () {

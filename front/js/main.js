@@ -50,6 +50,7 @@ myApp.onPageBeforeInit('group', function () {
         mainView.router.loadPage('order.html');
     });
 
+
 });
 
 myApp.onPageBeforeInit('group-detail', function () {
@@ -91,9 +92,9 @@ myApp.onPageBeforeInit('order', function () {
 
 // TODO CHEAT
 (function () {
-    //myApp.closeModal('.login-screen');
-    //
-    //mainView.router.loadPage('group-setting.html');
+    myApp.closeModal('.login-screen');
+
+    mainView.router.loadPage('group.html');
 
 })();
 
