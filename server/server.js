@@ -1,10 +1,8 @@
 /**
  * Created by User on 2016/3/24.
  */
-
 var Server = function () {
 
-    //let a = 0;
     var express = require('express');
     var bodyParser = require('body-parser');
 //var db = require('/batabase.js');
@@ -12,13 +10,18 @@ var Server = function () {
     var app = express();
 
     var USER = require('./mock-db').USER;
-    var GROUP = require('./mock-db').GROUP;
+    var ORDER = require('./mock-db').ORDER;
     var MERCHANT = require('./mock-db').MERCHANT;
+    var DISH = require('./mock-db').DISH;
+
+    var GROUP = require('./mock-db').GROUP;
     var GROUP_DISHES = require('./mock-db').GROUP_DISHES;
+    var GROUP_MEMBER = require('./mock-db').GROUP_MEMBER;
+    var GROUP_ORDER = require('./mock-db').GROUP_ORDER;
 
 
     var self = this;
- //
+//
 //var group1 = [
 //    {
 //        grpHostId: 'c',
@@ -96,7 +99,7 @@ var Server = function () {
         });
     });
 
-    app.get('/merchantById/:id', function (req, res) {
+    app.get('/getMerchantById/:id', function (req, res) {
         // Pass to next layer of middleware
         merchantById(req.params.id, function (result) {
             res.json(result);
@@ -143,7 +146,6 @@ var Server = function () {
 
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
-        var isSuccess = false;
         var usrId = 0;
         for (var index in USER) {
             if (USER[index].usrId > usrId) {
@@ -152,23 +154,16 @@ var Server = function () {
             usrId = Number(usrId) + 1;
         }
 
-        //usrId=Number(usrId)+1;
-        //console.log(usrId);
-
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
-        //console.log(newUser);
 
-        //USER.concat(newUser);
-        USER.push(newUser);
-        //console.log(USER);
-
-        callback({success: 1});
-
-
-        //if (!isSuccess) {
-        //    callback({success: 0});
-        //}
+        if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+            USER.push(newUser);
+            callback({success: 1});
+            return;
+        } else {
+            callback({success: 0});
+        }
     };
 
 
@@ -188,25 +183,117 @@ var Server = function () {
 
 
     this.allGroup = function (callback) {
+        var allGroupdata = [];
+        var grpOrderList = [];
+        var grpDishesList = [];
 
-        callback(GROUP);
-        return;
+        for (var GIndex in GROUP) {
+            for (var UIndex in USER) {
+                var metName;
+
+                for (var MIndex in MERCHANT) {
+                    if (GROUP[GIndex].metId == MERCHANT[MIndex].metId) {
+                        metName = MERCHANT[MIndex].metName;
+                        //藉由 GROUP.metId 去抓 MERCHANT.metName
+                    }
+                }
+                for (var GOIndex in GROUP_ORDER) {
+                    if (GROUP[GIndex].grpId == GROUP_ORDER[GOIndex].grpId) {
+                        grpOrderList.push({
+                            grpId: GROUP_ORDER[GOIndex].grpId,
+                            dihId: GROUP_ORDER[GOIndex].dihId,
+                            gorNum: GROUP_ORDER[GOIndex].gorNum
+                        });
+                        //透過相同的grpId，把<餐點ID>跟<餐點數量>從GROUP_ORDER抓出來，放入grpOrderList
+                    }
+                }
+                for (var GDIndex in GROUP_DISHES) {
+
+                    if (GROUP[GIndex].grpId == GROUP_DISHES[GDIndex].grpId)
+                        grpDishesList.push({
+                            gdeId: GROUP_DISHES[GDIndex].gdeId,
+                            dihId: GROUP_DISHES[GDIndex].dihId,
+                            grpId: GROUP_DISHES[GDIndex].grpId
+                        });
+                    //透過相同的grpId，把<餐點ID>從GROUP_ORDER抓出來，放入grpDishesList
+                }
+
+                if (GROUP[GIndex].grpHostId == USER[UIndex].usrId) {
+                    allGroupdata.push({
+                        grpId: GROUP[GIndex].grpId,
+                        grpHostName: USER[UIndex].usrName,
+                        metName: metName,
+                        grpAddr: GROUP[GIndex].grpAddr,
+                        grpTime: GROUP[GIndex].grpTime,
+                        grpOrder: grpOrderList,
+                        grpDishes: grpDishesList
+                    });
+                    grpOrderList = [];
+                    grpDishesList = [];
+                }
+            }
+        }
+        //console.log(JSON.stringify(allGroupdata));
+
+        if (allGroupdata.length != 0) {
+            callback(allGroupdata);
+            return;
+        }
+        else {
+            callback({success: 0});
+        }
+
     };
 
 
     this.allMerchant = function (callback) {
 
-        callback(MERCHANT);
-        return;
+
+        var allMerchantdata = [];
+        var menu = [];
+
+        for (var MIndex in MERCHANT) {
+
+            for (var DIndex in DISH) {
+                if (MERCHANT[MIndex].metId == DISH[DIndex].metId) {
+                    menu.push({
+                            dihName: DISH[DIndex].dihName,
+                            metId: DISH[DIndex].metId,
+                            dihType: DISH[DIndex].dihType,
+                            dihPrice:DISH[DIndex].dihPrice
+                        }
+                    );
+                }
+            }
+
+
+
+            allMerchantdata.push({
+                metId: MERCHANT[MIndex].metId,
+                metName: MERCHANT[MIndex].metName,
+                metPhone: MERCHANT[MIndex].metPhone,
+                menu: menu
+            });
+            menu = [];
+        }
+
+        //console.log(JSON.stringify(allMerchantdata));
+
+        if (allMerchantdata.length != 0) {
+            callback(allMerchantdata);
+            return;
+        }
+        else {
+            callback({success: 0});
+        }
     };
 
 
-    this.merchantById = function (id, callback) {
-        //console.log("getMerchantById!");
+    this.getMerchantById = function (id, callback) {
         var isSuccess = false;
         for (var index in MERCHANT) {
             if (MERCHANT[index].metId == id) {
-                callback(MERCHANT);
+                callback(MERCHANT[index]);
                 return;
             }
         }
@@ -218,29 +305,28 @@ var Server = function () {
 
     };
 
-    this.group = function (grpHostId, dishes, metId, addr, gorTime, minAmount, callback) {
-        var isSuccess = true;
+    this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
 
+        var i = GROUP.length + 1;
+        var newGroup = {
+            grpId: i,
+            grpHostId: grpHostId,
+            //dishes: dishes,
+            metId: metId,
+            grpAddr: addr,
+            grpTime: gorTime
+            //minAmount: minAmount
+        };
 
-        if (isSuccess) {
-            var i = GROUP.length + 1;
-            var newGroup = {
-                grpId: i,
-                grpHostId: grpHostId,
-                //dishes: dishes,
-                metId: metId,
-                grpAddr: addr,
-                grpTime: gorTime,
-                minAmount: minAmount
-            };
+        for (var index in dishes) {
+            var gdeId = GROUP_DISHES.length + 1;
+            var grpId = i;
+            var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
+            //console.log("dishesList:"+JSON.stringify(dishesList));
+            GROUP_DISHES.push(dishesList);
+        }
 
-            for (var index in dishes) {
-                var gdeId = GROUP_DISHES.length + 1;
-                var grpId = i;
-                var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
-                GROUP_DISHES.push(dishesList);
-            }
-
+        if (newGroup != 0) {
             GROUP.push(newGroup);
             //console.log(USER);
             //callback(GROUP);
@@ -253,21 +339,36 @@ var Server = function () {
     };
 
     this.joinGroup = function (usrId, dishes, grpId, callback) {
-        var isSuccess = true;
-
-
-        if (isSuccess) {
 
             var newGroupOrder = {};
-            var dihId = dishes.dishId;
-            var gorNum = dishes.num;
-            for (var index in GROUP_ORDER) {
-                if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
-                    GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + gorNum;
-                }
-                else {
-                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: gorNum};
+            var dihId;
+            var gorNum;
+            var num;
+
+            if (GROUP_ORDER.length == 0) {
+                for (var index in dishes) {
+                    dihId = dishes[index].dihId;
+                    num = dishes[index].num;
+                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
                     GROUP_ORDER.push(newGroupOrder);
+                    //資料表沒有資料，直接新增
+                }
+            } else {
+                for (var index in GROUP_ORDER) {
+                    for (var index in dishes) {
+                        dihId = dishes[index].dihId;
+                        num = dishes[index].num;
+
+                        if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
+                            GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + num;//直接改值
+                            //尋找相同的<團號>及<商品ID>，有則Updata
+                        }
+                        else {
+                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
+                            GROUP_ORDER.push(newGroupOrder);
+                            //無，新增
+                        }
+                    }
                 }
             }
 
@@ -280,13 +381,12 @@ var Server = function () {
                 grpId: grpId
             };
 
+        if (newGroupMember!=0) {
             GROUP_MEMBER.push(newGroupMember);
-
             callback({success: 1});
 
         } else {
             callback({success: 0});
-
         }
 
     };
@@ -294,4 +394,4 @@ var Server = function () {
 
 };
 module.exports = new Server();
-
+//console.log( new Date());

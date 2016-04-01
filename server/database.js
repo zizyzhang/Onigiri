@@ -44,7 +44,7 @@ exports.allMerchant = function (calback) {
 
 };
 
-exports.merchantById = function (id, calback) {
+exports.getMerchantById = function (id, calback) {
     //用ID尋找指定店家
 
 };
