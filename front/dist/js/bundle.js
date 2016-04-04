@@ -56,7 +56,7 @@
 	// Initialize app
 	var myApp = new Framework7({
 	    modalTitle: 'Onigiri',
-	    template7Pages: true,
+	    //template7Pages: true,
 	    // Enable Material theme
 	    material: true
 	});
@@ -99,7 +99,8 @@
 	myApp.onPageBeforeInit('group', function () {
 	    console.log('before group init');
 	    $$('#btnJoinInGroupPage').on('click', function () {
-	        mainView.router.loadPage('order.html');
+	        //mainView.router.loadPage('order.html');
+	        console.log($$(this).attr('metId'));
 	    });
 	});
 	
@@ -135,10 +136,9 @@
 	
 	// TODO CHEAT
 	(function () {
-	    //myApp.closeModal('.login-screen');
+	    myApp.closeModal('.login-screen');
 	
-	    //mainView.router.loadPage('group.html');
-	
+	    mainView.router.loadPage('group.html');
 	})();
 	
 	$$('#txtUsrName').on('focus', function () {
@@ -156,12 +156,15 @@
 	$$('#btn-login').click(function () {
 	
 	    ajaxMethod.userAuth().then(function () {
+	        //加载AllGroup
 	        return ajaxMethod.getAllGroup();
 	    }).then(function (groups) {
 	        console.log(groups);
 	
 	        myApp.closeModal();
-	        mainView.router.loadPage({ url: 'group.html', context: { groups: groups } });
+	        mainView.router.loadPage({ url: 'group.html' });
+	    }).catch(function () {
+	        myApp.alert('登录失败');
 	    });
 	});
 	
