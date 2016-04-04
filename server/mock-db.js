@@ -37,11 +37,11 @@ var MockDb = function () {
 
     this.MERCHANT = [
         {
-            metId: '1',
+            metId: 1,
             metName: 'a',
             metPhone: '123123123'
         }, {
-            metId: '2',
+            metId: 2,
             metName: 'b',
             metPhone: '234234234'
         }
@@ -75,7 +75,16 @@ var MockDb = function () {
             grpId: '1',//团的Id
             grpHostId: '1',//團長
             //dishes: [],
-            metId: '999',//商家Id
+            metId: '1',//商家Id
+            grpAddr: 'road',//取餐地点
+            grpTime: "13:33"//取餐时间
+            //minAmount: '9999'
+        }
+        ,{
+            grpId: '2',//团的Id
+            grpHostId: '2',//團長
+            //dishes: [],
+            metId: '2',//商家Id
             grpAddr: 'road',//取餐地点
             grpTime: "13:33"//取餐时间
             //minAmount: '9999'

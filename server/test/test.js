@@ -57,7 +57,24 @@ describe('Server', function () {
                 assert.typeOf(result[0].grpDishes, 'array');
                 done();
             })
+
+
         });
+
+        it('should has same length as groups', function (done) {
+            server.allGroup(function (result) {
+                assert.equal(GROUP.length, result.length);
+                done();
+            })
+        });
+
+        it('has merchant object', function (done) {
+            server.allGroup(function (result) {
+                assert.equal('a', result[0].merchant.metName);
+                done();
+            })
+        });
+
 
     });
 
@@ -66,7 +83,7 @@ describe('Server', function () {
             server.allMerchant(function (result) {
                 //assert.equal(1 , result[0].metId );
                 assert.typeOf(result, 'array');
-                console.log(JSON.stringify(result));
+                //console.log(JSON.stringify(result));
                 done();
             })
         });
@@ -86,14 +103,14 @@ describe('Server', function () {
 
         it('has menu with dihName defined', function (done) {
             server.allMerchant(function (result) {
-                assert.isDefined(  result[0].menu[0].dihName);
+                assert.isDefined(result[0].menu[0].dihName);
                 done();
             })
         });
 
         it('has menu with dihName defined', function (done) {
             server.allMerchant(function (result) {
-                assert.isDefined(  result[0].menu[0].dihPrice);
+                assert.isDefined(result[0].menu[0].dihPrice);
                 done();
             })
         });
@@ -118,20 +135,25 @@ describe('Server', function () {
     });
 
     describe('#group()', function () {
+
         it('should insert a group ', function (done) {
+
             server.group('1', [3, 5, 7, 9], '1', 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
-                var i = GROUP.length - 1;
-                assert.equal('1', GROUP[i].grpHostId);
-                assert.equal('1', GROUP[i].metId);
-                assert.equal('daor', GROUP[i].grpAddr);
-                assert.equal('00:00', GROUP[i].grpTime);
+
+                assert.equal('1', GROUP[GROUP.length-1].grpHostId);
+                assert.equal('1', GROUP[GROUP.length-1].metId);
+                assert.equal('daor', GROUP[GROUP.length-1].grpAddr);
+                assert.equal('00:00', GROUP[GROUP.length-1].grpTime);
                 //assert.equal('-9999', GROUP[i].minAmount);
                 //assert.typeOf(GROUP_DISHES[i].dishes,'array');
 
-                assert.equal('3', GROUP_DISHES[2].gdeId);
-                assert.equal('3', GROUP_DISHES[2].dihId);
-                assert.equal('2', GROUP_DISHES[2].grpId);
+                console.log(JSON.stringify(GROUP_DISHES[GROUP_DISHES.length-1]));
+                assert.equal(GROUP_DISHES.length-1, GROUP_DISHES[GROUP_DISHES.length-1].gdeId);
+                assert.equal(9, GROUP_DISHES[GROUP_DISHES.length-1].dihId);
+                assert.equal(3, GROUP_DISHES[GROUP_DISHES.length-1-3].dihId);
+
+                assert.equal(GROUP.length-1, GROUP_DISHES[GROUP.length-1].grpId);
 
                 assert.equal('1', result.success);
 

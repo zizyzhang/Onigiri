@@ -9,12 +9,12 @@ var Server = function () {
 
     var app = express();
 
-    var USER = require('./mock-db').USER;
-    var ORDER = require('./mock-db').ORDER;
-    var MERCHANT = require('./mock-db').MERCHANT;
-    var DISH = require('./mock-db').DISH;
+    var USERS = require('./mock-db').USER;
+    var ORDERS = require('./mock-db').ORDER;
+    var MERCHANTS = require('./mock-db').MERCHANT;
+    var DISHES = require('./mock-db').DISH;
 
-    var GROUP = require('./mock-db').GROUP;
+    var GROUPS = require('./mock-db').GROUP;
     var GROUP_DISHES = require('./mock-db').GROUP_DISHES;
     var GROUP_MEMBER = require('./mock-db').GROUP_MEMBER;
     var GROUP_ORDER = require('./mock-db').GROUP_ORDER;
@@ -147,9 +147,9 @@ var Server = function () {
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
-        for (var index in USER) {
-            if (USER[index].usrId > usrId) {
-                usrId = USER[index].usrId;
+        for (var index in USERS) {
+            if (USERS[index].usrId > usrId) {
+                usrId = USERS[index].usrId;
             }
             usrId = Number(usrId) + 1;
         }
@@ -158,7 +158,7 @@ var Server = function () {
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
 
         if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            USER.push(newUser);
+            USERS.push(newUser);
             callback({success: 1});
             return;
         } else {
@@ -169,8 +169,8 @@ var Server = function () {
 
     this.userAuth = function (usrName, usrPwd, callback) {
         var isSuccess = false;
-        for (var index in USER) {
-            if (USER[index].usrName == usrName && USER[index].usrPwd == usrPwd) {
+        for (var index in USERS) {
+            if (USERS[index].usrName == usrName && USERS[index].usrPwd == usrPwd) {
                 callback({success: 1});
                 return;
             }
@@ -183,65 +183,47 @@ var Server = function () {
 
 
     this.allGroup = function (callback) {
-        var allGroupdata = [];
-        var grpOrderList = [];
-        var grpDishesList = [];
+        let result = [];
 
-        for (var GIndex in GROUP) {
-            for (var UIndex in USER) {
-                var metName;
 
-                for (var MIndex in MERCHANT) {
-                    if (GROUP[GIndex].metId == MERCHANT[MIndex].metId) {
-                        metName = MERCHANT[MIndex].metName;
-                        //藉由 GROUP.metId 去抓 MERCHANT.metName
-                    }
-                }
-                for (var GOIndex in GROUP_ORDER) {
-                    if (GROUP[GIndex].grpId == GROUP_ORDER[GOIndex].grpId) {
-                        grpOrderList.push({
-                            grpId: GROUP_ORDER[GOIndex].grpId,
-                            dihId: GROUP_ORDER[GOIndex].dihId,
-                            gorNum: GROUP_ORDER[GOIndex].gorNum
-                        });
-                        //透過相同的grpId，把<餐點ID>跟<餐點數量>從GROUP_ORDER抓出來，放入grpOrderList
-                    }
-                }
-                for (var GDIndex in GROUP_DISHES) {
+        for (let group of GROUPS) {
+            let grpId,
+                grpHostName,
+                merchant,
+                grpAddr,
+                grpTime,
+                grpOrder = [],
+                grpDishes = [];
 
-                    if (GROUP[GIndex].grpId == GROUP_DISHES[GDIndex].grpId)
-                        grpDishesList.push({
-                            gdeId: GROUP_DISHES[GDIndex].gdeId,
-                            dihId: GROUP_DISHES[GDIndex].dihId,
-                            grpId: GROUP_DISHES[GDIndex].grpId
-                        });
-                    //透過相同的grpId，把<餐點ID>從GROUP_ORDER抓出來，放入grpDishesList
-                }
+            grpId = group.grpId;
+            grpId = group.grpId;
+            grpAddr = group.grpAddr;
+            grpTime = group.grpTime;
 
-                if (GROUP[GIndex].grpHostId == USER[UIndex].usrId) {
-                    allGroupdata.push({
-                        grpId: GROUP[GIndex].grpId,
-                        grpHostName: USER[UIndex].usrName,
-                        metName: metName,
-                        grpAddr: GROUP[GIndex].grpAddr,
-                        grpTime: GROUP[GIndex].grpTime,
-                        grpOrder: grpOrderList,
-                        grpDishes: grpDishesList
-                    });
-                    grpOrderList = [];
-                    grpDishesList = [];
-                }
+            grpHostName = (USERS.find(user => user.usrId == group.grpHostId)).usrName;
+            merchant = MERCHANTS.find(merchant => merchant.metId == group.metId);
+
+            for (let grr of GROUP_ORDER) {
+                 if (grr.grpId == group.grpId) grpOrder.push(grr);
             }
-        }
-        //console.log(JSON.stringify(allGroupdata));
 
-        if (allGroupdata.length != 0) {
-            callback(allGroupdata);
-            return;
+            for (let grh of GROUP_DISHES) {
+                 if (grh.grpId == group.grpId) grpDishes.push(grh);
+            }
+
+            result.push({
+                grpId,
+                grpHostName,
+                merchant,
+                grpAddr,
+                grpTime,
+                grpOrder,
+                grpDishes
+            })
+
         }
-        else {
-            callback({success: 0});
-        }
+
+        callback(result);
 
     };
 
@@ -252,26 +234,25 @@ var Server = function () {
         var allMerchantdata = [];
         var menu = [];
 
-        for (var MIndex in MERCHANT) {
+        for (var MIndex in MERCHANTS) {
 
-            for (var DIndex in DISH) {
-                if (MERCHANT[MIndex].metId == DISH[DIndex].metId) {
+            for (var DIndex in DISHES) {
+                if (MERCHANTS[MIndex].metId == DISHES[DIndex].metId) {
                     menu.push({
-                            dihName: DISH[DIndex].dihName,
-                            metId: DISH[DIndex].metId,
-                            dihType: DISH[DIndex].dihType,
-                            dihPrice:DISH[DIndex].dihPrice
+                            dihName: DISHES[DIndex].dihName,
+                            metId: DISHES[DIndex].metId,
+                            dihType: DISHES[DIndex].dihType,
+                            dihPrice: DISHES[DIndex].dihPrice
                         }
                     );
                 }
             }
 
 
-
             allMerchantdata.push({
-                metId: MERCHANT[MIndex].metId,
-                metName: MERCHANT[MIndex].metName,
-                metPhone: MERCHANT[MIndex].metPhone,
+                metId: MERCHANTS[MIndex].metId,
+                metName: MERCHANTS[MIndex].metName,
+                metPhone: MERCHANTS[MIndex].metPhone,
                 menu: menu
             });
             menu = [];
@@ -291,9 +272,9 @@ var Server = function () {
 
     this.getMerchantById = function (id, callback) {
         var isSuccess = false;
-        for (var index in MERCHANT) {
-            if (MERCHANT[index].metId == id) {
-                callback(MERCHANT[index]);
+        for (var index in MERCHANTS) {
+            if (MERCHANTS[index].metId == id) {
+                callback(MERCHANTS[index]);
                 return;
             }
         }
@@ -307,7 +288,7 @@ var Server = function () {
 
     this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
 
-        var i = GROUP.length + 1;
+        var i = GROUPS.length ;
         var newGroup = {
             grpId: i,
             grpHostId: grpHostId,
@@ -319,7 +300,7 @@ var Server = function () {
         };
 
         for (var index in dishes) {
-            var gdeId = GROUP_DISHES.length + 1;
+            var gdeId = GROUP_DISHES.length ;
             var grpId = i;
             var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
             //console.log("dishesList:"+JSON.stringify(dishesList));
@@ -327,7 +308,10 @@ var Server = function () {
         }
 
         if (newGroup != 0) {
-            GROUP.push(newGroup);
+
+            GROUPS.push(newGroup);
+
+
             //console.log(USER);
             //callback(GROUP);
             callback({success: 1});
@@ -340,48 +324,48 @@ var Server = function () {
 
     this.joinGroup = function (usrId, dishes, grpId, callback) {
 
-            var newGroupOrder = {};
-            var dihId;
-            var gorNum;
-            var num;
+        var newGroupOrder = {};
+        var dihId;
+        var gorNum;
+        var num;
 
-            if (GROUP_ORDER.length == 0) {
+        if (GROUP_ORDER.length == 0) {
+            for (var index in dishes) {
+                dihId = dishes[index].dihId;
+                num = dishes[index].num;
+                newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
+                GROUP_ORDER.push(newGroupOrder);
+                //資料表沒有資料，直接新增
+            }
+        } else {
+            for (var index in GROUP_ORDER) {
                 for (var index in dishes) {
                     dihId = dishes[index].dihId;
                     num = dishes[index].num;
-                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                    GROUP_ORDER.push(newGroupOrder);
-                    //資料表沒有資料，直接新增
-                }
-            } else {
-                for (var index in GROUP_ORDER) {
-                    for (var index in dishes) {
-                        dihId = dishes[index].dihId;
-                        num = dishes[index].num;
 
-                        if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
-                            GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + num;//直接改值
-                            //尋找相同的<團號>及<商品ID>，有則Updata
-                        }
-                        else {
-                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                            GROUP_ORDER.push(newGroupOrder);
-                            //無，新增
-                        }
+                    if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
+                        GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + num;//直接改值
+                        //尋找相同的<團號>及<商品ID>，有則Updata
+                    }
+                    else {
+                        newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
+                        GROUP_ORDER.push(newGroupOrder);
+                        //無，新增
                     }
                 }
             }
+        }
 
-            var gmrId = GROUP_MEMBER.length + 1;
-            var newGroupMember = {
-                //grpHostId: grpHostId,
-                //dishes: dishes,
-                gmrId: gmrId,
-                usrId: usrId,
-                grpId: grpId
-            };
+        var gmrId = GROUP_MEMBER.length + 1;
+        var newGroupMember = {
+            //grpHostId: grpHostId,
+            //dishes: dishes,
+            gmrId: gmrId,
+            usrId: usrId,
+            grpId: grpId
+        };
 
-        if (newGroupMember!=0) {
+        if (newGroupMember != 0) {
             GROUP_MEMBER.push(newGroupMember);
             callback({success: 1});
 
