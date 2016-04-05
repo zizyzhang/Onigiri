@@ -1,7 +1,8 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
 const concat = require('gulp-concat');
-var webpack = require('webpack-stream');
+const webpack = require('webpack-stream');
+const plumber = require('gulp-plumber');
 
 gulp.task('default', ['front','server','watch']);
 
