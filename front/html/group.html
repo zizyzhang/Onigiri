@@ -10,14 +10,14 @@
     <a href="select-merchant.html" class="floating-button color-pink"><i class="icon icon-plus"></i></a>
     <div class="page-content">
 
-     <!--{{#each}}-->
+     {{#each data}}
         <div class="card demo-card-header-pic">
             <div style="background-image:url('../assets/img/img-store-01.jpg' );" valign="bottom" class="card-img ">
                 <img src="../assets/img/img-store-01.jpg"
                      style="visibility: hidden; width: 100%; max-height: 40%;display: block;"/>
 
 
-                <div class="card-img-text" style="color: white;">{{merName}}</div>
+                <div class="card-img-text" style="color: white;">{{merchant.metName}}</div>
             </div>
             <div class="card-content">
                 <div class="card-content-inner">
@@ -28,32 +28,13 @@
                 </div>
             </div>
             <div class="card-footer">
-                <a href="#" class="link btn-join" id="btnJoinInGroupPage" metId="{{metId}}">加入團購</a>
-                <a href="group-detail.html" class="link">查看詳情</a>
+                <a href="#" class="link btn-join btn-join-in-group-page" data-met-id="{{merchant.metId}}">加入團購</a>
+                <a href="group-detail.html" class="link btn-group-detail" data-met-id="{{merchant.metId}}">查看詳情</a>
             </div>
         </div>
 
-     <!--{{/each}}-->
+     {{/each}}
 
 
-        <!--<div class="card demo-card-header-pic">-->
-            <!--<div style="background-image:url('../assets/img/img-store-02.jpg' )" valign="bottom" class="card-img ">-->
-                <!--<img src="../assets/img/img-store-02.jpg" style="visibility: hidden; width: 100%; max-height: 40%;display: block;" />-->
-
-                <!--<div class="card-img-text color-white">食樂拉麵</div>-->
-            <!--</div>-->
-            <!--<div class="card-content">-->
-                <!--<div class="card-content-inner">-->
-                    <!--<p class="color-gray">发起人: 资管系</p>-->
-                    <!--<p>-->
-                        <!--取餐时间: 明天中午 12:00-->
-                    <!--</p>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="card-footer">-->
-                <!--<a href="#" class="link btn-join">加入團購</a>-->
-                <!--<a href="group-detail.html" class="link">查看詳情</a>-->
-            <!--</div>-->
-        <!--</div>-->
     </div>
 </div>

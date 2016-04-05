@@ -1,22 +1,33 @@
-//var ajaxMethod = require('./ajaxMethods.js');
-//import ajaxMethod  from './ajaxMethods.js';
+let ajaxMethod = require('./ajaxMethods.js'),
+    tool = require('./tool.js'),
+    GroupPage = require('./pages/group.js'),
+    GroupDetailPage = require('./pages/group-detail.js');
 
 // Initialize app
-var myApp = new Framework7({
+let myApp = new Framework7({
     modalTitle: 'Onigiri',
-    //template7Pages: true,
+    template7Pages: true,
     // Enable Material theme
-    material: true
+    material: true,
+
 });
 
-// If we need to use custom DOM library, let's save it to $$ variable:
-var $$ = Dom7;
-var dish = 1;
+
+// If we need to use custom DOM library, let's save it to $$ letiable:
+let $$ = Dom7;
+let dish = 1;
 // Add view
-var mainView = myApp.addView('.view-main', {
+let mainView = myApp.addView('.view-main', {
     // Because we want to use dynamic navbar, we need to enable it for this view:
     //dynamicNavbar: true,
+    contentCache: true
 });
+
+//加载page,绑定page的event
+let pageEventBind = function () {
+    new GroupPage(myApp, mainView);
+    new GroupDetailPage(myApp, mainView);
+}();
 
 // Show/hide preloader for remote ajax loaded pages
 // Probably should be removed on a production/local app
@@ -27,6 +38,8 @@ $$(document).on('ajaxStart', function (e) {
     }
     myApp.showIndicator();
 });
+
+
 $$(document).on('ajaxComplete', function (e) {
     if (e.detail.xhr.requestUrl.indexOf('autocomplete-languages.json') >= 0) {
         // Don't show preloader for autocomplete demo requests
@@ -35,31 +48,8 @@ $$(document).on('ajaxComplete', function (e) {
     myApp.hideIndicator();
 });
 
-//myApp.onPageInit('about', function (page) {
-//    // Do something here for "about" page
-//    myApp.alert("hi");
-//})
-//
-$$(document).on('pageInit', function (e) {
-    // Do something here when page loaded and initialized
-});
 
-myApp.onPageBeforeInit('group', function () {
-    console.log('before group init');
-    $$('#btnJoinInGroupPage').on('click', function () {
-        //mainView.router.loadPage('order.html');
-        console.log($$(this).attr('metId'));
-    });
 
-});
-
-myApp.onPageBeforeInit('group-detail', function () {
-    console.log('before group init');
-    $$('#btnJoin').on('click', function () {
-        mainView.router.loadPage('order.html');
-    });
-
-});
 
 myApp.onPageBeforeInit('group-setting', function () {
     $$('#btnFinish').on('click', function () {
@@ -92,10 +82,11 @@ myApp.onPageBeforeInit('order', function () {
 
 // TODO CHEAT
 (() => {
-    myApp.closeModal('.login-screen');
+    ajaxMethod.getAllGroup().then(function (groups) {
+        myApp.closeModal();
+        mainView.router.loadPage({url: 'group.html'});
 
-    mainView.router.loadPage('group.html');
-
+    });
 })();
 
 $$('#txtUsrName').on('focus', function () {
@@ -115,15 +106,10 @@ $$('#btn-sign-up').click(function () {
 $$('#btn-login').click(function () {
 
 
-    ajaxMethod.userAuth().then(function () {
-        //加载AllGroup
-        return ajaxMethod.getAllGroup();
-    }).then(function (groups) {
-        console.log(groups);
-
+    ajaxMethod.userAuth().then(function (groups) {
         myApp.closeModal();
         mainView.router.loadPage({url: 'group.html'});
-    }).catch(function(){
+    }).catch(function () {
         myApp.alert('登录失败');
     });
 
