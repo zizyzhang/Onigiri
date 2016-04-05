@@ -1,9 +1,9 @@
 var $$ = Dom7;
 var SERVER_ADS = "http://localhost:3000";
 
-var AjaxMethods = function(){
+var AjaxMethods = function () {
 
-    this.addUser= function() {
+    this.addUser = function () {
         var subname = $$('#subAccount').val();
         var subpwd = $$('#subPwd').val();
         var submobile = $$('#subMobile').val();
@@ -14,61 +14,58 @@ var AjaxMethods = function(){
         });
     }
 
-   this.userAuth= function() {
-       return new Promise(function(resolve,reject){
-           var usrName = $$('#txtUsrName').val();
-
-
-           var usrPwd = $$('#txtUsrPwd').val();
-
-
-           $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-               if(JSON.parse(result).success == 1 ){
-                   console.log('login success');
-
-                   resolve();
-               }else{
-                   reject();
-               }
-           });
-       });
-
-
-    };
-
-    this.getAllGroup = function() {
+    this.userAuth = function () {
         return new Promise(function (resolve, reject) {
-            $$.get(SERVER_ADS+"/allGroup", function (data) {
-                resolve(data);
-            });
+            var usrName = $$('#txtUsrName').val();
 
+
+            var usrPwd = $$('#txtUsrPwd').val();
+
+
+            $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
+                if (JSON.parse(result).success == 1) {
+                    console.log('login success');
+
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         });
 
 
     };
 
-    this.allMerchant= function() {
+    this.getAllGroup = function () {
+        return new Promise(function (resolve, reject) {
+            $$.getJSON(SERVER_ADS + "/allGroup", function (data) {
+                resolve(data);
+            });
+         });
+    };
 
-        $$.get(SERVER_ADS + "/allMerchant", function (data) {
+    this.allMerchant = function () {
+
+        $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
             allMerchantList = data;
         });
     }
 
-    this.merchantById= function(id) {
+    this.merchantById = function (id) {
         console.log(id);
-        $$.get(SERVER_ADS + "/merchantById" + id, function (data) {
+        $$.getJSON(SERVER_ADS + "/merchantById" + id, function (data) {
             merchant = data;
         });
     }
 
-    this.group= function() {
+    this.group = function () {
 
         //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
         //
         //});
     }
 
-    this.joinGroup= function() {
+    this.joinGroup = function () {
         //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
         //
         //});
@@ -77,5 +74,5 @@ var AjaxMethods = function(){
 };
 
 var ajaxMethods = new AjaxMethods();
-export {ajaxMethods};
+module.exports = ajaxMethods;
 
