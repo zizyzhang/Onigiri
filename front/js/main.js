@@ -1,6 +1,5 @@
-var ajaxMethod = require('./ajaxMethods.js');
-
-console.log(JSON.stringify(ajaxMethod));
+//var ajaxMethod = require('./ajaxMethods.js');
+//import ajaxMethod  from './ajaxMethods.js';
 
 // Initialize app
 var myApp = new Framework7({

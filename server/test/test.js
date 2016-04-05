@@ -1,25 +1,17 @@
+'use strict'
 var assert = require('chai').assert;
-var server = require('./../server');
-
-var USER = require('../mock-db').USER;
-var ORDER = require('../mock-db').ORDER;
-var MERCHANT = require('../mock-db').MERCHANT;
-var DISH = require('../mock-db').DISH;
-
-var GROUP = require('../mock-db').GROUP;
-var GROUP_DISHES = require('../mock-db').GROUP_DISHES;
-var GROUP_MEMBER = require('../mock-db').GROUP_MEMBER;
-var GROUP_ORDER = require('../mock-db').GROUP_ORDER;
+var server = require('./../dist/server');
+let db = require('../dist/mock-db');
 
 
 describe('Server', function () {
     describe('#addUser()', function () {
         it('should insert an user : Jack,qqq,02-1231212 ', function (done) {
             server.addUser('Jack', 'qqq', '02-1231212', function (result) {
-                var i = USER.length - 1;
-                assert.equal('Jack', USER[i].usrName);
-                assert.equal('qqq', USER[i].usrPwd);
-                assert.equal('02-1231212', USER[i].usrMobi);
+                var i = db.USER.length - 1;
+                assert.equal('Jack', db.USER[i].usrName);
+                assert.equal('qqq', db.USER[i].usrPwd);
+                assert.equal('02-1231212', db.USER[i].usrMobi);
                 assert.equal(1, result.success);
                 done();
             })
@@ -63,7 +55,7 @@ describe('Server', function () {
 
         it('should has same length as groups', function (done) {
             server.allGroup(function (result) {
-                assert.equal(GROUP.length, result.length);
+                assert.equal(db.GROUP.length, result.length);
                 done();
             })
         });
@@ -141,19 +133,19 @@ describe('Server', function () {
             server.group('1', [3, 5, 7, 9], '1', 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
 
-                assert.equal('1', GROUP[GROUP.length-1].grpHostId);
-                assert.equal('1', GROUP[GROUP.length-1].metId);
-                assert.equal('daor', GROUP[GROUP.length-1].grpAddr);
-                assert.equal('00:00', GROUP[GROUP.length-1].grpTime);
+                assert.equal('1', db.GROUP[db.GROUP.length-1].grpHostId);
+                assert.equal('1', db.GROUP[db.GROUP.length-1].metId);
+                assert.equal('daor', db.GROUP[db.GROUP.length-1].grpAddr);
+                assert.equal('00:00', db.GROUP[db.GROUP.length-1].grpTime);
                 //assert.equal('-9999', GROUP[i].minAmount);
                 //assert.typeOf(GROUP_DISHES[i].dishes,'array');
 
-                console.log(JSON.stringify(GROUP_DISHES[GROUP_DISHES.length-1]));
-                assert.equal(GROUP_DISHES.length-1, GROUP_DISHES[GROUP_DISHES.length-1].gdeId);
-                assert.equal(9, GROUP_DISHES[GROUP_DISHES.length-1].dihId);
-                assert.equal(3, GROUP_DISHES[GROUP_DISHES.length-1-3].dihId);
+                console.log(JSON.stringify(db.GROUP_DISHES[db.GROUP_DISHES.length-1]));
+                assert.equal(db.GROUP_DISHES.length-1, db.GROUP_DISHES[db.GROUP_DISHES.length-1].gdeId);
+                assert.equal(9, db.GROUP_DISHES[db.GROUP_DISHES.length-1].dihId);
+                assert.equal(3, db.GROUP_DISHES[db.GROUP_DISHES.length-1-3].dihId);
 
-                assert.equal(GROUP.length-1, GROUP_DISHES[GROUP.length-1].grpId);
+                assert.equal(db.GROUP.length-1, db.GROUP_DISHES[db.GROUP.length-1].grpId);
 
                 assert.equal('1', result.success);
 
@@ -165,17 +157,17 @@ describe('Server', function () {
         it('should insert a gorNum', function (done) {
             server.joinGroup(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], '1', function (result) {
                 //(usrId, dishes, grpId, callback)
-                assert.equal(1, GROUP_ORDER[2].grpId);
-                assert.equal(0, GROUP_ORDER[2].dihId);
-                assert.equal(1, GROUP_ORDER[2].gorNum);
+                assert.equal(1, db.GROUP_ORDER[2].grpId);
+                assert.equal(0, db.GROUP_ORDER[2].dihId);
+                assert.equal(1, db.GROUP_ORDER[2].gorNum);
 
-                assert.equal(1, GROUP_ORDER[3].grpId);
-                assert.equal(1, GROUP_ORDER[3].dihId);
-                assert.equal(1, GROUP_ORDER[3].gorNum);
+                assert.equal(1, db.GROUP_ORDER[3].grpId);
+                assert.equal(1, db.GROUP_ORDER[3].dihId);
+                assert.equal(1, db.GROUP_ORDER[3].gorNum);
 
-                assert.equal(3, GROUP_MEMBER[2].gmrId);//自動編號ID
-                assert.equal(1, GROUP_MEMBER[2].usrId);
-                assert.equal('1', GROUP_MEMBER[2].grpId);
+                assert.equal(3, db.GROUP_MEMBER[2].gmrId);//自動編號ID
+                assert.equal(1, db.GROUP_MEMBER[2].usrId);
+                assert.equal('1', db.GROUP_MEMBER[2].grpId);
 
                 assert.equal('1', result.success);
                 done();
