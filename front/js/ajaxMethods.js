@@ -76,6 +76,6 @@ var AjaxMethods = function(){
 
 };
 
-
-module.exports = new AjaxMethods();
+var ajaxMethods = new AjaxMethods();
+export {ajaxMethods};
 
