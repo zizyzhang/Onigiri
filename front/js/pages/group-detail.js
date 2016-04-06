@@ -3,32 +3,31 @@
  */
 let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
-let myApp = null;
+let myApp = null,mainView=null;
 let tool = require('../tool.js');
 
 class GroupDetailPage {
-    constructor(myApp, mainView) {
-        this.myApp = myApp;
-        this.mainView = mainView;
-
+    constructor(_myApp, _mainView) {
+        myApp = _myApp;
+        mainView = _mainView;
 
     }
 
     bind() {
 
 
-        this.myApp.onPageBeforeInit('group-detail', (page) => {
+        myApp.onPageBeforeInit('group-detail', (page) => {
             this.metId = this.metId || page.query.metId;
 
             console.log('group-detail onPageBeforeInit');
             console.log(page.query);
 
             $$('#btnJoin').on('click', function () {
-                self.mainView.router.loadPage('order.html');
+                mainView.router.loadPage('order.html');
             });
         });
 
-        this.myApp.onPageInit('group-detail', (page) => {
+        myApp.onPageInit('group-detail', (page) => {
 
             console.log('group-detail Init');
         });

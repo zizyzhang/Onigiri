@@ -6,17 +6,17 @@
  */
 let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7; // jshint ignore:line
-let myApp = null;
+let myApp = null, mainView = null;
 let tool = require('../tool.js');
 
 
-class SelectMerchantPage   {
-    constructor(myApp, mainView) {
-        this.myApp=myApp;
-        this.mainView=mainView;
+class SelectMerchantPage {
+    constructor(_myApp, _mainView) {
+        myApp = _myApp;
+        mainView = _mainView;
     }
 
-    bind(){
+    bind() {
         this.myApp.onPageBeforeInit('select-merchant', function (page) {
             console.log('select-merchant before init');
         });

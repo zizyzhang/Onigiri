@@ -6,18 +6,22 @@
  */
 let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
-let myApp = null;
+let myApp = null, mainView = null;
 let tool = require('../tool.js');
 
 
-class Page   {
-    constructor(myApp, mainView) {
+class Page {
+    constructor(_myApp, _mainView) {
+        myApp = _myApp;
+        mainView = _mainView;
 
-        myApp.onPageBeforeInit('',function (page) {
-
-        })
     }
 
+    bind() {
+        myApp.onPageBeforeInit('', function (page) {
+
+        });
+    }
 
 }
 

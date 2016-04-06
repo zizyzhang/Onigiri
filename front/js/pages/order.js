@@ -4,16 +4,17 @@
 let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let tool = require('../tool.js');
+let myApp = null, mainView = null;
 
 
 class OrderPage {
-    constructor(myApp, mainView) {
-        this.myApp=myApp;
-        this.mainView=mainView;
+    constructor(_myApp, _mainView) {
+        myApp = _myApp;
+        mainView = _mainView;
     }
 
     bind(){
-        this.myApp.onPageBeforeInit('order',function (page) {
+        myApp.onPageBeforeInit('order',function (page) {
             console.log('before order init');
 
 

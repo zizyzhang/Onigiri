@@ -38,7 +38,7 @@ let pageEventBind = function () {
     groupPage.bind();
     groupDetailPage.bind();
     orderPage.bind();
-
+    selectMerchantPage.bind();
 
 }();
 
