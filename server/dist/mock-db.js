@@ -115,3 +115,4 @@ var MockDb = function MockDb() {
 };
 
 module.exports = new MockDb();
+//# sourceMappingURL=mock-db.js.map

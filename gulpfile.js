@@ -1,8 +1,12 @@
+'use strict';
+
 const gulp = require('gulp');
 const babel = require('gulp-babel');
 const concat = require('gulp-concat');
 const webpack = require('webpack-stream');
 const plumber = require('gulp-plumber');
+var sourcemaps = require("gulp-sourcemaps");
+
 
 gulp.task('default', ['front','server','watch']);
 
@@ -33,7 +37,9 @@ gulp.task('front',()=>{
 gulp.task('server',()=>{
     return gulp.src('server/*.js')
         .pipe(plumber())
+        .pipe(sourcemaps.init())
         .pipe(babel())
+        .pipe(sourcemaps.write("."))
         .pipe(gulp.dest('server/dist'));
 });
 

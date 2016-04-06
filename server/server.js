@@ -129,7 +129,7 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            joinGroup(usrId, dishes, grpId, function (result) {
+            this.joinGroupPromise(usrId, dishes, grpId).then(result=>{
 
             });
 
@@ -198,7 +198,7 @@ var Server = function () {
         callback(result);
     };
 
-    this.getGroupById = function (id,callback) {
+    this.getGroupById = function (id, callback) {
         let group = db.GROUP.find(g=>g.grpId === id);
         callback({
             grpId: group.grpId,
@@ -213,145 +213,92 @@ var Server = function () {
 
 
     this.allMerchant = function (callback) {
-
-
-        var allMerchantdata = [];
-        var menu = [];
-
-        for (var MIndex in db.MERCHANT) {
-
-            for (var DIndex in db.DISH) {
-                if (db.MERCHANT[MIndex].metId == db.DISH[DIndex].metId) {
-                    menu.push({
-                            dihName: db.DISH[DIndex].dihName,
-                            metId: db.DISH[DIndex].metId,
-                            dihType: db.DISH[DIndex].dihType,
-                            dihPrice: db.DISH[DIndex].dihPrice
-                        }
-                    );
-                }
-            }
-
-
-            allMerchantdata.push({
-                metId: db.MERCHANT[MIndex].metId,
-                metName: db.MERCHANT[MIndex].metName,
-                metPhone: db.MERCHANT[MIndex].metPhone,
-                menu: menu
-            });
-            menu = [];
+        var result = [];
+        for (let merchant of db.MERCHANT) {
+            merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
+            result.push(
+                merchant
+            );
         }
+        callback(result);
 
-        //console.log(JSON.stringify(allMerchantdata));
-
-        if (allMerchantdata.length != 0) {
-            callback(allMerchantdata);
-            return;
-        }
-        else {
-            callback({success: 0});
-        }
     };
 
 
     this.getMerchantById = function (id, callback) {
-
-        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
+         let result = db.MERCHANT.find(merchant=>merchant.metId === id);
         result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
-
         callback(result);
-
-
     };
 
     this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
-
-        var i = db.GROUP.length;
-        var newGroup = {
-            grpId: i,
+        let grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
+        db.GROUP.push({
+            grpId,
             grpHostId: grpHostId,
-            //dishes: dishes,
             metId: metId,
             grpAddr: addr,
             grpTime: gorTime
             //minAmount: minAmount
-        };
-
-        for (var index in dishes) {
-            var gdeId = db.GROUP_DISHES.length;
-            var grpId = i;
-            var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
-            //console.log("dishesList:"+JSON.stringify(dishesList));
-            db.GROUP_DISHES.push(dishesList);
+        });
+        for (let dihId of dishes) {
+            let gdh = {
+                gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
+                dihId: dihId,
+                grpId
+            };
+            db.GROUP_DISHES.push(gdh);
         }
-
-        if (newGroup != 0) {
-
-            db.GROUP.push(newGroup);
-
-
-            //console.log(USER);
-            //callback(GROUP);
-            callback({success: 1});
-        }
-        else {
-            callback({success: 0});
-
-        }
+        callback({success: 1});
     };
 
-    this.joinGroup = function (usrId, dishes, grpId, callback) {
+    this.joinGroupPromise = function (usrId, dishes, grpId) {
+        return new Promise(resolve=>{
+            var newGroupOrder = {};
+            var dihId;
+            var gorNum;
+            var num;
 
-        var newGroupOrder = {};
-        var dihId;
-        var gorNum;
-        var num;
 
-        if (db.GROUP_ORDER.length == 0) {
-            for (var index in dishes) {
-                dihId = dishes[index].dihId;
-                num = dishes[index].num;
-                newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                db.GROUP_ORDER.push(newGroupOrder);
-                //資料表沒有資料，直接新增
-            }
-        } else {
-            for (var index in db.GROUP_ORDER) {
+            if (db.GROUP_ORDER.length == 0) {
                 for (var index in dishes) {
                     dihId = dishes[index].dihId;
                     num = dishes[index].num;
+                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
+                    db.GROUP_ORDER.push(newGroupOrder);
+                    //資料表沒有資料，直接新增
+                }
+            } else {
+                for (var index in db.GROUP_ORDER) {
+                    for (var index in dishes) {
+                        dihId = dishes[index].dihId;
+                        num = dishes[index].num;
 
-                    if (grpId == db.GROUP_ORDER[index].grpId && dihId == db.GROUP_ORDER[index].dihId) {
-                        db.GROUP_ORDER[index].gorNum = parseInt(db.GROUP_ORDER[index].gorNum) + num;//直接改值
-                        //尋找相同的<團號>及<商品ID>，有則Updata
-                    }
-                    else {
-                        newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                        db.GROUP_ORDER.push(newGroupOrder);
-                        //無，新增
+                        if (grpId == db.GROUP_ORDER[index].grpId && dihId == db.GROUP_ORDER[index].dihId) {
+                            db.GROUP_ORDER[index].gorNum = parseInt(db.GROUP_ORDER[index].gorNum) + num;//直接改值
+                            //尋找相同的<團號>及<商品ID>，有則Updata
+                        }
+                        else {
+                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
+                            db.GROUP_ORDER.push(newGroupOrder);
+                            //無，新增
+                        }
                     }
                 }
             }
-        }
 
-        var gmrId = db.GROUP_MEMBER.length + 1;
-        var newGroupMember = {
-            //grpHostId: grpHostId,
-            //dishes: dishes,
-            gmrId: gmrId,
-            usrId: usrId,
-            grpId: grpId
-        };
-
-        if (newGroupMember != 0) {
+            var gmrId = db.GROUP_MEMBER.length + 1;
+            var newGroupMember = {
+                //grpHostId: grpHostId,
+                //dishes: dishes,
+                gmrId: gmrId,
+                usrId: usrId,
+                grpId: grpId
+            };
             db.GROUP_MEMBER.push(newGroupMember);
-            callback({success: 1});
-
-        } else {
-            callback({success: 0});
-        }
-
-    };
+            resolve({success:1});
+        }) ;
+     };
 
 
 };
