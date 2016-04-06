@@ -1,8 +1,8 @@
 'use strict'
-var assert = require('chai').assert;
-var server = require('./../dist/server');
-let db = require('../dist/mock-db');
-
+const assert = require('chai').assert;
+const server = require('./../dist/server');
+const db = require('../dist/mock-db');
+const _ = require('lodash');
 
 describe('Server', function () {
     describe('#addUser()', function () {
@@ -14,13 +14,13 @@ describe('Server', function () {
                 assert.equal('02-1231212', db.USER[i].usrMobi);
                 assert.equal(1, result.success);
                 done();
-            })
+            });
         });
         it('should ', function (done) {
             server.addUser('', '', '', function (result) {
                 assert.equal(0, result.success);
                 done();
-            })
+            });
         });
 
     });
@@ -30,14 +30,14 @@ describe('Server', function () {
             server.userAuth('firstUser', '123', function (data) {
                 assert.equal(1, data.success);
                 done();
-            })
+            });
         });
 
         it('should return 0 when given wrong usrName&usrPwd', function (done) {
             server.userAuth('ab', '123', function (data) {
                 assert.equal(0, data.success);
                 done();
-            })
+            });
         });
     });
 
@@ -48,7 +48,7 @@ describe('Server', function () {
                 assert.typeOf(result[0].grpOrder, 'array');
                 assert.typeOf(result[0].grpDishes, 'array');
                 done();
-            })
+            });
 
 
         });
@@ -57,14 +57,14 @@ describe('Server', function () {
             server.allGroup(function (result) {
                 assert.equal(db.GROUP.length, result.length);
                 done();
-            })
+            });
         });
 
         it('has merchant object', function (done) {
             server.allGroup(function (result) {
-                assert.equal('a', result[0].merchant.metName);
+                assert.equal('韩国纸上烤肉', result[0].merchant.metName);
                 done();
-            })
+            });
         });
 
 
@@ -77,18 +77,18 @@ describe('Server', function () {
                 assert.typeOf(result, 'array');
                 //console.log(JSON.stringify(result));
                 done();
-            })
+            });
         });
         it('should equal to 1', function (done) {
             server.allMerchant(function (result) {
                 assert.equal(1, result[0].metId);
                 done();
-            })
+            });
         });
 
         it('return a merchats name', function (done) {
             server.allMerchant(function (result) {
-                assert.equal('a', result[0].metName);
+                assert.equal('韩国纸上烤肉', result[0].metName);
                 done();
             })
         });
@@ -97,14 +97,14 @@ describe('Server', function () {
             server.allMerchant(function (result) {
                 assert.isDefined(result[0].menu[0].dihName);
                 done();
-            })
+            });
         });
 
         it('has menu with dihName defined', function (done) {
             server.allMerchant(function (result) {
                 assert.isDefined(result[0].menu[0].dihPrice);
                 done();
-            })
+            });
         });
 
     });
@@ -113,14 +113,31 @@ describe('Server', function () {
         it('should return an object by getMerchantById', function (done) {
             server.getMerchantById(2, function (result) {
                 assert.typeOf(result, 'object');
+
                 done();
-            })
+            });
         });
         it('should id equal to 2', function (done) {
             server.getMerchantById(2, function (result) {
                 assert.equal(2, result.metId);
                 done();
-            })
+            });
+        });
+
+        it('should be a Merchant instance', function (done) {
+            server.getMerchantById(2, function (result) {
+                //assert.equal(2, result.metId);
+                assert.property(result, 'metId');
+                assert.property(result, 'metName');
+                assert.property(result, 'metPhone');
+                assert.property(result, 'menu');
+                for (let m of result.menu) {
+                    assert.equal(2, m.metId);
+                }
+
+                done();
+
+            });
         });
 
 
@@ -133,26 +150,27 @@ describe('Server', function () {
             server.group('1', [3, 5, 7, 9], '1', 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
 
-                assert.equal('1', db.GROUP[db.GROUP.length-1].grpHostId);
-                assert.equal('1', db.GROUP[db.GROUP.length-1].metId);
-                assert.equal('daor', db.GROUP[db.GROUP.length-1].grpAddr);
-                assert.equal('00:00', db.GROUP[db.GROUP.length-1].grpTime);
+                assert.equal('1', db.GROUP[db.GROUP.length - 1].grpHostId);
+                assert.equal('1', db.GROUP[db.GROUP.length - 1].metId);
+                assert.equal('daor', db.GROUP[db.GROUP.length - 1].grpAddr);
+                assert.equal('00:00', db.GROUP[db.GROUP.length - 1].grpTime);
                 //assert.equal('-9999', GROUP[i].minAmount);
                 //assert.typeOf(GROUP_DISHES[i].dishes,'array');
 
-                console.log(JSON.stringify(db.GROUP_DISHES[db.GROUP_DISHES.length-1]));
-                assert.equal(db.GROUP_DISHES.length-1, db.GROUP_DISHES[db.GROUP_DISHES.length-1].gdeId);
-                assert.equal(9, db.GROUP_DISHES[db.GROUP_DISHES.length-1].dihId);
-                assert.equal(3, db.GROUP_DISHES[db.GROUP_DISHES.length-1-3].dihId);
+                //console.log(JSON.stringify(db.GROUP_DISHES[db.GROUP_DISHES.length - 1]));
+                assert.equal(db.GROUP_DISHES.length - 1, db.GROUP_DISHES[db.GROUP_DISHES.length - 1].gdeId);
+                assert.equal(9, db.GROUP_DISHES[db.GROUP_DISHES.length - 1].dihId);
+                assert.equal(3, db.GROUP_DISHES[db.GROUP_DISHES.length - 1 - 3].dihId);
 
-                assert.equal(db.GROUP.length-1, db.GROUP_DISHES[db.GROUP.length-1].grpId);
+                assert.equal(db.GROUP.length - 1, db.GROUP_DISHES[db.GROUP.length - 1].grpId);
 
                 assert.equal('1', result.success);
 
                 done();
-            })
+            });
         });
     });
+
     describe('#joinGroup()', function () {
         it('should insert a gorNum', function (done) {
             server.joinGroup(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], '1', function (result) {
@@ -173,10 +191,46 @@ describe('Server', function () {
                 done();
             });
 
-        })
+        });
 
 
     });
 
+    describe('#getGroupById()', function () {
+        it('should return an object', function (done) {
+            server.getGroupById(1,function (result) {
+                console.log(result);
+                assert.isObject(result);
+                done();
+            });
 
+
+        });
+
+        it('should get an instance of Group object', function (done) {
+            server.getGroupById(1,function (result) {
+                assert.property(result,'grpId');
+                assert.property(result,'grpHostName');
+                assert.property(result,'merchant');
+                assert.property(result,'grpAddr');
+                assert.property(result,'grpTime');
+                assert.property(result,'grpOrder');
+                assert.property(result,'grpDishes');
+                done();
+            });
+          });
+
+        it('has correct data', function (done) {
+            server.getGroupById(1,function (result) {
+                assert.equal(result.grpId,1);
+                assert.equal(result.merchant.metId,1);
+
+                done();
+            });
+        });
+
+
+
+
+    });
 });

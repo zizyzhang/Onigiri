@@ -1,6 +1,4 @@
-/**
- * Created by Zizy on 4/6/16.
- */
+'use strict';
 /**
  * Created by Zizy on 4/6/16.
  */
@@ -10,7 +8,7 @@ let myApp = null, mainView = null;
 let tool = require('../tool.js');
 
 
-class Page {
+class Page { //TODO first
     constructor(_myApp, _mainView) {
         myApp = _myApp;
         mainView = _mainView;
@@ -18,11 +16,11 @@ class Page {
     }
 
     bind() {
-        myApp.onPageBeforeInit('', function (page) {
+        myApp.onPageBeforeInit('', function (page) {//TODO second
 
         });
     }
 
 }
 
-module.exports = Page;
+module.exports = Page;////TODO third
