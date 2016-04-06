@@ -17,7 +17,7 @@ class SelectMerchantPage {
     }
 
     bind() {
-        this.myApp.onPageBeforeInit('select-merchant', function (page) {
+        myApp.onPageBeforeInit('select-merchant', function (page) {
             console.log('select-merchant before init');
         });
     }

@@ -85,6 +85,10 @@ var Server = function () {
         });
     });
 
+    app.get('/groupById/:id', (req, res)=> {
+        self.getGroupById(Number(req.params.id), result=>res.json(result));
+    })
+
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
         self.allMerchant(function (result) {
@@ -94,7 +98,7 @@ var Server = function () {
 
     app.get('/getMerchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(req.params.id, function (result) {
+        self.merchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
@@ -141,13 +145,12 @@ var Server = function () {
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
 
-        for(let user of db.USER){
+        for (let user of db.USER) {
             if (user.usrId > usrId) {
                 usrId = user.usrId;
             }
             usrId = Number(usrId) + 1;
         }
-
 
 
         var usrCreateTime = new Date();
@@ -189,10 +192,23 @@ var Server = function () {
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
                 grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId == group.grpId)
-            })
+            });
 
         }
         callback(result);
+    };
+
+    this.getGroupById = function (id,callback) {
+        let group = db.GROUP.find(g=>g.grpId === id);
+        callback({
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
+            merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
+            grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId)
+        });
     };
 
 
@@ -239,17 +255,11 @@ var Server = function () {
 
 
     this.getMerchantById = function (id, callback) {
-        var isSuccess = false;
-        for (var index in db.MERCHANT) {
-            if (db.MERCHANT[index].metId == id) {
-                callback(db.MERCHANT[index]);
-                return;
-            }
-        }
 
-        if (!isSuccess) {
-            callback({success: 0});
-        }
+        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
+        result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
+
+        callback(result);
 
 
     };

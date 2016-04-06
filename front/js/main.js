@@ -1,17 +1,20 @@
 'use strict';
+let isDebug = true;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
     GroupPage = require('./pages/group.js'),
     GroupDetailPage = require('./pages/group-detail.js'),
     OrderPage = require('./pages/order.js'),
-    SelectMerchantPage = require('./pages/select-merchant.js');
+    GroupSettingPage = require('./pages/group-setting.js'),
+    SelectMerchantPage = require('./pages/select-merchant.js'),
+    IndexPage = require('./pages/index.js');
 
 
 // Initialize app
 let myApp = new Framework7({
     modalTitle: 'Onigiri',
-    template7Pages: true,
+    //template7Pages: true,
     // Enable Material theme
     material: true,
 
@@ -33,12 +36,16 @@ let pageEventBind = function () {
     let groupPage = new GroupPage(myApp, mainView);
     let groupDetailPage = new GroupDetailPage(myApp, mainView);
     let orderPage = new OrderPage(myApp, mainView);
-    let selectMerchantPage= new SelectMerchantPage (myApp, mainView);
+    let selectMerchantPage = new SelectMerchantPage(myApp, mainView);
+    let groupSettingPage = new GroupSettingPage(myApp, mainView);
+    let indexPage = new IndexPage(myApp, mainView);
 
     groupPage.bind();
     groupDetailPage.bind();
     orderPage.bind();
     selectMerchantPage.bind();
+    groupSettingPage.bind();
+    indexPage.bind();
 
 }();
 
@@ -62,51 +69,12 @@ $$(document).on('ajaxComplete', function (e) {
 });
 
 
-myApp.onPageBeforeInit('group-setting', function () {
-    $$('#btnFinish').on('click', function () {
-        myApp.alert('开团完成!', function () {
-            mainView.router.loadPage('group.html');
-        });
-    });
-});
-
-
 // TODO CHEAT
 (() => {
-    myApp.closeModal();
-    mainView.router.loadPage({url: 'group.html'});
-    console.log('cheat');
-})();
-
-$$('#txtUsrName').on('focus', function () {
-    $$('.usrName').css('color', 'white !important');
-});
-
-
-$$('#btn-sign-up').click(function () {
-    if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-        ajaxMethod.addUser();
-    }
-    else {
-        console.log("error subSignUp");
-    }
-});
-
-$$('#btn-login').click(function () {
-
-
-    ajaxMethod.userAuth().then(function (groups) {
+    if (isDebug) {
         myApp.closeModal();
         mainView.router.loadPage({url: 'group.html'});
-    }).catch(function () {
-        myApp.alert('登录失败');
-    });
+        console.log('cheat');
+    }
 
-});
-
-
-//$$("#tpl").load('./template/todoItem.html', null, function () {
-//    allGroup();
-//});
-
-
+})();

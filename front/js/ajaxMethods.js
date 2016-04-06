@@ -51,11 +51,13 @@ var AjaxMethods = function () {
         });
     };
 
-    this.merchantById = function (id) {
-        console.log(id);
-        $$.getJSON(SERVER_ADS + "/merchantById" + id, function (data) {
-            //merchant = data;
+    this.getGroupById= function (id) {
+        return new Promise((resolve)=> {
+            $$.getJSON(SERVER_ADS + "/groupById/" + id, function (data) {
+                resolve(data);
+            });
         });
+
     };
 
     this.group = function () {

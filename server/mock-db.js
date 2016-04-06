@@ -38,11 +38,11 @@ var MockDb = function () {
     this.MERCHANT = [
         {
             metId: 1,
-            metName: 'a',
+            metName: '韩国纸上烤肉',
             metPhone: '123123123'
         }, {
             metId: 2,
-            metName: 'b',
+            metName: '麦当劳',
             metPhone: '234234234'
         }
     ];
@@ -72,19 +72,19 @@ var MockDb = function () {
 
     this.GROUP = [
         {
-            grpId: '1',//团的Id
-            grpHostId: '1',//團長
+            grpId: 1,//团的Id
+            grpHostId: 1,//團長
             //dishes: [],
-            metId: '1',//商家Id
+            metId: 1,//商家Id
             grpAddr: 'road',//取餐地点
             grpTime: "13:33"//取餐时间
             //minAmount: '9999'
-        }
-        ,{
-            grpId: '2',//团的Id
-            grpHostId: '2',//團長
+        },
+        {
+            grpId: 2,//团的Id
+            grpHostId: 2,//團長
             //dishes: [],
-            metId: '2',//商家Id
+            metId: 2,//商家Id
             grpAddr: 'road',//取餐地点
             grpTime: "13:33"//取餐时间
             //minAmount: '9999'
@@ -94,39 +94,39 @@ var MockDb = function () {
 
     this.GROUP_MEMBER = [
         {
-            gmrId: '1',//自動編號ID
-            grpId: '1',//团号
-            usrId: '2'//使用者Id
+            gmrId: 1,//自動編號ID
+            grpId: 1,//团号
+            usrId: 2//使用者Id
         },
         {
-            gmrId: '2',//自動編號ID
-            grpId: '1',//团号
-            usrId: '3'//使用者Id
+            gmrId: 2,//自動編號ID
+            grpId: 1,//团号
+            usrId: 3//使用者Id
         }
     ];
 
     this.GROUP_ORDER = [//团购中某个餐点的份数
         {
-            grpId: '1',//团号
-            dihId: '1',//餐点名称
+            grpId: 1,//团号
+            dihId: 1,//餐点名称
             gorNum: '1'//该餐点份数
         },{
-            grpId: '1',
-            dihId: '2',
+            grpId: 1,
+            dihId: 2,
             gorNum: '1'
         }
     ];
 
     this.GROUP_DISHES = [//允许选择的餐点
         {
-            gdeId: '1',//自動編號ID
-            dihId: '1',//餐点Id
-            grpId: '1'//团的Id
+            gdeId: 1,//自動編號ID
+            dihId: 1,//餐点Id
+            grpId: 1//团的Id
         },
         {
-            gdeId: '2',//自動編號ID
-            dihId: '2',//餐点Id
-            grpId: '1'//团的Id
+            gdeId: 2,//自動編號ID
+            dihId: 2,//餐点Id
+            grpId: 1//团的Id
         }
     ];
 

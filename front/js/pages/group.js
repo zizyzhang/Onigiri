@@ -19,24 +19,24 @@ class GroupPage {
         myApp.onPageBeforeInit('group', (page) => {
             console.log('group before init');
 
-            tool.loadTemplateFromJsonPromise(ajaxMethod.getAllGroup, page, ()=> {
+            tool.loadTemplateFromJsonPromise(ajaxMethod.getAllGroup(), page, ()=> {
                  //函数绑定要在完成template之后
                 $$('.btn-join-in-group-page').on('click', function () {
 
-                    let metId = $$(this).dataset().metId;
-                    console.log(`metId : ${metId}`);
+                    let grpId= $$(this).dataset().grpId;
+                    console.log(`grpId   : ${grpId}`);
 
-                    mainView.router.loadPage(`order.html?metId=${metId}`);
+                    mainView.router.loadPage(`order.html?grpId=${grpId}`);
 
                 });
 
                 $$('.btn-group-detail').on('click', function () {
 
-                    let metId = $$(this).dataset().metId;
-                    console.log(`metId : ${metId}`);
+                    let grpId = $$(this).dataset().grpId;
+                    console.log(`grpId : ${grpId}`);
 
 
-                    mainView.router.loadPage(`group-detail.html?metId=${metId}`);
+                    mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
                 });
             });

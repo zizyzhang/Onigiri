@@ -75,6 +75,12 @@ var Server = function Server() {
         });
     });
 
+    app.get('/groupById/:id', function (req, res) {
+        self.getGroupById(Number(req.params.id), function (result) {
+            return res.json(result);
+        });
+    });
+
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
         self.allMerchant(function (result) {
@@ -84,7 +90,7 @@ var Server = function Server() {
 
     app.get('/getMerchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(req.params.id, function (result) {
+        self.merchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
@@ -225,6 +231,29 @@ var Server = function Server() {
         callback(result);
     };
 
+    this.getGroupById = function (id, callback) {
+        var group = db.GROUP.find(function (g) {
+            return g.grpId === id;
+        });
+        callback({
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: db.USER.find(function (user) {
+                return user.usrId === group.grpHostId;
+            }).usrName,
+            merchant: db.MERCHANT.find(function (merchant) {
+                return merchant.metId === group.metId;
+            }),
+            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
+                return grr.grpId === group.grpId;
+            }),
+            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
+                return grh.grpId === group.grpId;
+            })
+        });
+    };
+
     this.allMerchant = function (callback) {
 
         var allMerchantdata = [];
@@ -263,17 +292,15 @@ var Server = function Server() {
     };
 
     this.getMerchantById = function (id, callback) {
-        var isSuccess = false;
-        for (var index in db.MERCHANT) {
-            if (db.MERCHANT[index].metId == id) {
-                callback(db.MERCHANT[index]);
-                return;
-            }
-        }
 
-        if (!isSuccess) {
-            callback({ success: 0 });
-        }
+        var result = db.MERCHANT.find(function (merchant) {
+            return merchant.metId === id;
+        });
+        result.menu = _.filter(db.DISH, function (dish) {
+            return dish.metId === id;
+        });
+
+        callback(result);
     };
 
     this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {

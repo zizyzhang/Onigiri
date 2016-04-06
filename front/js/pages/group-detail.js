@@ -3,7 +3,7 @@
  */
 let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
-let myApp = null,mainView=null;
+let myApp = null, mainView = null;
 let tool = require('../tool.js');
 
 class GroupDetailPage {
@@ -17,13 +17,16 @@ class GroupDetailPage {
 
 
         myApp.onPageBeforeInit('group-detail', (page) => {
-            this.metId = this.metId || page.query.metId;
+            this.grpId = page.query.grpId || this.grpId;
 
             console.log('group-detail onPageBeforeInit');
             console.log(page.query);
 
-            $$('#btnJoin').on('click', function () {
-                mainView.router.loadPage('order.html');
+            tool.loadTemplateWithHideNavBarFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
+                $$('#btnJoin').on('click', function () {
+                    mainView.router.loadPage('order.html');
+                });
+
             });
         });
 
