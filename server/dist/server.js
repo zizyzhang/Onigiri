@@ -120,11 +120,33 @@ var Server = function Server() {
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
-        for (var index in db.USER) {
-            if (db.USER[index].usrId > usrId) {
-                usrId = db.USER[index].usrId;
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = db.USER[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var user = _step.value;
+
+                if (user.usrId > usrId) {
+                    usrId = user.usrId;
+                }
+                usrId = Number(usrId) + 1;
             }
-            usrId = Number(usrId) + 1;
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
         }
 
         var usrCreateTime = new Date();
@@ -155,13 +177,13 @@ var Server = function Server() {
 
     this.allGroup = function (callback) {
         var result = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
             var _loop = function _loop() {
-                var group = _step.value;
+                var group = _step2.value;
 
                 result.push({
                     grpId: group.grpId,
@@ -182,20 +204,20 @@ var Server = function Server() {
                 });
             };
 
-            for (var _iterator = db.GROUP[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator2 = db.GROUP[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                 _loop();
             }
         } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
                 }
             } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
                 }
             }
         }

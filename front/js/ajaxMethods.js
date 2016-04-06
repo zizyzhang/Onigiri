@@ -2,7 +2,7 @@ var $$ = Dom7;
 var SERVER_ADS = "http://localhost:3000";
 
 var AjaxMethods = function () {
-
+    'use strict';
     this.addUser = function () {
         var subname = $$('#subAccount').val();
         var subpwd = $$('#subPwd').val();
@@ -12,7 +12,7 @@ var AjaxMethods = function () {
 
             }
         });
-    }
+    };
 
     this.userAuth = function () {
         return new Promise(function (resolve, reject) {
@@ -23,7 +23,7 @@ var AjaxMethods = function () {
 
 
             $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-                if (JSON.parse(result).success == 1) {
+                if (JSON.parse(result).success === 1) {
                     console.log('login success');
 
                     resolve();
@@ -37,39 +37,39 @@ var AjaxMethods = function () {
     };
 
     this.getAllGroup = function () {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             $$.getJSON(SERVER_ADS + "/allGroup", function (data) {
                 resolve(data);
             });
-         });
+        });
     };
 
     this.allMerchant = function () {
 
         $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
-            allMerchantList = data;
+            //allMerchantList = data;
         });
-    }
+    };
 
     this.merchantById = function (id) {
         console.log(id);
         $$.getJSON(SERVER_ADS + "/merchantById" + id, function (data) {
-            merchant = data;
+            //merchant = data;
         });
-    }
+    };
 
     this.group = function () {
 
         //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
         //
         //});
-    }
+    };
 
     this.joinGroup = function () {
         //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
         //
         //});
-    }
+    };
 
 };
 

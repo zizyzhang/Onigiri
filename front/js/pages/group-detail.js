@@ -8,25 +8,31 @@ let tool = require('../tool.js');
 
 class GroupDetailPage {
     constructor(myApp, mainView) {
-        myApp.onPageBeforeInit('group-detail',  (page) => {
+        this.myApp = myApp;
+        this.mainView = mainView;
+
+
+    }
+
+    bind() {
+
+
+        this.myApp.onPageBeforeInit('group-detail', (page) => {
             this.metId = this.metId || page.query.metId;
 
             console.log('group-detail onPageBeforeInit');
             console.log(page.query);
 
             $$('#btnJoin').on('click', function () {
-                mainView.router.loadPage('order.html');
+                self.mainView.router.loadPage('order.html');
             });
         });
 
-        myApp.onPageInit('group-detail',  (page) => {
+        this.myApp.onPageInit('group-detail', (page) => {
 
             console.log('group-detail Init');
-         });
-
-
+        });
     }
-
 
 }
 

@@ -8,19 +8,19 @@ var MockDb = function MockDb() {
 
     this.USER = [{
         usrId: 1,
-        usrName: '张三',
+        usrName: 'firstUser',
         usrPwd: '123',
         usrCreateTime: '16/03/24/00:33:20',
         usrMobi: '09123456'
     }, {
         usrId: 2,
-        usrName: '李四',
+        usrName: 'secondUser',
         usrPwd: '',
         usrCreateTime: '16/03/24/00:33:22',
         usrMobi: '09123456'
     }, {
         usrId: 3,
-        usrName: '王五',
+        usrName: 'thirdUser',
         usrPwd: '',
         usrCreateTime: '16/03/25/00:33:22',
         usrMobi: '094573321'

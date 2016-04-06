@@ -1,7 +1,12 @@
+'use strict';
+
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
     GroupPage = require('./pages/group.js'),
-    GroupDetailPage = require('./pages/group-detail.js');
+    GroupDetailPage = require('./pages/group-detail.js'),
+    OrderPage = require('./pages/order.js'),
+    SelectMerchantPage = require('./pages/select-merchant.js');
+
 
 // Initialize app
 let myApp = new Framework7({
@@ -25,8 +30,16 @@ let mainView = myApp.addView('.view-main', {
 
 //加载page,绑定page的event
 let pageEventBind = function () {
-    new GroupPage(myApp, mainView);
-    new GroupDetailPage(myApp, mainView);
+    let groupPage = new GroupPage(myApp, mainView);
+    let groupDetailPage = new GroupDetailPage(myApp, mainView);
+    let orderPage = new OrderPage(myApp, mainView);
+    let selectMerchantPage= new SelectMerchantPage (myApp, mainView);
+
+    groupPage.bind();
+    groupDetailPage.bind();
+    orderPage.bind();
+
+
 }();
 
 // Show/hide preloader for remote ajax loaded pages
@@ -49,8 +62,6 @@ $$(document).on('ajaxComplete', function (e) {
 });
 
 
-
-
 myApp.onPageBeforeInit('group-setting', function () {
     $$('#btnFinish').on('click', function () {
         myApp.alert('开团完成!', function () {
@@ -59,34 +70,12 @@ myApp.onPageBeforeInit('group-setting', function () {
     });
 });
 
-myApp.onPageBeforeInit('order', function () {
-    console.log('before order init');
-
-
-    $$('#add').click(function () {
-        $$('#dish').html(++dish);
-        console.log("++");
-
-    });
-    $$('#subtraction').click(function () {
-        if ($$('#dish').html() >= 1) {
-            $$('#dish').html(--dish);
-
-        }
-        console.log("--");
-
-    });
-
-});
-
 
 // TODO CHEAT
 (() => {
-    ajaxMethod.getAllGroup().then(function (groups) {
-        myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
-
-    });
+    myApp.closeModal();
+    mainView.router.loadPage({url: 'group.html'});
+    console.log('cheat');
 })();
 
 $$('#txtUsrName').on('focus', function () {

@@ -27,7 +27,7 @@ describe('Server', function () {
 
     describe('#usrAuth()', function () {
         it('should return 1 when given right usrName&usrPwd', function (done) {
-            server.userAuth('a', '123', function (data) {
+            server.userAuth('firstUser', '123', function (data) {
                 assert.equal(1, data.success);
                 done();
             })

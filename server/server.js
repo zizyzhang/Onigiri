@@ -140,12 +140,15 @@ var Server = function () {
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
-        for (var index in db.USER) {
-            if (db.USER[index].usrId > usrId) {
-                usrId = db.USER[index].usrId;
+
+        for(let user of db.USER){
+            if (user.usrId > usrId) {
+                usrId = user.usrId;
             }
             usrId = Number(usrId) + 1;
         }
+
+
 
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
