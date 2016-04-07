@@ -44,10 +44,23 @@ var AjaxMethods = function () {
         });
     };
 
-    this.allMerchant = function () {
+    this.getMerchantById = function (id) {
+        return new Promise(function (resolve) {
+            $$.getJSON(SERVER_ADS + "/getMerchantById//" +id , function (data) {
+                console.log(data);
+                resolve(data);
+            });
+        });
+    };
 
-        $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
-            //allMerchantList = data;
+
+
+    this.allMerchant = function () {
+        return new Promise (function  (resolve) {
+            $$.getJSON(SERVER_ADS + "/allMerchant" , function (data) {
+                console.log(data);
+                resolve(data);
+             });
         });
     };
 
