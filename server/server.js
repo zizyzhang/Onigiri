@@ -1,4 +1,5 @@
-'use strict';
+ 'use strict';
+
 
 const _ = require('lodash');
 require('source-map-support').install();
