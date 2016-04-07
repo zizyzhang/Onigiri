@@ -74,7 +74,7 @@ var AjaxMethods = function () {
 
         return new Promise(resolve=>{
 
-            $$.post(SERVER_ADS+"/group",{grpHostId,dishes,metId,addr,gorTime},function(data){
+            $$.post(SERVER_ADS+"/group",{data:JSON.stringify({grpHostId,dishes,metId,addr,gorTime})},function(data){
                 data = JSON.parse(data);
                 console.log(data);
                 if(data.success===1){

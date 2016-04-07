@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 
 
 const _ = require('lodash');
@@ -108,17 +108,19 @@ var Server = function () {
     });
 
     app.post('/group', function (req, res) {
+
+            console.log(req.body);
+
+            req.body = JSON.parse(req.body.data);
             var grpHostId = req.body.grpHostId;
-            var dishes = req.body['dishes[]'];
+            var dishes = req.body.dishes;
             var metId = req.body.metId;
             var addr = req.body.addr;
             var gorTime = req.body.gorTime;
             var minAmount = req.body.minAmount;
 
 
-            console.log(JSON.stringify(req.body));
-
-            self.group(grpHostId, dishes, metId, addr, gorTime, function (result) {
+            self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
                 res.json(result);
             });
 
@@ -243,7 +245,7 @@ var Server = function () {
         callback(result);
     };
 
-    this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         let grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
         db.GROUP.push({
             grpId,
