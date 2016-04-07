@@ -60,6 +60,7 @@ var AjaxMethods = function () {
 
     };
 
+
     this.group = function () {
 
         //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){

@@ -18,7 +18,7 @@ class Tool {
                 } else {
                     html = compiledTemplate(data);
                 }
-
+                console.log(data);
 
                 $$(page.container).html(html);
 

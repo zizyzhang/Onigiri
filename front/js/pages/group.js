@@ -24,9 +24,12 @@ class GroupPage {
                 $$('.btn-join-in-group-page').on('click', function () {
 
                     let grpId= $$(this).dataset().grpId;
+                    console.log("-----------------------");
                     console.log(`grpId   : ${grpId}`);
+                    console.log("-----------------------");
 
                     mainView.router.loadPage(`order.html?grpId=${grpId}`);
+
 
                 });
 

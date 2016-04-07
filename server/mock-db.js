@@ -74,7 +74,7 @@ var MockDb = function () {
         {
             grpId: 1,//团的Id
             grpHostId: 1,//團長
-            //dishes: [],
+            //dishes: [{dihName:'friedChicken',metId:'1',dihType:'rice',dihPrice:'400'}],
             metId: 1,//商家Id
             grpAddr: 'road',//取餐地点
             grpTime: "13:33"//取餐时间

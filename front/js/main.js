@@ -16,7 +16,7 @@ let myApp = new Framework7({
     modalTitle: 'Onigiri',
     //template7Pages: true,
     // Enable Material theme
-    material: true,
+    material: true
 
 });
 
