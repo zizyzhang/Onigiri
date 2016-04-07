@@ -8,7 +8,9 @@ let ajaxMethod = require('./ajaxMethods.js'),
     OrderPage = require('./pages/order.js'),
     GroupSettingPage = require('./pages/group-setting.js'),
     SelectMerchantPage = require('./pages/select-merchant.js'),
-    IndexPage = require('./pages/index.js');
+    IndexPage = require('./pages/index.js'),
+    CreateMenuPage = require('./pages/create-menu.js');
+
 
 
 // Initialize app
@@ -39,6 +41,7 @@ let pageEventBind = function () {
     let selectMerchantPage = new SelectMerchantPage(myApp, mainView);
     let groupSettingPage = new GroupSettingPage(myApp, mainView);
     let indexPage = new IndexPage(myApp, mainView);
+    let createMenuPage = new CreateMenuPage(myApp, mainView);
 
     groupPage.bind();
     groupDetailPage.bind();
@@ -46,7 +49,7 @@ let pageEventBind = function () {
     selectMerchantPage.bind();
     groupSettingPage.bind();
     indexPage.bind();
-
+    createMenuPage.bind();
 }();
 
 // Show/hide preloader for remote ajax loaded pages
@@ -73,7 +76,9 @@ $$(document).on('ajaxComplete', function (e) {
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
+        mainView.router.loadPage({url: 'create-menu.html?metId=1'});
+        //mainView.router.loadPage({url: 'group.html'});
+
         console.log('cheat');
     }
 

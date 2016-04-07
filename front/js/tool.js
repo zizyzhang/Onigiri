@@ -9,8 +9,10 @@ class Tool {
 
     //把一个返回值为Json类型的Promise通过page对应的template加载到page中,当Json为Array时自动把该Array放入data中.
     loadTemplateFromJsonPromise(promise, page, callback) {
+
         promise.then((data)=> {
             $$.get(page.url, (template)=> {
+                console.log(data);
                 let compiledTemplate = Template7.compile(template.substring(template.indexOf('>') + 1, template.lastIndexOf('<')));
                 let html = '';
                 if (Array.isArray(data)) {

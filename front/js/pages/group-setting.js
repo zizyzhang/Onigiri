@@ -17,6 +17,7 @@ class GroupSettingPage {
     bind() {
         myApp.onPageBeforeInit('group-setting', function (page) {
             console.log('group-setting init');
+            console.log('group-setting init');
             $$('#btnFinish').on('click', function () {
                 myApp.alert('开团完成!', function () {
                     mainView.router.loadPage('group.html');

@@ -44,6 +44,15 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getMerchantById = function (id) {
+        return new Promise(resolve => {
+            $$.getJSON(SERVER_ADS + "/merchantById/" + id, function (data) {
+                resolve(data);
+            });
+        });
+    };
+
+
     this.allMerchant = function () {
 
         $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
@@ -51,7 +60,7 @@ var AjaxMethods = function () {
         });
     };
 
-    this.getGroupById= function (id) {
+    this.getGroupById = function (id) {
         return new Promise((resolve)=> {
             $$.getJSON(SERVER_ADS + "/groupById/" + id, function (data) {
                 resolve(data);

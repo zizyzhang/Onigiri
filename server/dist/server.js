@@ -88,9 +88,9 @@ var Server = function Server() {
         });
     });
 
-    app.get('/getMerchantById/:id', function (req, res) {
+    app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(Number(req.params.id), function (result) {
+        self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
