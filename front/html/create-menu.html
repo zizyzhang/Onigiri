@@ -18,20 +18,21 @@
 
     <div class="page-content">
 
-        <div class="content-block-title" style="margin-top: 0px;!important;">勾选支持团购的餐点</div>
+        <div class="content-block-title" style="margin-top: 0px;!important;">勾選支持團購的餐点</div>
         <div class="list-block media-list" style="margin-top: 0px;!important;">
             <ul>
                 <li>
                     <div class="item-divider">主食</div>
                 </li>
+                {{#each data}}
                 <li>
                     <label  class="label-checkbox item-content">
                         <input type="checkbox" name="cru-checkbox" value="2">
                         <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36"></div>
                         <div class="item-inner">
                             <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">烤鸡腿</div>
-                                <div class="item-after">$16</div>
+                                <div class="item-title">{{dihName}}</div>
+                                <div class="item-after">{{dihPrice}}</div>
                             </div>
                           </div>
                         <div class="item-after menu-checkbox"><i class="icon icon-form-checkbox"></i></div>
@@ -44,8 +45,8 @@
                         <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36"></div>
                         <div class="item-inner">
                             <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">泡菜鸡肉卷</div>
-                                <div class="item-after">$16</div>
+                                <div class="item-title">{{dihName}}</div>
+                                <div class="item-after">{{dihPrice}}</div>
                             </div>
                         </div>
                         <div class="item-after menu-checkbox"><i class="icon icon-form-checkbox"></i></div>
@@ -59,8 +60,8 @@
                         <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36"></div>
                         <div class="item-inner">
                             <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">烤鸡翅</div>
-                                <div class="item-after">$16</div>
+                                <div class="item-title">{{dihName}}</div>
+                                <div class="item-after">{{dihPrice}}</div>
                             </div>
                         </div>
                         <div class="item-after menu-checkbox"  style="">
@@ -70,6 +71,7 @@
 
                 </li>
 
+                {{/each}}
             </ul>
         </div>
 
