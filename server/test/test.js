@@ -41,6 +41,15 @@ describe('Server', function () {
                 done();
             });
         });
+
+        it('should return userObject when given correct usrName&usrPwd', function (done) {
+            server.userAuth('firstUser', '123', function (data) {
+                assert.isObject(data.user);
+                assert.equal(data.user.usrName,'firstUser');
+
+                done();
+            });
+        });
     });
 
     describe('#allGroup()', function () {
@@ -147,7 +156,7 @@ describe('Server', function () {
     describe('#group()', function () {
 
         it('should insert a group ', function (done) {
-            server.group(1, [3, 5, 7, 9], 1, 'daor', '00:00', function (result) {
+            server.postGroup(1, [3, 5, 7, 9], 1, 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
                 let lastGroup = _.maxBy(db.GROUP, 'grpId');
                 let lastGroupDish = _.maxBy(db.GROUP_DISHES, 'gdeId');

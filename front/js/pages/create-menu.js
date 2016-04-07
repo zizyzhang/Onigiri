@@ -8,6 +8,7 @@ let myApp = null, mainView = null;
 const _ = require('lodash');
 let tool = require('../tool.js');
 let Public = require('../public.js');
+const cookies = require('js-cookie');
 
 
 class CreateMenuPage { //TODO first
@@ -18,7 +19,8 @@ class CreateMenuPage { //TODO first
 
     bind() {
         myApp.onPageBeforeInit('create-menu', function (page) {//TODO second
-            Public.selectedMerchantId  =this.metId= page.query.metId || this.metId;
+            this.metId= page.query.metId || this.metId;
+            cookies.set('selectedMerchantId', this.metId);
             console.log('onPageBeforeInit : create-menu');
             tool.loadTemplateFromJsonPromise(ajaxMethod.getMerchantById(this.metId), page, ()=> {
                 console.log();
