@@ -189,7 +189,7 @@ describe('Server', function () {
                 assert.equal(2, db.GROUP_MEMBER[2].grpId);
 
 
-                assert.equal(numberOfGroupOrder+2, db.GROUP_ORDER.length);
+                assert.equal(numberOfGroupOrder + 2, db.GROUP_ORDER.length);
 
                 assert.equal(1, result.success);
                 numberOfGroupOrder = db.GROUP_ORDER.length;
@@ -197,11 +197,7 @@ describe('Server', function () {
             }).then(result=> {
                 assert.equal(numberOfGroupOrder, db.GROUP_ORDER.length);
                 done();
-
-
-            }).catch(err=> {
-                done(err);
-            });
+            }).catch(done);
 
 
         });
