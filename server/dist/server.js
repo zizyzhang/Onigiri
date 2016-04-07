@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+require('source-map-support').install();
 
 /**
  * Created by User on 2016/3/24.
@@ -88,16 +89,16 @@ var Server = function Server() {
         });
     });
 
-    app.get('/getMerchantById/:id', function (req, res) {
+    app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(Number(req.params.id), function (result) {
+        self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
 
     app.post('/group', function (req, res) {
         var grpHostId = req.body.grpHostId;
-        var dishes = req.body.dishes;
+        var dishes = req.body['dishes[]'];
         var metId = req.body.metId;
         var addr = req.body.addr;
         var gorTime = req.body.gorTime;
@@ -105,7 +106,7 @@ var Server = function Server() {
 
         console.log(JSON.stringify(req.body));
 
-        self.group(grpHostId, dishes, metId, addr, gorTime, minAmount, function (result) {
+        self.group(grpHostId, dishes, metId, addr, gorTime, function (result) {
             res.json(result);
         });
     });
@@ -205,8 +206,14 @@ var Server = function Server() {
                         return grr.grpId == group.grpId;
                     }),
                     grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
-                        return grh.grpId == group.grpId;
+                        return grh.grpId === group.grpId;
+                    }).map(function (grh) {
+                        grh.dish = _.filter(db.DISH, function (dish) {
+                            return dish.dihId === grh.dihId;
+                        });
+                        return grh;
                     })
+
                 });
             };
 
@@ -250,7 +257,13 @@ var Server = function Server() {
             }),
             grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
                 return grh.grpId === group.grpId;
+            }).map(function (grh) {
+                grh.dish = _.filter(db.DISH, function (dish) {
+                    return dish.dihId === grh.dihId;
+                });
+                return grh;
             })
+
         });
     };
 
@@ -321,7 +334,7 @@ var Server = function Server() {
 
                 var gdh = {
                     gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
-                    dihId: dihId,
+                    dihId: Number(dihId),
                     grpId: grpId
                 };
                 db.GROUP_DISHES.push(gdh);

@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+const Public = require('../public.js');
 
 
 class IndexPage {
@@ -35,6 +36,7 @@ class IndexPage {
 
 
             ajaxMethod.userAuth().then(function (groups) {
+                Public.usrId = $$('.usrName').val();
                 myApp.closeModal();
                 mainView.router.loadPage({url: 'group.html'});
             }).catch(function () {

@@ -44,6 +44,15 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getMerchantById = function (id) {
+        return new Promise(resolve => {
+            $$.getJSON(SERVER_ADS + "/merchantById/" + id, function (data) {
+                resolve(data);
+            });
+        });
+    };
+
+
     this.allMerchant = function () {
 
         $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
@@ -51,7 +60,7 @@ var AjaxMethods = function () {
         });
     };
 
-    this.getGroupById= function (id) {
+    this.getGroupById = function (id) {
         return new Promise((resolve)=> {
             $$.getJSON(SERVER_ADS + "/groupById/" + id, function (data) {
                 resolve(data);
@@ -60,20 +69,29 @@ var AjaxMethods = function () {
 
     };
 
-    this.group = function () {
+    this.postGroup = function (grpHostId,dishes,metId,addr,gorTime) {
+        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
 
-        //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
-        //
-        //});
+        return new Promise(resolve=>{
+
+            $$.post(SERVER_ADS+"/group",{grpHostId,dishes,metId,addr,gorTime},function(data){
+                data = JSON.parse(data);
+                console.log(data);
+                if(data.success===1){
+                    resolve();
+                }
+             });
+        });
     };
 
     this.joinGroup = function () {
-        //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
-        //
-        //});
+       return new Promise(resolve=>{
+           $$.post(SERVER_ADS+"/joinGroup",{},function(data){
+                resolve(data);
+           });
+       });
     };
-
-};
+ };
 
 var ajaxMethods = new AjaxMethods();
 module.exports = ajaxMethods;

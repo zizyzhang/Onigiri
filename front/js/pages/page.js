@@ -24,3 +24,4 @@ class Page { //TODO first
 }
 
 module.exports = Page;////TODO third
+//TODO fourth : 加入到Main.js里面注册bind方法

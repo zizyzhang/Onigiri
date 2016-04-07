@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+require('source-map-support').install();
 
 /**
  * Created by User on 2016/3/24.
@@ -98,16 +99,16 @@ var Server = function () {
         });
     });
 
-    app.get('/getMerchantById/:id', function (req, res) {
+    app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(Number(req.params.id), function (result) {
+        self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
 
     app.post('/group', function (req, res) {
             var grpHostId = req.body.grpHostId;
-            var dishes = req.body.dishes;
+            var dishes = req.body['dishes[]'];
             var metId = req.body.metId;
             var addr = req.body.addr;
             var gorTime = req.body.gorTime;
@@ -116,7 +117,7 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            self.group(grpHostId, dishes, metId, addr, gorTime, minAmount, function (result) {
+            self.group(grpHostId, dishes, metId, addr, gorTime, function (result) {
                 res.json(result);
             });
 
@@ -194,7 +195,11 @@ var Server = function () {
                 grpHostName: (db.USER.find(user => user.usrId == group.grpHostId)).usrName,
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
-                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId == group.grpId)
+                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                    grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                    return grh;
+                }),
+
             });
 
         }
@@ -210,7 +215,11 @@ var Server = function () {
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId)
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                return grh;
+            }),
+
         });
     };
 
@@ -246,7 +255,7 @@ var Server = function () {
         for (let dihId of dishes) {
             let gdh = {
                 gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
-                dihId: dihId,
+                dihId: Number(dihId),
                 grpId
             };
             db.GROUP_DISHES.push(gdh);
@@ -265,7 +274,7 @@ var Server = function () {
                 } else {
                     //如果找不到就直接增加object
                     db.GROUP_ORDER.push({
-                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId +1 ,
+                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
                         dihId,
                         gorNum: num,
                         grpId,

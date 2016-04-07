@@ -50,13 +50,13 @@ var MockDb = function () {
     this.DISH = [
         {
             dihId: 1,//自動編號ID
-            dihName: '大X',//食物名字
+            dihName: '炸鸡腿',//食物名字
             metId: 1,//商家Id
             dihType: '主食',//食物种类
-            dihPrice: '8'//价格
+            dihPrice: '10'//价格
         }, {
             dihId: 2,
-            dihName: '小X',
+            dihName: '红茶',
             metId: 1,
             dihType: '飲料',
             dihPrice: '5'
