@@ -70,9 +70,13 @@ var AjaxMethods = function () {
     };
 
     this.postGroup = function (grpHostId,dishes,metId,addr,gorTime) {
+        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
 
         return new Promise(resolve=>{
+
             $$.post(SERVER_ADS+"/group",{grpHostId,dishes,metId,addr,gorTime},function(data){
+                data = JSON.parse(data);
+                console.log(data);
                 if(data.success===1){
                     resolve();
                 }

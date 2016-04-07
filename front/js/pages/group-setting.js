@@ -5,7 +5,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
-let createMenuPage= require('create')
+let Public = require('../public.js');
 
 class GroupSettingPage {
     constructor(_myApp, _mainView) {
@@ -20,19 +20,22 @@ class GroupSettingPage {
 
             $$('#btnFinish').on('click', function () {
 
-                let dishes= this.arrayOfDishIds = page.query.arrayOfDishIds || this.arrayOfDishIds ;
-                let grpHostId;
-                let metId;
-                let addr;
-                let gorTime;
+                let dishes = this.arrayOfSelectedDishIds = page.query.arrayOfSelectedDishIds || this.arrayOfSelectedDishIds;
+                let grpHostId =Public.usrId;
+                let metId = Public.selectedMerchantId;
+                let addr = $$('#txtGrpAddr').text();
+                let gorTime = $$('#txtGrpTime').text();
 
-                tool.loadTemplateFromJsonPromise(ajaxMethod.postGroup(grpHostId, dishes ,metId,addr,gorTime)).then(()=>{
+
+                console.log('btnFinish ', grpHostId, dishes, metId, addr, gorTime);
+                console.log('btnFinish ', page.query);
+                ajaxMethod.postGroup(grpHostId, dishes, metId, addr, gorTime).then(()=> {
                     myApp.alert('开团完成!', function () {
-                         mainView.router.loadPage('group.html');
-                     });
+                        mainView.router.loadPage('group.html');
+                    });
                 });
 
-             });
+            });
         });
     }
 

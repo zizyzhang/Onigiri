@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+require('source-map-support').install();
 
 /**
  * Created by User on 2016/3/24.
@@ -107,7 +108,7 @@ var Server = function () {
 
     app.post('/group', function (req, res) {
             var grpHostId = req.body.grpHostId;
-            var dishes = req.body.dishes;
+            var dishes = req.body['dishes[]'];
             var metId = req.body.metId;
             var addr = req.body.addr;
             var gorTime = req.body.gorTime;
@@ -116,7 +117,7 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            self.group(grpHostId, dishes, metId, addr, gorTime, minAmount, function (result) {
+            self.group(grpHostId, dishes, metId, addr, gorTime, function (result) {
                 res.json(result);
             });
 
@@ -254,7 +255,7 @@ var Server = function () {
         for (let dihId of dishes) {
             let gdh = {
                 gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
-                dihId: dihId,
+                dihId: Number(dihId),
                 grpId
             };
             db.GROUP_DISHES.push(gdh);

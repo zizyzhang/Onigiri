@@ -7,18 +7,18 @@ let $$ = Dom7;
 let myApp = null, mainView = null;
 const _ = require('lodash');
 let tool = require('../tool.js');
-CreateMenuPage.metId = null;
+let Public = require('../public.js');
 
 
 class CreateMenuPage { //TODO first
     constructor(_myApp, _mainView) {
         myApp = _myApp;
         mainView = _mainView;
-     }
+    }
 
     bind() {
         myApp.onPageBeforeInit('create-menu', function (page) {//TODO second
-            CreateMenuPage.metId = page.query.metId || this.metId;
+            Public.selectedMerchantId  =this.metId= page.query.metId || this.metId;
             console.log('onPageBeforeInit : create-menu');
             tool.loadTemplateFromJsonPromise(ajaxMethod.getMerchantById(this.metId), page, ()=> {
                 console.log();
@@ -39,7 +39,7 @@ class CreateMenuPage { //TODO first
 
                     console.log(arrayOfSelectedDishIds);
 
-                    mainView.router.loadPage({url:'group-setting.html',query:{arrayOfSelectedDishIds}});
+                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds}});
                 });
 
 

@@ -5,4 +5,9 @@
 class Public{
 
 }
+
+Public.usrId = '';
+Public.selectedMerchantId = '';
+
+
 module.exports = Public;
