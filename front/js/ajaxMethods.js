@@ -69,20 +69,25 @@ var AjaxMethods = function () {
 
     };
 
-    this.group = function () {
+    this.postGroup = function (grpHostId,dishes,metId,addr,gorTime) {
 
-        //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
-        //
-        //});
+        return new Promise(resolve=>{
+            $$.post(SERVER_ADS+"/group",{grpHostId,dishes,metId,addr,gorTime},function(data){
+                if(data.success===1){
+                    resolve();
+                }
+             });
+        });
     };
 
     this.joinGroup = function () {
-        //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
-        //
-        //});
+       return new Promise(resolve=>{
+           $$.post(SERVER_ADS+"/joinGroup",{},function(data){
+                resolve(data);
+           });
+       });
     };
-
-};
+ };
 
 var ajaxMethods = new AjaxMethods();
 module.exports = ajaxMethods;

@@ -18,11 +18,19 @@ class GroupSettingPage {
         myApp.onPageBeforeInit('group-setting', function (page) {
             console.log('group-setting init');
             console.log('group-setting init');
+            
+            let arrayOfDishIds  = this.arrayOfDishIds = page.query.arrayOfDishIds || this.arrayOfDishIds;
+            let metId  = this.arrayOfDishIds = page.query.arrayOfDishIds || this.arrayOfDishIds;
+
             $$('#btnFinish').on('click', function () {
-                myApp.alert('开团完成!', function () {
-                    mainView.router.loadPage('group.html');
+                let 
+                
+                tool.loadTemplateFromJsonPromise(ajaxMethod.postGroup(grpHostId,arrayOfDishIds,metId,addr,gorTime)).then(()=>{
+                    myApp.alert('开团完成!', function () {
+                         mainView.router.loadPage('group.html');
+                     });
                 });
-            });
+             });
         });
     }
 
