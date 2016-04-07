@@ -1,3 +1,5 @@
+'use strict';
+
 const _ = require('lodash');
 
 /**
@@ -129,7 +131,7 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            this.joinGroupPromise(usrId, dishes, grpId).then(result=>{
+            this.joinGroupPromise(usrId, dishes, grpId).then(result=> {
 
             });
 
@@ -156,7 +158,8 @@ var Server = function () {
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
 
-        if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+
+        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
             db.USER.push(newUser);
             callback({success: 1});
             return;
@@ -221,12 +224,11 @@ var Server = function () {
             );
         }
         callback(result);
-
     };
 
 
     this.getMerchantById = function (id, callback) {
-         let result = db.MERCHANT.find(merchant=>merchant.metId === id);
+        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
         result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
         callback(result);
     };
@@ -253,52 +255,35 @@ var Server = function () {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
-        return new Promise(resolve=>{
-            var newGroupOrder = {};
-            var dihId;
-            var gorNum;
-            var num;
+        return new Promise(resolve=> {
 
+            for (let {dihId,num} of dishes) {
+                let gor = db.GROUP_ORDER.find(gor=>gor.dihId === dihId && gor.grpId === grpId);
+                if (gor) {
+                    //如果找到了直接增加数字
+                    gor.gorNum += num;
+                } else {
+                    //如果找不到就直接增加object
+                    db.GROUP_ORDER.push({
+                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId +1 ,
+                        dihId,
+                        gorNum: num,
+                        grpId,
 
-            if (db.GROUP_ORDER.length == 0) {
-                for (var index in dishes) {
-                    dihId = dishes[index].dihId;
-                    num = dishes[index].num;
-                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                    db.GROUP_ORDER.push(newGroupOrder);
-                    //資料表沒有資料，直接新增
+                    });
                 }
-            } else {
-                for (var index in db.GROUP_ORDER) {
-                    for (var index in dishes) {
-                        dihId = dishes[index].dihId;
-                        num = dishes[index].num;
 
-                        if (grpId == db.GROUP_ORDER[index].grpId && dihId == db.GROUP_ORDER[index].dihId) {
-                            db.GROUP_ORDER[index].gorNum = parseInt(db.GROUP_ORDER[index].gorNum) + num;//直接改值
-                            //尋找相同的<團號>及<商品ID>，有則Updata
-                        }
-                        else {
-                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                            db.GROUP_ORDER.push(newGroupOrder);
-                            //無，新增
-                        }
-                    }
-                }
             }
 
-            var gmrId = db.GROUP_MEMBER.length + 1;
-            var newGroupMember = {
-                //grpHostId: grpHostId,
-                //dishes: dishes,
-                gmrId: gmrId,
+            db.GROUP_MEMBER.push({
+                gmrId: _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId).gmrId + 1,
                 usrId: usrId,
-                grpId: grpId
-            };
-            db.GROUP_MEMBER.push(newGroupMember);
-            resolve({success:1});
-        }) ;
-     };
+                grpId: grpId,
+            });
+
+            resolve({success: 1});
+        });
+    };
 
 
 };

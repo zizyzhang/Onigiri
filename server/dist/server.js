@@ -158,7 +158,7 @@ var Server = function Server() {
         var usrCreateTime = new Date();
         var newUser = { usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi };
 
-        if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
             db.USER.push(newUser);
             callback({ success: 1 });
             return;
@@ -346,46 +346,62 @@ var Server = function Server() {
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
         return new Promise(function (resolve) {
-            var newGroupOrder = {};
-            var dihId;
-            var gorNum;
-            var num;
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
 
-            if (db.GROUP_ORDER.length == 0) {
-                for (var index in dishes) {
-                    dihId = dishes[index].dihId;
-                    num = dishes[index].num;
-                    newGroupOrder = { grpId: grpId, dihId: dihId, gorNum: num };
-                    db.GROUP_ORDER.push(newGroupOrder);
-                    //資料表沒有資料，直接新增
+            try {
+                var _loop3 = function _loop3() {
+                    var _step5$value = _step5.value;
+                    var dihId = _step5$value.dihId;
+                    var num = _step5$value.num;
+
+                    var gor = db.GROUP_ORDER.find(function (gor) {
+                        return gor.dihId === dihId && gor.grpId === grpId;
+                    });
+                    if (gor) {
+                        //如果找到了直接增加数字
+                        gor.gorNum += num;
+                    } else {
+                        //如果找不到就直接增加object
+                        db.GROUP_ORDER.push({
+                            gorId: _.maxBy(db.GROUP_ORDER, function (gor) {
+                                return gor.gorId;
+                            }).gorId + 1,
+                            dihId: dihId,
+                            gorNum: num,
+                            grpId: grpId
+
+                        });
+                    }
+                };
+
+                for (var _iterator5 = dishes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    _loop3();
                 }
-            } else {
-                    for (var index in db.GROUP_ORDER) {
-                        for (var index in dishes) {
-                            dihId = dishes[index].dihId;
-                            num = dishes[index].num;
-
-                            if (grpId == db.GROUP_ORDER[index].grpId && dihId == db.GROUP_ORDER[index].dihId) {
-                                db.GROUP_ORDER[index].gorNum = parseInt(db.GROUP_ORDER[index].gorNum) + num; //直接改值
-                                //尋找相同的<團號>及<商品ID>，有則Updata
-                            } else {
-                                    newGroupOrder = { grpId: grpId, dihId: dihId, gorNum: num };
-                                    db.GROUP_ORDER.push(newGroupOrder);
-                                    //無，新增
-                                }
-                        }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
                     }
                 }
+            }
 
-            var gmrId = db.GROUP_MEMBER.length + 1;
-            var newGroupMember = {
-                //grpHostId: grpHostId,
-                //dishes: dishes,
-                gmrId: gmrId,
+            db.GROUP_MEMBER.push({
+                gmrId: _.maxBy(db.GROUP_MEMBER, function (gmr) {
+                    return gmr.gmrId;
+                }).gmrId + 1,
                 usrId: usrId,
                 grpId: grpId
-            };
-            db.GROUP_MEMBER.push(newGroupMember);
+            });
+
             resolve({ success: 1 });
         });
     };
