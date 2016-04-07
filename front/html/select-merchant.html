@@ -1,6 +1,7 @@
-<div data-page="select-merchat" class="page">
+<div data-page="select-merchant" class="page">
     <div class="navbar">
         <div class="navbar-inner">
+
 
             <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div>
             <div class="center">選擇商家</div>
@@ -11,8 +12,8 @@
     </div>
     <div class="toolbar toolbar-bottom ">
         <div class="toolbar-inner">
-            <a href="create-menu.html?metId=1" class="button button-fill button color-red toolbar-button">
-                下一步(1/3)
+             <a href="create-menu.html" class="button button-fill button color-red toolbar-button" id="btn-create-menu" >
+                 下一步(1/3)
             </a>
 
 
@@ -20,56 +21,60 @@
     </div>
 
     <div class="page-content">
+
         <div class="list-block media-list" style="margin-top: 0px;!important;">
-
+            {{#each data}}
             <ul>
+
+                <!--<li>-->
+
+                    <!--<label class="label-radio item-content">-->
+                        <!--<input type="radio" name="cru-radio" value="2">-->
+
+                            <!--<div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png"-->
+                                                     <!--width="36"></div>-->
+                        <!--<div class="item-inner">-->
+                            <!--<div class="item-title-row" style="line-height: 36px;">-->
+                                <!--<div class="item-title">{{metName}}</div>-->
+                             <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="item-after menu-checkbox"><i class="icon-form-radio"></i></div>-->
+                    <!--</label>-->
+                <!--</li>-->
+                <!--<li>-->
+
+                    <!--<label class="label-radio item-content">-->
+                        <!--<input type="radio" name="cru-radio" value="2">-->
+
+                        <!--<div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png"-->
+                                                     <!--width="36"></div>-->
+                        <!--<div class="item-inner">-->
+                            <!--<div class="item-title-row" style="line-height: 36px;">-->
+                                <!--<div class="item-title">{{metName}}</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="item-after menu-checkbox"><i class="icon-form-radio"></i></div>-->
+                    <!--</label>-->
+                <!--</li>-->
                 <li>
 
                     <label class="label-radio item-content">
-                        <input type="radio" name="cru-radio" value="2">
-
-                            <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png"
-                                                     width="36"></div>
-                        <div class="item-inner">
-                            <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">韓國紙上烤肉</div>
-                             </div>
-                        </div>
-                        <div class="item-after menu-checkbox"><i class="icon-form-radio"></i></div>
-                    </label>
-                </li>
-                <li>
-
-                    <label class="label-radio item-content">
-                        <input type="radio" name="cru-radio" value="2">
+                        <input type="radio" class="isChecked" data-met-id="{{metId}}" name="cru-radio" value="2">
 
                         <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png"
                                                      width="36"></div>
                         <div class="item-inner">
                             <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">食樂拉麵</div>
+                                <div class="item-title">{{metName}}</div>
                             </div>
                         </div>
-                        <div class="item-after menu-checkbox"><i class="icon-form-radio"></i></div>
-                    </label>
-                </li>
-                <li>
-
-                    <label class="label-radio item-content">
-                        <input type="radio" name="cru-radio" value="2">
-
-                        <div class="item-media"><img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png"
-                                                     width="36"></div>
-                        <div class="item-inner">
-                            <div class="item-title-row" style="line-height: 36px;">
-                                <div class="item-title">麥當勞</div>
-                            </div>
-                        </div>
-                        <div class="item-after menu-checkbox"><i class="icon-form-radio"></i></div>
+                        <div class="item-after menu-checkbox" data-met-id="{{metId}}" ><i class="icon-form-radio"></i></div>
                     </label>
                 </li>
              </ul>
+            {{/each}}
         </div>
+
     </div>
 
 </div>

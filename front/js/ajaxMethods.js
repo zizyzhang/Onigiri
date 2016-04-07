@@ -45,18 +45,23 @@ var AjaxMethods = function () {
     };
 
     this.getMerchantById = function (id) {
-        return new Promise(resolve => {
+         return new Promise(resolve => {
             $$.getJSON(SERVER_ADS + "/merchantById/" + id, function (data) {
+
                 resolve(data);
             });
         });
     };
 
 
-    this.allMerchant = function () {
 
-        $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
-            //allMerchantList = data;
+
+    this.allMerchant = function () {
+        return new Promise (function  (resolve) {
+            $$.getJSON(SERVER_ADS + "/allMerchant" , function (data) {
+                console.log(data);
+                resolve(data);
+             });
         });
     };
 
