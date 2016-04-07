@@ -26,7 +26,7 @@ var AjaxMethods = function () {
                 if (JSON.parse(result).success === 1) {
                     console.log('login success');
 
-                    resolve();
+                    resolve(JSON.parse(result));
                 } else {
                     reject();
                 }

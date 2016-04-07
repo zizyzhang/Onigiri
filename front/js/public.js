@@ -6,7 +6,7 @@ class Public{
 
 }
 
-Public.usrId = '';
+Public.user = {};
 Public.selectedMerchantId = '';
 
 

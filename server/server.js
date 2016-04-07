@@ -177,7 +177,14 @@ var Server = function () {
         var isSuccess = false;
         for (var index in db.USER) {
             if (db.USER[index].usrName == usrName && db.USER[index].usrPwd == usrPwd) {
-                callback({success: 1});
+                callback({
+                    success: 1,
+                    user:{
+                        usrName:db.USER[index].usrName,
+                        usrId:db.USER[index].usrId,
+                        usrMobi:db.USER[index].usrMobi,
+
+                    }});
                 return;
             }
         }

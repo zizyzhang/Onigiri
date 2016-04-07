@@ -1,5 +1,5 @@
 'use strict';
-let isDebug = true;
+let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -76,8 +76,7 @@ $$(document).on('ajaxComplete', function (e) {
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        Public.selectedMerchantId = 1;
-        Public.usrId = 1;
+
 
         mainView.router.loadPage({url: 'create-menu.html?metId=1'});
 
