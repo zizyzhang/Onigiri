@@ -228,6 +228,7 @@ describe('Server', function () {
                 assert.property(result, 'grpTime');
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
+                assert.property(result.grpDishes[0], 'dish');
                 done();
             });
         });

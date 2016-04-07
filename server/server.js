@@ -194,7 +194,11 @@ var Server = function () {
                 grpHostName: (db.USER.find(user => user.usrId == group.grpHostId)).usrName,
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
-                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId == group.grpId)
+                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                    grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                    return grh;
+                }),
+
             });
 
         }
@@ -210,7 +214,11 @@ var Server = function () {
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId)
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                return grh;
+            }),
+
         });
     };
 
@@ -265,7 +273,7 @@ var Server = function () {
                 } else {
                     //如果找不到就直接增加object
                     db.GROUP_ORDER.push({
-                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId +1 ,
+                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
                         dihId,
                         gorNum: num,
                         grpId,

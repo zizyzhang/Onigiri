@@ -205,8 +205,14 @@ var Server = function Server() {
                         return grr.grpId == group.grpId;
                     }),
                     grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
-                        return grh.grpId == group.grpId;
+                        return grh.grpId === group.grpId;
+                    }).map(function (grh) {
+                        grh.dish = _.filter(db.DISH, function (dish) {
+                            return dish.dihId === grh.dihId;
+                        });
+                        return grh;
                     })
+
                 });
             };
 
@@ -250,7 +256,13 @@ var Server = function Server() {
             }),
             grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
                 return grh.grpId === group.grpId;
+            }).map(function (grh) {
+                grh.dish = _.filter(db.DISH, function (dish) {
+                    return dish.dihId === grh.dihId;
+                });
+                return grh;
             })
+
         });
     };
 
