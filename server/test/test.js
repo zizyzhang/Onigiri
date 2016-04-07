@@ -172,34 +172,38 @@ describe('Server', function () {
 
     describe('#joinGroup()', function () {
         let numberOfGroupOrder = db.GROUP_ORDER.length;
-
         it('should insert a gorNum', function (done) {
             server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 2).then((result)=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
 
-                assert.equal(2, db.GROUP_ORDER[2].grpId);
-                assert.equal(0, db.GROUP_ORDER[2].dihId);
-                assert.equal(1, db.GROUP_ORDER[2].gorNum);
-
-                assert.equal(2, db.GROUP_ORDER[3].grpId);
-                assert.equal(1, db.GROUP_ORDER[3].dihId);
-                assert.equal(1, db.GROUP_ORDER[3].gorNum);
-
-                assert.equal(3, db.GROUP_MEMBER[2].gmrId);//自動編號ID
-                assert.equal(1, db.GROUP_MEMBER[2].usrId);
-                assert.equal(2, db.GROUP_MEMBER[2].grpId);
-
+                assert.isObject(lastInsertedGroupOrder);
 
                 assert.equal(numberOfGroupOrder + 2, db.GROUP_ORDER.length);
 
                 assert.equal(1, result.success);
-                numberOfGroupOrder = db.GROUP_ORDER.length;
-                return server.joinGroupPromise(2, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 2);
-            }).then(result=> {
-                assert.equal(numberOfGroupOrder, db.GROUP_ORDER.length);
                 done();
             }).catch(done);
 
+        });
 
+        it('should update group order number', function (done) {
+            server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3).then((result)=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+
+                assert.isObject(lastInsertedGroupOrder);
+
+
+                assert.equal(1, result.success);
+                numberOfGroupOrder = db.GROUP_ORDER.length;
+                return server.joinGroupPromise(2, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3);
+            }).then(result=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+
+                assert.equal(numberOfGroupOrder, db.GROUP_ORDER.length);
+                assert.equal(lastInsertedGroupOrder.gorNum, 2);
+
+                done();
+            }).catch(done);
         });
 
 
