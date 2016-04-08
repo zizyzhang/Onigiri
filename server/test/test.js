@@ -238,6 +238,7 @@ describe('Server', function () {
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
                 assert.property(result.grpDishes[0], 'dish');
+                assert.property(result.grpDishes[0].dish, 'dihId');
                 done();
             });
         });
@@ -247,6 +248,7 @@ describe('Server', function () {
                 assert.equal(result.grpId, 1);
                 assert.equal(result.merchant.metId, 1);
 
+                assert.equal(result.grpDishes[0].dish.dihId, 1);
                 done();
             });
         });

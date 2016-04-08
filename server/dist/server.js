@@ -267,7 +267,7 @@ var Server = function Server() {
             grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
                 return grh.grpId === group.grpId;
             }).map(function (grh) {
-                grh.dish = _.filter(db.DISH, function (dish) {
+                grh.dish = _.find(db.DISH, function (dish) {
                     return dish.dihId === grh.dihId;
                 });
                 return grh;
