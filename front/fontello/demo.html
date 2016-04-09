@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+  <head><!--[if lt IE 9]><script language="javascript" type="text/javascript" src="//html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <meta charset="UTF-8"><style>/*
+ * Bootstrap v2.2.1
+ *
+ * Copyright 2012 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ */
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+a:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+a:hover,
+a:active {
+  outline: 0;
+}
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+}
+button,
+input {
+  *overflow: visible;
+  line-height: normal;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333;
+  background-color: #fff;
+}
+a {
+  color: #08c;
+  text-decoration: none;
+}
+a:hover {
+  color: #005580;
+  text-decoration: underline;
+}
+.row {
+  margin-left: -20px;
+  *zoom: 1;
+}
+.row:before,
+.row:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.row:after {
+  clear: both;
+}
+[class*="span"] {
+  float: left;
+  min-height: 1px;
+  margin-left: 20px;
+}
+.container,
+.navbar-static-top .container,
+.navbar-fixed-top .container,
+.navbar-fixed-bottom .container {
+  width: 940px;
+}
+.span12 {
+  width: 940px;
+}
+.span11 {
+  width: 860px;
+}
+.span10 {
+  width: 780px;
+}
+.span9 {
+  width: 700px;
+}
+.span8 {
+  width: 620px;
+}
+.span7 {
+  width: 540px;
+}
+.span6 {
+  width: 460px;
+}
+.span5 {
+  width: 380px;
+}
+.span4 {
+  width: 300px;
+}
+.span3 {
+  width: 220px;
+}
+.span2 {
+  width: 140px;
+}
+.span1 {
+  width: 60px;
+}
+[class*="span"].pull-right,
+.row-fluid [class*="span"].pull-right {
+  float: right;
+}
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  *zoom: 1;
+}
+.container:before,
+.container:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.container:after {
+  clear: both;
+}
+p {
+  margin: 0 0 10px;
+}
+.lead {
+  margin-bottom: 20px;
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 30px;
+}
+small {
+  font-size: 85%;
+}
+h1 {
+  margin: 10px 0;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 20px;
+  color: inherit;
+  text-rendering: optimizelegibility;
+}
+h1 small {
+  font-weight: normal;
+  line-height: 1;
+  color: #999;
+}
+h1 {
+  line-height: 40px;
+}
+h1 {
+  font-size: 38.5px;
+}
+h1 small {
+  font-size: 24.5px;
+}
+body {
+  margin-top: 90px;
+}
+.header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -480px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  padding-top: 10px;
+  z-index: 10;
+}
+.footer {
+  color: #ddd;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+.footer a {
+  color: #ccc;
+  text-decoration: underline;
+}
+.the-icons {
+  font-size: 14px;
+  line-height: 24px;
+}
+.switch {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  color: #666;
+}
+.switch input {
+  margin-right: 0.3em;
+}
+.codesOn .i-name {
+  display: none;
+}
+.codesOn .i-code {
+  display: inline;
+}
+.i-code {
+  display: none;
+}
+@font-face {
+      font-family: 'icon';
+      src: url('./font/icon.eot?97062590');
+      src: url('./font/icon.eot?97062590#iefix') format('embedded-opentype'),
+           url('./font/icon.woff?97062590') format('woff'),
+           url('./font/icon.ttf?97062590') format('truetype'),
+           url('./font/icon.svg?97062590#icon') format('svg');
+      font-weight: normal;
+      font-style: normal;
+    }
+     
+     
+    .demo-icon
+    {
+      font-family: "icon";
+      font-style: normal;
+      font-weight: normal;
+      speak: none;
+     
+      display: inline-block;
+      text-decoration: inherit;
+      width: 1em;
+      margin-right: .2em;
+      text-align: center;
+      /* opacity: .8; */
+     
+      /* For safety - reset parent styles, that can break glyph codes*/
+      font-variant: normal;
+      text-transform: none;
+     
+      /* fix buttons height, for twitter bootstrap */
+      line-height: 1em;
+     
+      /* Animation center compensation - margins should be symmetric */
+      /* remove if not needed */
+      margin-left: .2em;
+     
+      /* You can be more comfortable with increased icons size */
+      /* font-size: 120%; */
+     
+      /* Font smoothing. That was taken from TWBS */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+     
+      /* Uncomment for 3D effect */
+      /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+    }
+     </style>
+    <link rel="stylesheet" href="css/animation.css"><!--[if IE 7]><link rel="stylesheet" href="css/icon-ie7.css"><![endif]-->
+    <script>
+      function toggleCodes(on) {
+        var obj = document.getElementById('icons');
+        
+        if (on) {
+          obj.className += ' codesOn';
+        } else {
+          obj.className = obj.className.replace(' codesOn', '');
+        }
+      }
+      
+    </script>
+  </head>
+  <body>
+    <div class="container header">
+      <h1>
+        icon
+         <small>font demo</small>
+      </h1>
+      <label class="switch">
+        <input type="checkbox" onclick="toggleCodes(this.checked)">show codes
+      </label>
+    </div>
+    <div id="icons" class="container">
+      <div class="row">
+        <div title="Code: 0x21" class="the-icons span3"><i class="demo-icon icon-ok">&#x21;</i> <span class="i-name">icon-ok</span><span class="i-code">0x21</span></div>
+        <div title="Code: 0x22" class="the-icons span3"><i class="demo-icon icon-money-1">&#x22;</i> <span class="i-name">icon-money-1</span><span class="i-code">0x22</span></div>
+        <div title="Code: 0x23" class="the-icons span3"><i class="demo-icon icon-arrows-cw-3">&#x23;</i> <span class="i-name">icon-arrows-cw-3</span><span class="i-code">0x23</span></div>
+        <div title="Code: 0x24" class="the-icons span3"><i class="demo-icon icon-angle-right">&#x24;</i> <span class="i-name">icon-angle-right</span><span class="i-code">0x24</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x25" class="the-icons span3"><i class="demo-icon icon-down-dir-1">&#x25;</i> <span class="i-name">icon-down-dir-1</span><span class="i-code">0x25</span></div>
+        <div title="Code: 0x26" class="the-icons span3"><i class="demo-icon icon-down-open-1">&#x26;</i> <span class="i-name">icon-down-open-1</span><span class="i-code">0x26</span></div>
+        <div title="Code: 0x27" class="the-icons span3"><i class="demo-icon icon-chart-bar-outline">&#x27;</i> <span class="i-name">icon-chart-bar-outline</span><span class="i-code">0x27</span></div>
+        <div title="Code: 0x28" class="the-icons span3"><i class="demo-icon icon-clipboard-1">&#x28;</i> <span class="i-name">icon-clipboard-1</span><span class="i-code">0x28</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x29" class="the-icons span3"><i class="demo-icon icon-list-4">&#x29;</i> <span class="i-name">icon-list-4</span><span class="i-code">0x29</span></div>
+        <div title="Code: 0x2a" class="the-icons span3"><i class="demo-icon icon-list-bullet">&#x2a;</i> <span class="i-name">icon-list-bullet</span><span class="i-code">0x2a</span></div>
+        <div title="Code: 0x2b" class="the-icons span3"><i class="demo-icon icon-th-list-outline">&#x2b;</i> <span class="i-name">icon-th-list-outline</span><span class="i-code">0x2b</span></div>
+        <div title="Code: 0x2c" class="the-icons span3"><i class="demo-icon icon-volume-off-4">&#x2c;</i> <span class="i-name">icon-volume-off-4</span><span class="i-code">0x2c</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x2d" class="the-icons span3"><i class="demo-icon icon-volume-down-2">&#x2d;</i> <span class="i-name">icon-volume-down-2</span><span class="i-code">0x2d</span></div>
+        <div title="Code: 0x2e" class="the-icons span3"><i class="demo-icon icon-volume-up-3">&#x2e;</i> <span class="i-name">icon-volume-up-3</span><span class="i-code">0x2e</span></div>
+        <div title="Code: 0x2f" class="the-icons span3"><i class="demo-icon icon-search">&#x2f;</i> <span class="i-name">icon-search</span><span class="i-code">0x2f</span></div>
+        <div title="Code: 0x30" class="the-icons span3"><i class="demo-icon icon-star-half-1">&#x30;</i> <span class="i-name">icon-star-half-1</span><span class="i-code">0x30</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x31" class="the-icons span3"><i class="demo-icon icon-up-small">&#x31;</i> <span class="i-name">icon-up-small</span><span class="i-code">0x31</span></div>
+        <div title="Code: 0x32" class="the-icons span3"><i class="demo-icon icon-up-4">&#x32;</i> <span class="i-name">icon-up-4</span><span class="i-code">0x32</span></div>
+        <div title="Code: 0x33" class="the-icons span3"><i class="demo-icon icon-down-small">&#x33;</i> <span class="i-name">icon-down-small</span><span class="i-code">0x33</span></div>
+        <div title="Code: 0x34" class="the-icons span3"><i class="demo-icon icon-down-4">&#x34;</i> <span class="i-name">icon-down-4</span><span class="i-code">0x34</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x35" class="the-icons span3"><i class="demo-icon icon-down-dir-3">&#x35;</i> <span class="i-name">icon-down-dir-3</span><span class="i-code">0x35</span></div>
+        <div title="Code: 0x36" class="the-icons span3"><i class="demo-icon icon-home-4">&#x36;</i> <span class="i-name">icon-home-4</span><span class="i-code">0x36</span></div>
+        <div title="Code: 0x37" class="the-icons span3"><i class="demo-icon icon-emo-grin">&#x37;</i> <span class="i-name">icon-emo-grin</span><span class="i-code">0x37</span></div>
+        <div title="Code: 0x38" class="the-icons span3"><i class="demo-icon icon-star-empty-3">&#x38;</i> <span class="i-name">icon-star-empty-3</span><span class="i-code">0x38</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x39" class="the-icons span3"><i class="demo-icon icon-star-8">&#x39;</i> <span class="i-name">icon-star-8</span><span class="i-code">0x39</span></div>
+        <div title="Code: 0x3a" class="the-icons span3"><i class="demo-icon icon-home-outline">&#x3a;</i> <span class="i-name">icon-home-outline</span><span class="i-code">0x3a</span></div>
+        <div title="Code: 0x3b" class="the-icons span3"><i class="demo-icon icon-emo-laugh">&#x3b;</i> <span class="i-name">icon-emo-laugh</span><span class="i-code">0x3b</span></div>
+        <div title="Code: 0x3c" class="the-icons span3"><i class="demo-icon icon-female-1">&#x3c;</i> <span class="i-name">icon-female-1</span><span class="i-code">0x3c</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x3d" class="the-icons span3"><i class="demo-icon icon-male-1">&#x3d;</i> <span class="i-name">icon-male-1</span><span class="i-code">0x3d</span></div>
+        <div title="Code: 0x3e" class="the-icons span3"><i class="demo-icon icon-paper-plane-2">&#x3e;</i> <span class="i-name">icon-paper-plane-2</span><span class="i-code">0x3e</span></div>
+        <div title="Code: 0x3f" class="the-icons span3"><i class="demo-icon icon-mic-3">&#x3f;</i> <span class="i-name">icon-mic-3</span><span class="i-code">0x3f</span></div>
+        <div title="Code: 0x40" class="the-icons span3"><i class="demo-icon icon-basket-4">&#x40;</i> <span class="i-name">icon-basket-4</span><span class="i-code">0x40</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x41" class="the-icons span3"><i class="demo-icon icon-history">&#x41;</i> <span class="i-name">icon-history</span><span class="i-code">0x41</span></div>
+        <div title="Code: 0x42" class="the-icons span3"><i class="demo-icon icon-search-8">&#x42;</i> <span class="i-name">icon-search-8</span><span class="i-code">0x42</span></div>
+        <div title="Code: 0x43" class="the-icons span3"><i class="demo-icon icon-desktop-3">&#x43;</i> <span class="i-name">icon-desktop-3</span><span class="i-code">0x43</span></div>
+        <div title="Code: 0x44" class="the-icons span3"><i class="demo-icon icon-pencil-6">&#x44;</i> <span class="i-name">icon-pencil-6</span><span class="i-code">0x44</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x45" class="the-icons span3"><i class="demo-icon icon-mobile-5">&#x45;</i> <span class="i-name">icon-mobile-5</span><span class="i-code">0x45</span></div>
+        <div title="Code: 0x46" class="the-icons span3"><i class="demo-icon icon-icq">&#x46;</i> <span class="i-name">icon-icq</span><span class="i-code">0x46</span></div>
+        <div title="Code: 0x47" class="the-icons span3"><i class="demo-icon icon-reddit-2">&#x47;</i> <span class="i-name">icon-reddit-2</span><span class="i-code">0x47</span></div>
+        <div title="Code: 0x48" class="the-icons span3"><i class="demo-icon icon-garden">&#x48;</i> <span class="i-name">icon-garden</span><span class="i-code">0x48</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x49" class="the-icons span3"><i class="demo-icon icon-bicycle">&#x49;</i> <span class="i-name">icon-bicycle</span><span class="i-code">0x49</span></div>
+        <div title="Code: 0x4a" class="the-icons span3"><i class="demo-icon icon-shuffle-3">&#x4a;</i> <span class="i-name">icon-shuffle-3</span><span class="i-code">0x4a</span></div>
+        <div title="Code: 0x4b" class="the-icons span3"><i class="demo-icon icon-star-half-alt">&#x4b;</i> <span class="i-name">icon-star-half-alt</span><span class="i-code">0x4b</span></div>
+        <div title="Code: 0x4c" class="the-icons span3"><i class="demo-icon icon-user-8">&#x4c;</i> <span class="i-name">icon-user-8</span><span class="i-code">0x4c</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x4d" class="the-icons span3"><i class="demo-icon icon-location-8">&#x4d;</i> <span class="i-name">icon-location-8</span><span class="i-code">0x4d</span></div>
+        <div title="Code: 0x4e" class="the-icons span3"><i class="demo-icon icon-phone-3">&#x4e;</i> <span class="i-name">icon-phone-3</span><span class="i-code">0x4e</span></div>
+        <div title="Code: 0x4f" class="the-icons span3"><i class="demo-icon icon-female-2">&#x4f;</i> <span class="i-name">icon-female-2</span><span class="i-code">0x4f</span></div>
+        <div title="Code: 0x50" class="the-icons span3"><i class="demo-icon icon-comment-3">&#x50;</i> <span class="i-name">icon-comment-3</span><span class="i-code">0x50</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x51" class="the-icons span3"><i class="demo-icon icon-qrcode-1">&#x51;</i> <span class="i-name">icon-qrcode-1</span><span class="i-code">0x51</span></div>
+        <div title="Code: 0x52" class="the-icons span3"><i class="demo-icon icon-email">&#x52;</i> <span class="i-name">icon-email</span><span class="i-code">0x52</span></div>
+        <div title="Code: 0x53" class="the-icons span3"><i class="demo-icon icon-lock">&#x53;</i> <span class="i-name">icon-lock</span><span class="i-code">0x53</span></div>
+        <div title="Code: 0x54" class="the-icons span3"><i class="demo-icon icon-menu">&#x54;</i> <span class="i-name">icon-menu</span><span class="i-code">0x54</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x55" class="the-icons span3"><i class="demo-icon icon-menu-2">&#x55;</i> <span class="i-name">icon-menu-2</span><span class="i-code">0x55</span></div>
+        <div title="Code: 0x56" class="the-icons span3"><i class="demo-icon icon-menu-3">&#x56;</i> <span class="i-name">icon-menu-3</span><span class="i-code">0x56</span></div>
+        <div title="Code: 0x57" class="the-icons span3"><i class="demo-icon icon-ok-2">&#x57;</i> <span class="i-name">icon-ok-2</span><span class="i-code">0x57</span></div>
+        <div title="Code: 0x58" class="the-icons span3"><i class="demo-icon icon-check-2">&#x58;</i> <span class="i-name">icon-check-2</span><span class="i-code">0x58</span></div>
+      </div>
+      <div class="row">
+        <div title="Code: 0x59" class="the-icons span3"><i class="demo-icon icon-ok-6">&#x59;</i> <span class="i-name">icon-ok-6</span><span class="i-code">0x59</span></div>
+        <div title="Code: 0x72" class="the-icons span3"><i class="demo-icon icon-link-ext">&#x72;</i> <span class="i-name">icon-link-ext</span><span class="i-code">0x72</span></div>
+      </div>
+    </div>
+    <div class="container footer">Generated by <a href="http://fontello.com">fontello.com</a></div>
+  </body>
+</html>

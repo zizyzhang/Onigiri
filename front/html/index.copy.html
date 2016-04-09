@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+
+    <script src="../js/main.js"></script>
+
+    <style>
+        #login, #submit {
+            margin-top: 10px;
+        }
+    </style>
+
+</head>
+<body class="container">
+
+<img src="" alt=""/>
+<input type="text" id="account" class="form-control" placeholder="帳號"/>
+<br/>
+<input type="text" id="pwd" class="form-control" placeholder="密碼"/>
+<br/>
+<button type="button" class="btn btn-success form-control" id="login">登入</button>
+<br/>
+<button type="button" class="btn btn-info form-control" id="submit" data-toggle="modal" data-target="#myModal">註冊
+</button>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">註冊</h4>
+            </div>
+            <div class="modal-body">
+                <lable>帳號</lable>
+                <br>
+                <input class="form-control" type="text" id="subAccount"/><br>
+                <lable>密碼</lable>
+                <br>
+                <input class="form-control" type="password" id="subPwd"/><br>
+                <lable>確認密碼</lable>
+                <br>
+                <input class="form-control" type="password" id="confirmPwd"/><br>
+                <lable>手機</lable>
+                <br>
+                <input class="form-control" type="tel" id="subMobile" placeholder="0912 345 678" required
+                       pattern="09[1-8][0-9]([\-|\s]?)[0-9]{3}\1[0-9]{3}"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="subSignUp" data-dismiss="modal">註冊</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="" id="example">
+
+
+</div>
+
+</body>
+
+<!--<script src="../dist/bundle.js"></script>-->
+
+</html>

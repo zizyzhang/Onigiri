@@ -1,0 +1,21 @@
+{
+  "name": "onigiri",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "zizy <mezizy@live.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/zizyzhang/Onigiri",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Framework7": "framework7#~1.4.2"
+  }
+}

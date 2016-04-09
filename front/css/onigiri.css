@@ -1,0 +1,232 @@
+.login-screen-content {
+    background-image: url("../assets/img/login-bg.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-big {
+    text-align: center;
+}
+
+.icon-usr-pwd {
+    font-size: 16pt !important;
+
+}
+
+.icon-usr-name {
+    font-size: 11pt !important;
+
+}
+
+.usrName, .usrPwd {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.login-input {
+    color: white !important;
+
+}
+
+.item-input-field:after,
+.input-field:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    top: auto;
+    height: 1px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: block;
+    z-index: 15;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+}
+
+.demo-card-header-pic .card-header {
+    background-size: cover;
+    background-position: center;
+}
+
+.card-header {
+    /*min-height: 170px !important;*/
+    /*height: 170px !important;*/
+    height: auto !important;
+}
+
+.card-img-text {
+    padding-left: 1em;
+    font-size: 20px;
+    height: 1.7em;
+    line-height: 1.7em;
+    width: auto;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.card-footer {
+    /*background: #fafafa;*/
+    /*border: 1px solid rgba(0,0,0,0.1);*/
+}
+
+.card-img {
+    padding: 0px;
+    background-size: cover;
+    background-position: center;
+}
+
+.group-detail-img {
+    background-image: url('../assets/img/img-store-01.jpg');
+    height: 250px;
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+}
+
+@font-face {
+    font-family: 'fontello';
+    src: url('../fontello/font/icon.eot');
+    src: url('../fontello/font/icon.eot#iefix') format('embedded-opentype'),
+    url('../fontello/font/icon.woff') format('woff'),
+    url('../fontello/font/icon.ttf') format('truetype'),
+    url('../fontello/font/icon.svg#fontello') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.ficon, [class^="ficon-"], [class^="ficon-"]:before, [class*=" ficon-"]:before {
+    font-family: "fontello";
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    text-decoration: inherit;
+    font-size: 1.2em;
+    /*width: 1em;*/
+    margin-right: .2em;
+    text-align: center;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1em;
+    margin-left: .2em;
+}
+
+.navbar-trans {
+    background-color: transparent !important;
+}
+
+.navbar-trans ~ .page-content {
+    padding-top: 0px !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.comment {
+    margin-bottom: 1.5em;
+}
+
+.comment-img {
+    width: 88px;
+    height: 88px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.comment-title {
+    margin-top: 0px !important;
+    font-size: 1.2em;
+}
+
+.comment-usr-name {
+    font-size: 1.5em;
+}
+
+.comment-content {
+    margin-left: 0.2em;
+}
+
+.clear-both {
+    clear: both;
+}
+
+.toolbar-button {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    vertical-align: middle;
+    line-height: 48px;
+
+}
+
+.btn-outline{
+    border-style: solid;
+    border-color: red;
+    border-width: 1px;
+    border-radius: 2pt;
+    /*padding: 0px !important;*/
+    height: 2em;
+    min-width: 0px;
+    width:3em;
+    margin:auto;
+    line-height: 2em;
+
+}
+
+.btn-round-sm {
+    border-radius: 50%;
+    min-width: 18px;
+    min-height: 18px;
+    line-height: 2em ;
+    height:2em !important;
+    width:2em  !important;
+    padding:0px;
+ }
+
+.dish-price {
+    line-height: 2em;
+    margin-right: 1em;
+    display: inline;
+}
+
+
+.menu-checkbox{
+    max-height: 0px;
+    height: 64px !important;
+    padding: 0px !important;
+}
+.menu-checkbox i{
+margin-top: 50%;
+}
+.group-setting-icon    {
+    max-height: none  !important;
+    height: 64px !important;
+    padding: 0px !important;
+
+}
+
+.group-setting-icon   i{
+    margin-top:  14px !important ;
+    font-size: 20pt;
+    line-height: 36px !important;
+}
+
+.dish-option{
+    width: 100%;
+
+}
+.dish-num{
+    float: left;
+    padding:0em 0.5em;
+    line-height: 2em;
+
+
+}
+
+.toolbar-total-price{
+    width: 100%;
+    background-color: white;
+    height:100%;
+}
