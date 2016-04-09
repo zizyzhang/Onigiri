@@ -11,7 +11,6 @@ class Tool {
     loadTemplateFromJsonPromise(promise, page, callback) {
 
         promise.then((data)=> {
-            console.log(data);
             $$.get(page.url, (template)=> {
                 console.log(data);
                 let compiledTemplate = Template7.compile(template.substring(template.indexOf('>') + 1, template.lastIndexOf('<')));
@@ -26,8 +25,13 @@ class Tool {
                 $$(page.container).html(html);
 
                 if (callback) {
-                    callback();
+                    if (Array.isArray(data)) {
+                        callback({data});
+                    } else {
+                        callback(data);
+                    }
                 }
+
             });
         });
     }

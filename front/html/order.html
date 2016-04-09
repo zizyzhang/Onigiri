@@ -1,9 +1,9 @@
-
 <div data-page="order" class="page">
     <div class="navbar">
         <div class="navbar-inner">
-            <div class="left"><a href="group-detail.html" class="back link icon-only"><i class="icon icon-back"></i></a></div>
-            <div class="center">选择餐点·韩国紙上烤肉</div>
+            <div class="left"><a href="group-detail.html" class="back link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">{{merchant.metName}}</div>
             <div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars"></i></a></div>
         </div>
     </div>
@@ -11,14 +11,16 @@
     <div class="toolbar toolbar-bottom">
         <div class="toolbar-inner">
 
-            <a class="button button-fill button color-white  toolbar-button">
-                <div class="ficon" style="color:red">@</div>
-                <label id="price" style="color:black">$25</label>
-            </a>
+            <div class="toolbar-total-price color-white">
+                <div class="ficon" style="color:red;font-size: 25pt;height: 100%;line-height: 1.2em;">@</div>
+
+                <label id="total-price" class="color-deeporange"
+                       style="font-size: 18pt;">$0</label>
+            </div>
             <a class="button button-fill button color-green toolbar-button">
                 留言
             </a>
-            <a onclick="" href="group.html" class="button button-fill color-red toolbar-button">
+            <a id="btnJoinGroup" class="button button-fill color-red toolbar-button">
                 確認跟團
             </a>
         </div>
@@ -29,46 +31,47 @@
         <!--<div class="content-block-title">Data list, with icons</div>-->
         <div class="list-block" style="margin-top: 0px;!important;">
             <ul>
-                <li>
-                    <div class="item-divider">主食</div>
-                </li>
+                <!--<li>-->
+                <!--<div class="item-divider">主食</div>-->
+                <!--</li>-->
+                {{#each grpDishes}}
                 <li>
                     <div class="item-content">
-                        <!--<div class="item-media"><i class="icon icon-f7"></i></div>-->
+                        <div class="item-media"><i class="icon icon-f7"></i></div>
                         <div class="item-inner">
 
-                            <div class="item-title">{{chicken}}</div>
+                            <div class="item-title">{{dish.dihName}}</div>
 
                             <div class="item-after">
-                                <div class="dish-option dish-button-group">
 
-                                    <a href="#" class="button color-red btn-outline" style=""> $25</a>
+                                <div class="dish-price dish-button-group" data-dih-id="{{dish.dihId}}">
+                                    <a href="#" data-dih-id="{{dish.dihId}}"
+                                       class="button color-red btn-outline btn-dish-price" style="">
+                                        ${{dish.dihPrice}}</a>
 
                                 </div>
+
+                                <div class="dish-option dish-button-group" data-dih-id="{{dish.dihId}}"
+                                     style="display: none;">
+                                    <a href="#" class="button button-fill color-green  btn-round-sm btn-subtraction"
+                                       data-dih-id="{{dish.dihId}}"
+                                       style=" float: left">
+                                        - </a>
+                                    <div style=" " class="dish-num" data-dih-id="{{dish.dihId}}" id="dish">1</div>
+                                    <a href="#" class="button button-fill color-green  btn-round-sm btn-add"
+                                       data-dih-id="{{dish.dihId}}"
+                                       style=" float: left">
+                                        + </a>
+                                </div>
+
                             </div>
 
                         </div>
 
                     </div>
                 </li>
-                <li>
 
-                    <div class="item-content">
-                        <!--<div class="item-media"><i class="icon icon-f7"></i></div>-->
-                        <div class="item-inner">
-                            <div class="item-title">{{chicken}}</div>
-                            <div class="item-after">
-                                        <a href="#" class="button button-fill color-green  btn-round-sm" id="subtraction" style="">
-                                            - </a>
-                                        <div class="dish-price" id="dish">1</div>
-                                        <a href="#" class="button button-fill color-green  btn-round-sm" id="add" style="">
-                                            + </a>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </li>
+                {{/each}}
 
             </ul>
 

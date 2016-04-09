@@ -1,11 +1,14 @@
+/**
+ * Created by User on 2016/3/24.
+ */
+
 'use strict';
+
+var isDebug = true;
 
 var _ = require('lodash');
 require('source-map-support').install();
 
-/**
- * Created by User on 2016/3/24.
- */
 var Server = function Server() {
 
     var express = require('express');
@@ -50,7 +53,14 @@ var Server = function Server() {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({ extended: false }));
 
+    app.get('/db', function (req, res) {
+        if (isDebug) {
+            res.json(db);
+        }
+    });
+
     app.post('/addUser', function (req, res) {
+
         var usrName = req.body.usrName;
         var usrPwd = req.body.usrPwd;
         var usrMobi = req.body.usrMobi;
@@ -114,13 +124,16 @@ var Server = function Server() {
     });
 
     app.post('/joinGroup', function (req, res) {
+        req.body = JSON.parse(req.body.data);
         var usrId = req.body.grpHostId;
         var dishes = req.body.dishes;
         var grpId = req.body.grpId;
 
         console.log(JSON.stringify(req.body));
 
-        this.joinGroupPromise(usrId, dishes, grpId).then(function (result) {});
+        self.joinGroupPromise(usrId, dishes, grpId).then(function (result) {
+            res.json(result);
+        });
     });
 
     app.listen(3000, function () {
@@ -181,7 +194,8 @@ var Server = function Server() {
                         usrId: db.USER[index].usrId,
                         usrMobi: db.USER[index].usrMobi
 
-                    } });
+                    }
+                });
                 return;
             }
         }
@@ -267,7 +281,7 @@ var Server = function Server() {
             grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
                 return grh.grpId === group.grpId;
             }).map(function (grh) {
-                grh.dish = _.filter(db.DISH, function (dish) {
+                grh.dish = _.find(db.DISH, function (dish) {
                     return dish.dihId === grh.dihId;
                 });
                 return grh;
@@ -367,6 +381,8 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
+        console.log(JSON.stringify({ usrId: usrId, dishes: dishes, grpId: grpId }));
+
         return new Promise(function (resolve) {
             var _iteratorNormalCompletion5 = true;
             var _didIteratorError5 = false;
@@ -393,7 +409,6 @@ var Server = function Server() {
                             dihId: dihId,
                             gorNum: num,
                             grpId: grpId
-
                         });
                     }
                 };

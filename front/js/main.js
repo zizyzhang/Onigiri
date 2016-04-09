@@ -1,5 +1,5 @@
 'use strict';
-let isDebug = false;
+let isDebug = true;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -10,6 +10,7 @@ let ajaxMethod = require('./ajaxMethods.js'),
     SelectMerchantPage = require('./pages/select-merchant.js'),
     IndexPage = require('./pages/index.js'),
     CreateMenuPage = require('./pages/create-menu.js'),
+    cookies = require('js-cookie'),
     Public = require('./public.js');
 
 
@@ -76,12 +77,10 @@ $$(document).on('ajaxComplete', function (e) {
 (() => {
     if (isDebug) {
         myApp.closeModal();
+        mainView.router.loadPage({url: 'group.html'});
 
-
-        mainView.router.loadPage({url: 'create-menu.html?metId=1'});
-
+        cookies.set('user',{usrId:1,usrName:'firstUser'});
+        cookies.set('selectedGroupId',1);
         console.log('cheat');
-
-
     }
 })();
