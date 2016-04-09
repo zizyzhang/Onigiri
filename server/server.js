@@ -217,8 +217,10 @@ var Server = function () {
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
                 grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                    grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
-                    return grh;
+                    let grpDish ={};
+                    grpDish.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                    _.assign(grpDish,grh);
+                     return grpDish;
                 }),
 
             });
