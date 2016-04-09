@@ -47,6 +47,24 @@ class OrderPage {
                     let dihId = $$(this).dataset().dihId;
                     self.onOrderNumberChange(dihId, -1);
                 });
+
+                $$('#btnJoinGroup').click(()=> {
+                    let dishes = [];
+                    for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
+                        dishes.push({dihId: odrDishId, num: odrDishNum});
+                    }
+                    let grpId = Number(cookies.get('selectedGroupId'));
+                    let usrId = cookies.getJSON('user').usrId;
+                    console.log(JSON.stringify({usrId, dishes, grpId}));
+
+                    ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
+                        myApp.alert('开团成功', function () {
+                            mainView.router.loadPage('group.html');
+                        });
+                    }).catch(e=> myApp.alert(JSON.stringify(e)+'开团失败'));
+
+
+                });
             });
 
 
@@ -80,7 +98,7 @@ class OrderPage {
     calcPrice() {
         let totalPrice = 0;
         for (let [odrDishId,odrDishNum] of this.ordersMap.entries()) {
-            console.log(odrDishId,odrDishNum);
+            console.log(odrDishId, odrDishNum);
             totalPrice += odrDishNum * this.dishes.find(d=>d.dihId === odrDishId).dihPrice;
         }
 

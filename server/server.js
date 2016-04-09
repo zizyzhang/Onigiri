@@ -1,12 +1,14 @@
-'use strict';
+/**
+ * Created by User on 2016/3/24.
+ */
 
+'use strict';
+const isDebug = true;
 
 const _ = require('lodash');
 require('source-map-support').install();
 
-/**
- * Created by User on 2016/3/24.
- */
+
 var Server = function () {
 
     var express = require('express');
@@ -56,8 +58,15 @@ var Server = function () {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: false}));
 
+    app.get('/db',function(req,res){
+        if(isDebug) {
+            res.json(db);
+        }
+    });
 
     app.post('/addUser', function (req, res) {
+
+
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
             var usrMobi = req.body.usrMobi;
@@ -128,6 +137,7 @@ var Server = function () {
     );
 
     app.post('/joinGroup', function (req, res) {
+            req.body = JSON.parse(req.body.data);
             var usrId = req.body.grpHostId;
             var dishes = req.body.dishes;
             var grpId = req.body.grpId;
@@ -135,8 +145,8 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            this.joinGroupPromise(usrId, dishes, grpId).then(result=> {
-
+            self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+                res.json(result);
             });
 
         }
@@ -179,12 +189,13 @@ var Server = function () {
             if (db.USER[index].usrName == usrName && db.USER[index].usrPwd == usrPwd) {
                 callback({
                     success: 1,
-                    user:{
-                        usrName:db.USER[index].usrName,
-                        usrId:db.USER[index].usrId,
-                        usrMobi:db.USER[index].usrMobi,
+                    user: {
+                        usrName: db.USER[index].usrName,
+                        usrId: db.USER[index].usrId,
+                        usrMobi: db.USER[index].usrMobi,
 
-                    }});
+                    }
+                });
                 return;
             }
         }
@@ -274,6 +285,8 @@ var Server = function () {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
+        console.log(JSON.stringify({usrId, dishes, grpId}));
+
         return new Promise(resolve=> {
 
             for (let {dihId,num} of dishes) {
@@ -287,8 +300,7 @@ var Server = function () {
                         gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
                         dihId,
                         gorNum: num,
-                        grpId,
-
+                        grpId
                     });
                 }
 

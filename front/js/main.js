@@ -1,5 +1,5 @@
 'use strict';
-let isDebug = false;
+let isDebug = true;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -77,7 +77,7 @@ $$(document).on('ajaxComplete', function (e) {
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        mainView.router.loadPage({url: 'order.html'});
+        mainView.router.loadPage({url: 'group.html'});
 
         cookies.set('user',{usrId:1,usrName:'firstUser'});
         cookies.set('selectedGroupId',1);
