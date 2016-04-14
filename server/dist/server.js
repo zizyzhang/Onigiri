@@ -136,6 +136,17 @@ var Server = function Server() {
         });
     });
 
+    app.get('/ordersByUserId/:id', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrName = req.body.usrName;
+
+        console.log(JSON.stringify(req.body));
+
+        //self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+        //    res.json(result);
+        //});
+    });
+
     app.listen(3000, function () {
         console.log('' + 'app listening on port 3000!');
     });
@@ -389,32 +400,14 @@ var Server = function Server() {
             var _iteratorError5 = undefined;
 
             try {
-                var _loop3 = function _loop3() {
+
+                for (var _iterator5 = dishes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
                     var _step5$value = _step5.value;
                     var dihId = _step5$value.dihId;
                     var num = _step5$value.num;
 
-                    var gor = db.GROUP_ORDER.find(function (gor) {
-                        return gor.dihId === dihId && gor.grpId === grpId;
-                    });
-                    if (gor) {
-                        //如果找到了直接增加数字
-                        gor.gorNum += num;
-                    } else {
-                        //如果找不到就直接增加object
-                        db.GROUP_ORDER.push({
-                            gorId: _.maxBy(db.GROUP_ORDER, function (gor) {
-                                return gor.gorId;
-                            }).gorId + 1,
-                            dihId: dihId,
-                            gorNum: num,
-                            grpId: grpId
-                        });
-                    }
-                };
-
-                for (var _iterator5 = dishes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    _loop3();
+                    var ordId = _.maxBy(db.ORDER, 'ordId').ordId + 1;
+                    db.ORDER.push({ ordId: ordId, grpId: grpId, usrId: usrId, dihId: dihId, ordNum: num });
                 }
             } catch (err) {
                 _didIteratorError5 = true;
@@ -441,6 +434,87 @@ var Server = function Server() {
 
             resolve({ success: 1 });
         });
+    };
+
+    this.getOrdersByUserId = function (usrId, calback) {
+
+        var results = [];
+        var groups = _.filter(db.GROUP, function (group) {
+            return;
+            db.GROUP_MEMBER.find(function (grr) {
+                return grr.grpId === group.grpId;
+            }).find(function (grr) {
+                return grr.usrId === usrId;
+            });
+        });
+
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
+
+        try {
+            var _loop3 = function _loop3() {
+                var group = _step6.value;
+
+                var dishes = [];
+                var orders = _.filter(db.ORDER, function (ord) {
+                    return ord.grpId === group.grpId;
+                });
+                var _iteratorNormalCompletion7 = true;
+                var _didIteratorError7 = false;
+                var _iteratorError7 = undefined;
+
+                try {
+                    var _loop4 = function _loop4() {
+                        var order = _step7.value;
+
+                        var dish = db.DISH.find(function (d) {
+                            return d.dihId === order.dihId;
+                        });
+                        var ordNum = order.ordNum;
+                        dishes.push({ dish: dish, orderNum: orderNum });
+                    };
+
+                    for (var _iterator7 = orders[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                        _loop4();
+                    }
+                } catch (err) {
+                    _didIteratorError7 = true;
+                    _iteratorError7 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                            _iterator7.return();
+                        }
+                    } finally {
+                        if (_didIteratorError7) {
+                            throw _iteratorError7;
+                        }
+                    }
+                }
+
+                results.push({ group: group, dishes: dishes });
+            };
+
+            for (var _iterator6 = groups[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                _loop3();
+            }
+        } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                    _iterator6.return();
+                }
+            } finally {
+                if (_didIteratorError6) {
+                    throw _iteratorError6;
+                }
+            }
+        }
+
+        callback(results);
     };
 };
 module.exports = new Server();

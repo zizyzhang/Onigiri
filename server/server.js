@@ -58,8 +58,8 @@ var Server = function () {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: false}));
 
-    app.get('/db',function(req,res){
-        if(isDebug) {
+    app.get('/db', function (req, res) {
+        if (isDebug) {
             res.json(db);
         }
     });
@@ -148,6 +148,19 @@ var Server = function () {
             self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
                 res.json(result);
             });
+
+        }
+    );
+
+    app.get('/ordersByUserId/:id', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var usrName = req.body.usrName;
+
+            console.log(JSON.stringify(req.body));
+
+            //self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+            //    res.json(result);
+            //});
 
         }
     );
@@ -290,20 +303,8 @@ var Server = function () {
         return new Promise(resolve=> {
 
             for (let {dihId,num} of dishes) {
-                let gor = db.GROUP_ORDER.find(gor=>gor.dihId === dihId && gor.grpId === grpId);
-                if (gor) {
-                    //如果找到了直接增加数字
-                    gor.gorNum += num;
-                } else {
-                    //如果找不到就直接增加object
-                    db.GROUP_ORDER.push({
-                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
-                        dihId,
-                        gorNum: num,
-                        grpId
-                    });
-                }
-
+                let ordId = _.maxBy(db.ORDER, 'ordId').ordId + 1;
+                db.ORDER.push({ordId: ordId, grpId: grpId, usrId: usrId, dihId: dihId, ordNum: num});
             }
 
             db.GROUP_MEMBER.push({
@@ -316,6 +317,29 @@ var Server = function () {
         });
     };
 
+    this.getOrdersByUserId = function (usrId, calback) {
+
+        let results = [];
+        let groups = _.filter(db.GROUP,group=>{
+            return
+            db.GROUP_MEMBER.find(grr=>grr.grpId ===group.grpId )
+                .find(grr=>grr.usrId === usrId);
+         } );
+
+        for (let group of groups){
+            let dishes = [];
+            let orders = _.filter(db.ORDER,ord => ord.grpId === group.grpId)  ;
+            for(let order of orders){
+                let dish  = db.DISH.find(d=>d.dihId === order.dihId);
+                let ordNum = order.ordNum;
+                dishes.push({dish,orderNum});
+            }
+            results.push({group,dishes});
+        }
+
+
+         callback(results);
+     };
 
 };
 module.exports = new Server();
