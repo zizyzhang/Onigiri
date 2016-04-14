@@ -1,3 +1,4 @@
+'use strict'
 const _ = require('lodash');
 
 /**
@@ -123,6 +124,7 @@ var Server = function () {
 
     app.post('/joinGroup', function (req, res) {
             var usrId = req.body.grpHostId;
+
             var dishes = req.body.dishes;
             var grpId = req.body.grpId;
 

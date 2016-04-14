@@ -1,0 +1,61 @@
+<div data-page="group" class="page">
+    <div class="navbar">
+
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class=" link icon-only"><i class="icon icon-bars"></i></a></div>
+            <div class="center">饭团 Onigiri</div>
+        </div>
+    </div>
+
+    <div class="toolbar tabber">
+        <div class="toolbar-inner">
+            <a href="#tab1" class="tab-link active" style="color:black">tab1</a>
+            <a href="#tab2" class="tab-link"  style="color:black">Tab 2</a>
+            <a href="#tab3" class="tab-link"  style="color:black">Tab 3</a>
+            <span class="tab-link-highlight" style="width: 33.3333%; transform: translate3d(0%, 0px, 0px);"></span>
+        </div>
+    </div>
+    <!--<div class="tabs-animated-wrap">-->
+    <!--<div class="tabs">-->
+    <!-- -->
+    <!--</div>-->
+    <!--</div>-->
+    <a href="select-merchant.html" class="floating-button color-pink"><i class="icon icon-plus"></i></a>
+
+    <div class="page-content">
+
+        {{#each data}}
+        <div class="card demo-card-header-pic">
+            <div class="list-block media-list" style="margin-top: 0px;!important;">
+                <ul>
+                    <li>
+
+                        {{merchant.metName}} <p style="color:green">已開團</p>
+
+                        <div class="item-inner">
+                            <div class="item-title-row" style="line-height: 36px;">
+
+                                <div class="item-media"><img style="border-radius: 50%;"
+                                                             src="./../assets/img/img-dish-01.png" width="36"></div>
+                                <div class="item-title">泡菜鸡肉卷</div>
+                                <div class="item-after">$16</div>
+
+                            </div>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">聯繫團長</a>
+                <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">訂單詳情</a>
+
+            </div>
+        </div>
+
+
+        {{/each}}
+
+
+    </div>
+</div>

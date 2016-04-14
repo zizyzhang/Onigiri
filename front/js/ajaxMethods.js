@@ -44,6 +44,8 @@ var AjaxMethods = function () {
         });
     };
 
+
+
     this.allMerchant = function () {
 
         $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
@@ -71,6 +73,17 @@ var AjaxMethods = function () {
         //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
         //
         //});
+        var usrId = $$('#subAccount').val();
+
+        var dishes = [];
+
+        var grpId =
+
+        $$.post(SERVER_ADS + "/joinGroup", {usrId: usrId, dishes: dishes, grpId: grpId}, function (result) {
+            if (result) {
+
+            }
+        });
     };
 
 };

@@ -73,7 +73,7 @@ $$(document).on('ajaxComplete', function (e) {
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
+        mainView.router.loadPage({url: 'my-groups.html'});
         console.log('cheat');
     }
 

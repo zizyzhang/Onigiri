@@ -34,13 +34,17 @@ class GroupPage {
 
                     let grpId = $$(this).dataset().grpId;
                     console.log(`grpId : ${grpId}`);
-
-
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
+
+
                 });
+
+
             });
+
         });
+
     }
 
 
