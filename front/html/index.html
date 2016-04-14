@@ -19,6 +19,42 @@
 
 </head>
 <body class="theme-deeporange">
+
+
+<!-- First, we need to add Panel's overlay that will overlays app while panel is opened -->
+<div class="panel-overlay"></div>
+<!-- Left panel -->
+<div class="panel panel-left panel-cover">
+     <div class="panel-head">
+        <div class="panel-my-pic"></div>
+    </div>
+    <div class="list-block panel-button-list">
+        <ul>
+            <li>
+                <a href="#" class="item-link item-content">
+                     <div class="item-inner">
+                        <div class="item-title">發起團購</div>
+                     </div>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="item-link item-content">
+                     <div class="item-inner">
+                        <div class="item-title">我發起的團購</div>
+                     </div>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="panel-footer buttons-row">
+        <a href="#" class="button"> 幫助</a>
+        <a href="#" class="button"> 設置</a>
+    </div>
+</div>
+
+
 <!-- Views -->
 <div class="views">
     <!-- Your main view, should have "view-main" class -->
@@ -31,10 +67,9 @@
                 <!-- Top Navbar. In Material theme it should be inside of the page-->
                 <div class="navbar">
                     <div class="navbar-inner">
-                        <div class="center"   >饭团 Onigiri</div>
+                        <div class="center">饭团 Onigiri</div>
                     </div>
                 </div>
-
 
 
             </div>
@@ -58,7 +93,8 @@
                                 <div class="item-inner">
                                     <div class="item-title floating-label usrName ficon icon-usr-name">R</div>
                                     <div class="item-input">
-                                        <input type="text"   class="usrName login-input"  id="txtUsrName" name="usrName" placeholder="">
+                                        <input type="text" class="usrName login-input" id="txtUsrName" name="usrName"
+                                               placeholder="">
                                     </div>
                                 </div>
                             </li>
@@ -66,7 +102,8 @@
                                 <div class="item-inner ">
                                     <div class="item-title floating-label usrPwd ficon icon-usr-pwd">S</div>
                                     <div class="item-input">
-                                        <input type="password" class="usrPwd login-input" id="txtUsrPwd" name="usrPwd" placeholder="">
+                                        <input type="password" class="usrPwd login-input" id="txtUsrPwd" name="usrPwd"
+                                               placeholder="">
                                     </div>
                                 </div>
                             </li>
