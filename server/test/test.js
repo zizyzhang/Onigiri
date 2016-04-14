@@ -41,6 +41,15 @@ describe('Server', function () {
                 done();
             });
         });
+
+        it('should return userObject when given correct usrName&usrPwd', function (done) {
+            server.userAuth('firstUser', '123', function (data) {
+                assert.isObject(data.user);
+                assert.equal(data.user.usrName,'firstUser');
+
+                done();
+            });
+        });
     });
 
     describe('#allGroup()', function () {
@@ -147,7 +156,7 @@ describe('Server', function () {
     describe('#group()', function () {
 
         it('should insert a group ', function (done) {
-            server.group(1, [3, 5, 7, 9], 1, 'daor', '00:00', function (result) {
+            server.postGroup(1, [3, 5, 7, 9], 1, 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
                 let lastGroup = _.maxBy(db.GROUP, 'grpId');
                 let lastGroupDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
@@ -172,38 +181,38 @@ describe('Server', function () {
 
     describe('#joinGroup()', function () {
         let numberOfGroupOrder = db.GROUP_ORDER.length;
-
         it('should insert a gorNum', function (done) {
             server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 2).then((result)=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
 
-                assert.equal(2, db.GROUP_ORDER[2].grpId);
-                assert.equal(0, db.GROUP_ORDER[2].dihId);
-                assert.equal(1, db.GROUP_ORDER[2].gorNum);
+                assert.isObject(lastInsertedGroupOrder);
 
-                assert.equal(2, db.GROUP_ORDER[3].grpId);
-                assert.equal(1, db.GROUP_ORDER[3].dihId);
-                assert.equal(1, db.GROUP_ORDER[3].gorNum);
+                assert.equal(numberOfGroupOrder + 2, db.GROUP_ORDER.length);
 
-                assert.equal(3, db.GROUP_MEMBER[2].gmrId);//自動編號ID
-                assert.equal(1, db.GROUP_MEMBER[2].usrId);
-                assert.equal(2, db.GROUP_MEMBER[2].grpId);
+                assert.equal(1, result.success);
+                done();
+            }).catch(done);
 
+        });
 
-                assert.equal(numberOfGroupOrder+2, db.GROUP_ORDER.length);
+        it('should update group order number', function (done) {
+            server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3).then((result)=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+
+                assert.isObject(lastInsertedGroupOrder);
+
 
                 assert.equal(1, result.success);
                 numberOfGroupOrder = db.GROUP_ORDER.length;
-                return server.joinGroupPromise(2, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 2);
+                return server.joinGroupPromise(2, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3);
             }).then(result=> {
+                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+
                 assert.equal(numberOfGroupOrder, db.GROUP_ORDER.length);
+                assert.equal(lastInsertedGroupOrder.gorNum, 2);
+
                 done();
-
-
-            }).catch(err=> {
-                done(err);
-            });
-
-
+            }).catch(done);
         });
 
 
@@ -228,6 +237,8 @@ describe('Server', function () {
                 assert.property(result, 'grpTime');
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
+                assert.property(result.grpDishes[0], 'dish');
+                assert.property(result.grpDishes[0].dish, 'dihId');
                 done();
             });
         });
@@ -237,6 +248,7 @@ describe('Server', function () {
                 assert.equal(result.grpId, 1);
                 assert.equal(result.merchant.metId, 1);
 
+                assert.equal(result.grpDishes[0].dish.dihId, 1);
                 done();
             });
         });

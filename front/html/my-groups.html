@@ -1,61 +1,149 @@
-<div data-page="group" class="page">
+
+<div data-page="tabs-swipeable" class="toolbar-fixed page-on-center">
     <div class="navbar">
-
         <div class="navbar-inner">
-            <div class="left"><a href="#" class=" link icon-only"><i class="icon icon-bars"></i></a></div>
-            <div class="center">饭团 Onigiri</div>
+            <div class="left"><a href="#" data-panel="left"  class="link open-panel icon-only"><i class="icon icon-bars"></i></a></div>
+            <div class="center"  >饭团 Onigiri</div>
         </div>
     </div>
-
-    <div class="toolbar tabber">
-        <div class="toolbar-inner">
-            <a href="#tab1" class="tab-link active" style="color:black">tab1</a>
-            <a href="#tab2" class="tab-link"  style="color:black">Tab 2</a>
-            <a href="#tab3" class="tab-link"  style="color:black">Tab 3</a>
-            <span class="tab-link-highlight" style="width: 33.3333%; transform: translate3d(0%, 0px, 0px);"></span>
-        </div>
+    <div class="toolbar tabbar">
+        <div class="toolbar-inner"><a href="#tab1" class="tab-link active">附近的團購</a><a href="#tab2" class="tab-link">我的訂單</a><span
+                class="tab-link-highlight" style="width: 33.3333%; transform: translate3d(0%, 0px, 0px);"></span></div>
     </div>
-    <!--<div class="tabs-animated-wrap">-->
-    <!--<div class="tabs">-->
-    <!-- -->
-    <!--</div>-->
-    <!--</div>-->
-    <a href="select-merchant.html" class="floating-button color-pink"><i class="icon icon-plus"></i></a>
+    <div class="tabs-swipeable-wrap swiper-container swiper-container-horizontal swiper-container-android">
+        <div class="tabs swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
+            <div id="tab1" class="page-content tab swiper-slide swiper-slide-active active" style="width: 420px;">
+                <div class="content-block">
+                    <!--<div data-page="group" class="page">-->
+                        <div class="page-content">
 
-    <div class="page-content">
+                            {{#each data}}
+                            <div class="card demo-card-header-pic">
+                                <div style="background-image:url('../assets/img/img-store-01.jpg' );" valign="bottom" class="card-img ">
+                                    <img src="../assets/img/img-store-01.jpg"
+                                         style="visibility: hidden; width: 100%; max-height: 40%;display: block;"/>
 
-        {{#each data}}
-        <div class="card demo-card-header-pic">
-            <div class="list-block media-list" style="margin-top: 0px;!important;">
-                <ul>
-                    <li>
 
-                        {{merchant.metName}} <p style="color:green">已開團</p>
+                                    <div class="card-img-text" style="color: white;">{{merchant.metName}}</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-content-inner">
+                                        <p class="color-gray">发起人: {{grpHostName}}</p>
+                                        <p>
+                                            取餐时间: 今天中午 {{grpTime}}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">加入團購</a>
+                                    <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">查看詳情</a>
 
-                        <div class="item-inner">
-                            <div class="item-title-row" style="line-height: 36px;">
 
-                                <div class="item-media"><img style="border-radius: 50%;"
-                                                             src="./../assets/img/img-dish-01.png" width="36"></div>
-                                <div class="item-title">泡菜鸡肉卷</div>
-                                <div class="item-after">$16</div>
+                                </div>
+                            </div>
+
+                            {{/each}}
+
+
+                        </div>
+                    <!--</div>-->
+                    <p>This is tab 1 content</p>
+
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum mi quis felis
+                        scelerisque faucibus. Aliquam ut commodo justo. Mauris vitae pharetra arcu. Sed tincidunt dui et
+                        nibh auctor pretium. Nam accumsan fermentum sem. Suspendisse potenti. Nulla sed orci malesuada,
+                        pellentesque elit vitae, cursus lorem. Praesent et vehicula sapien, ut rhoncus quam. Lorem ipsum
+                        dolor sit amet, consectetur adipiscing elit. In vitae mi nec lorem aliquet venenatis quis nec
+                        nibh. Aenean sit amet leo ligula. Fusce in massa et nisl dictum ultricies et vitae dui. Sed
+                        sagittis quis diam sed lobortis. Donec in massa pharetra, tristique purus vitae, consequat
+                        mauris. Aliquam tellus ante, pharetra in mattis ut, dictum quis erat.</p>
+
+                    <p>Ut ac lobortis lacus, non pellentesque arcu. Quisque sodales sapien malesuada, condimentum nunc
+                        at, viverra lacus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+                        inceptos himenaeos. Vivamus eu pulvinar turpis, id tristique quam. Aenean venenatis molestie
+                        diam, sit amet condimentum nisl pretium id. Donec diam tortor, mollis in vehicula id, vehicula
+                        consectetur nulla. Quisque posuere rutrum mauris, eu rutrum turpis blandit at. Proin volutpat
+                        tortor sit amet metus porttitor accumsan. Class aptent taciti sociosqu ad litora torquent per
+                        conubia nostra, per inceptos himenaeos. Ut dapibus posuere dictum.</p>
+                </div>
+            </div>
+            <div id="tab2" class="page-content tab swiper-slide swiper-slide-next" style="width: 420px;">
+                <div class="content-block">
+                        <div class="card demo-card-header-pic">
+                            <div class="list-block media-list" style="margin-top: 0px;!important;">
+                                <ul>
+                                    <li>
+
+                                      <div class="card-footer item-title-row">
+                                          <div >韓國紙上烤肉</div>
+                                          <div  style="color:green">已開團</div>
+                                      </div>
+
+                                        <div class="item-inner">
+                                            <div class="item-title-row" style="line-height: 36px;">
+
+                                                <div class="item-media"><img style="border-radius: 50%;"
+                                                                             src="./../assets/img/img-dish-01.png"
+                                                                             width="36"></div>
+                                                <div class="item-title">泡菜鸡肉卷</div>
+                                                <div class="item-after">$16</div>
+
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="link btn-join btn-join-in-group-page"
+                                   data-grp-id="{{grpId}}" style="color:red">聯繫團長</a>
+                                <a href="order-details.html" class="link btn-group-detail"
+                                   data-grp-id="{{grpId}}" style="color:red">訂單詳情</a>
 
                             </div>
                         </div>
 
-                    </li>
-                </ul>
-            </div>
-            <div class="card-footer">
-                <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">聯繫團長</a>
-                <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">訂單詳情</a>
 
+                </div>
+                <div class="content-block">
+                    <div class="card demo-card-header-pic">
+                        <div class="list-block media-list" style="margin-top: 0px;!important;">
+                            <ul>
+                                <li>
+
+                                    <div class="card-footer item-title-row">
+                                        <div >韓國紙上烤肉</div>
+                                        <div  style="color:green">已開團</div>
+                                    </div>
+
+                                    <div class="item-inner">
+                                        <div class="item-title-row" style="line-height: 36px;">
+
+                                            <div class="item-media"><img style="border-radius: 50%;"
+                                                                         src="./../assets/img/img-dish-01.png"
+                                                                         width="36"></div>
+                                            <div class="item-title">泡菜鸡肉卷</div>
+                                            <div class="item-after">$16</div>
+
+                                        </div>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="link btn-join btn-join-in-group-page"
+                               data-grp-id="{{grpId}}" style="color:red">聯繫團長</a>
+                            <a href="order-details.html" class="link btn-group-detail"
+                               data-grp-id="{{grpId}}" style="color:red">訂單詳情</a>
+
+                        </div>
+                    </div>
+
+
+                </div>
             </div>
+
         </div>
-
-
-        {{/each}}
-
-
     </div>
 </div>

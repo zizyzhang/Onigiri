@@ -45,13 +45,13 @@ var MockDb = function MockDb() {
 
     this.DISH = [{
         dihId: 1, //自動編號ID
-        dihName: '大X', //食物名字
+        dihName: '炸鸡腿', //食物名字
         metId: 1, //商家Id
         dihType: '主食', //食物种类
-        dihPrice: '8' //价格
+        dihPrice: '10' //价格
     }, {
         dihId: 2,
-        dihName: '小X',
+        dihName: '红茶',
         metId: 1,
         dihType: '飲料',
         dihPrice: '5'
@@ -93,17 +93,20 @@ var MockDb = function MockDb() {
 
     this.GROUP_ORDER = [//团购中某个餐点的份数
     {
+        gorId: 0,
         grpId: 1, //团号
         dihId: 1, //餐点名称
-        gorNum: '1' //该餐点份数
+        gorNum: 1 //该餐点份数
     }, {
+        gorId: 1,
         grpId: 1,
         dihId: 2,
-        gorNum: '1'
+        gorNum: 1
     }];
 
     this.GROUP_DISHES = [//允许选择的餐点
     {
+
         gdeId: 1, //自動編號ID
         dihId: 1, //餐点Id
         grpId: 1 //团的Id

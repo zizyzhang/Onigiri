@@ -15,7 +15,6 @@ class GroupDetailPage {
 
     bind() {
 
-
         myApp.onPageBeforeInit('group-detail', (page) => {
             this.grpId = page.query.grpId || this.grpId;
 

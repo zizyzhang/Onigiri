@@ -1,9 +1,14 @@
-'use strict'
-const _ = require('lodash');
-
 /**
  * Created by User on 2016/3/24.
  */
+
+'use strict';
+const isDebug = true;
+
+const _ = require('lodash');
+require('source-map-support').install();
+
+
 var Server = function () {
 
     var express = require('express');
@@ -53,8 +58,15 @@ var Server = function () {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: false}));
 
+    app.get('/db',function(req,res){
+        if(isDebug) {
+            res.json(db);
+        }
+    });
 
     app.post('/addUser', function (req, res) {
+
+
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
             var usrMobi = req.body.usrMobi;
@@ -97,14 +109,18 @@ var Server = function () {
         });
     });
 
-    app.get('/getMerchantById/:id', function (req, res) {
+    app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        self.merchantById(Number(req.params.id), function (result) {
+        self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
 
     app.post('/group', function (req, res) {
+
+            console.log(req.body);
+
+            req.body = JSON.parse(req.body.data);
             var grpHostId = req.body.grpHostId;
             var dishes = req.body.dishes;
             var metId = req.body.metId;
@@ -113,9 +129,7 @@ var Server = function () {
             var minAmount = req.body.minAmount;
 
 
-            console.log(JSON.stringify(req.body));
-
-            self.group(grpHostId, dishes, metId, addr, gorTime, minAmount, function (result) {
+            self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
                 res.json(result);
             });
 
@@ -123,16 +137,16 @@ var Server = function () {
     );
 
     app.post('/joinGroup', function (req, res) {
+            req.body = JSON.parse(req.body.data);
             var usrId = req.body.grpHostId;
-
             var dishes = req.body.dishes;
             var grpId = req.body.grpId;
 
 
             console.log(JSON.stringify(req.body));
 
-            this.joinGroupPromise(usrId, dishes, grpId).then(result=>{
-
+            self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+                res.json(result);
             });
 
         }
@@ -158,7 +172,8 @@ var Server = function () {
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
 
-        if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+
+        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
             db.USER.push(newUser);
             callback({success: 1});
             return;
@@ -172,7 +187,15 @@ var Server = function () {
         var isSuccess = false;
         for (var index in db.USER) {
             if (db.USER[index].usrName == usrName && db.USER[index].usrPwd == usrPwd) {
-                callback({success: 1});
+                callback({
+                    success: 1,
+                    user: {
+                        usrName: db.USER[index].usrName,
+                        usrId: db.USER[index].usrId,
+                        usrMobi: db.USER[index].usrMobi,
+
+                    }
+                });
                 return;
             }
         }
@@ -193,7 +216,13 @@ var Server = function () {
                 grpHostName: (db.USER.find(user => user.usrId == group.grpHostId)).usrName,
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
-                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId == group.grpId)
+                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                    let grpDish ={};
+                    grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                    _.assign(grpDish,grh);
+                     return grpDish;
+                }),
+
             });
 
         }
@@ -209,7 +238,13 @@ var Server = function () {
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId)
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                let grpDish ={};
+                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                _.assign(grpDish,grh);
+                return grpDish;
+            }),
+
         });
     };
 
@@ -223,17 +258,16 @@ var Server = function () {
             );
         }
         callback(result);
-
     };
 
 
     this.getMerchantById = function (id, callback) {
-         let result = db.MERCHANT.find(merchant=>merchant.metId === id);
+        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
         result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
         callback(result);
     };
 
-    this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         let grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
         db.GROUP.push({
             grpId,
@@ -246,7 +280,7 @@ var Server = function () {
         for (let dihId of dishes) {
             let gdh = {
                 gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
-                dihId: dihId,
+                dihId: Number(dihId),
                 grpId
             };
             db.GROUP_DISHES.push(gdh);
@@ -255,52 +289,36 @@ var Server = function () {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
-        return new Promise(resolve=>{
-            var newGroupOrder = {};
-            var dihId;
-            var gorNum;
-            var num;
+        console.log(JSON.stringify({usrId, dishes, grpId}));
 
+        return new Promise(resolve=> {
 
-            if (db.GROUP_ORDER.length == 0) {
-                for (var index in dishes) {
-                    dihId = dishes[index].dihId;
-                    num = dishes[index].num;
-                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                    db.GROUP_ORDER.push(newGroupOrder);
-                    //資料表沒有資料，直接新增
+            for (let {dihId,num} of dishes) {
+                let gor = db.GROUP_ORDER.find(gor=>gor.dihId === dihId && gor.grpId === grpId);
+                if (gor) {
+                    //如果找到了直接增加数字
+                    gor.gorNum += num;
+                } else {
+                    //如果找不到就直接增加object
+                    db.GROUP_ORDER.push({
+                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
+                        dihId,
+                        gorNum: num,
+                        grpId
+                    });
                 }
-            } else {
-                for (var index in db.GROUP_ORDER) {
-                    for (var index in dishes) {
-                        dihId = dishes[index].dihId;
-                        num = dishes[index].num;
 
-                        if (grpId == db.GROUP_ORDER[index].grpId && dihId == db.GROUP_ORDER[index].dihId) {
-                            db.GROUP_ORDER[index].gorNum = parseInt(db.GROUP_ORDER[index].gorNum) + num;//直接改值
-                            //尋找相同的<團號>及<商品ID>，有則Updata
-                        }
-                        else {
-                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                            db.GROUP_ORDER.push(newGroupOrder);
-                            //無，新增
-                        }
-                    }
-                }
             }
 
-            var gmrId = db.GROUP_MEMBER.length + 1;
-            var newGroupMember = {
-                //grpHostId: grpHostId,
-                //dishes: dishes,
-                gmrId: gmrId,
+            db.GROUP_MEMBER.push({
+                gmrId: _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId).gmrId + 1,
                 usrId: usrId,
-                grpId: grpId
-            };
-            db.GROUP_MEMBER.push(newGroupMember);
-            resolve({success:1});
-        }) ;
-     };
+                grpId: grpId,
+            });
+
+            resolve({success: 1});
+        });
+    };
 
 
 };

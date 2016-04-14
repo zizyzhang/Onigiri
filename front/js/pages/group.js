@@ -5,6 +5,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+const cookies = require('js-cookie');
 
 
 class GroupPage {
@@ -20,13 +21,15 @@ class GroupPage {
             console.log('group before init');
 
             tool.loadTemplateFromJsonPromise(ajaxMethod.getAllGroup(), page, ()=> {
-                 //函数绑定要在完成template之后
+                //函数绑定要在完成template之后
                 $$('.btn-join-in-group-page').on('click', function () {
 
-                    let grpId= $$(this).dataset().grpId;
+                    let grpId = $$(this).dataset().grpId;
                     console.log(`grpId   : ${grpId}`);
 
+                    cookies.set('selectedGroupId', grpId);
                     mainView.router.loadPage(`order.html?grpId=${grpId}`);
+
 
                 });
 
@@ -36,6 +39,7 @@ class GroupPage {
                     console.log(`grpId : ${grpId}`);
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
+                    cookies.set('selectedGroupId', grpId);
 
 
                 });

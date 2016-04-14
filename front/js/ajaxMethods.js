@@ -1,3 +1,5 @@
+// POST 方法需要传入的参数是JSON.stringify之后的String.
+
 var $$ = Dom7;
 var SERVER_ADS = "http://localhost:3000";
 
@@ -26,7 +28,7 @@ var AjaxMethods = function () {
                 if (JSON.parse(result).success === 1) {
                     console.log('login success');
 
-                    resolve();
+                    resolve(JSON.parse(result));
                 } else {
                     reject();
                 }
@@ -44,16 +46,26 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getMerchantById = function (id) {
+        return new Promise(resolve => {
+            $$.getJSON(SERVER_ADS + "/merchantById/" + id, function (data) {
 
-
-    this.allMerchant = function () {
-
-        $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
-            //allMerchantList = data;
+                resolve(data);
+            });
         });
     };
 
-    this.getGroupById= function (id) {
+
+    this.allMerchant = function () {
+        return new Promise(function (resolve) {
+            $$.getJSON(SERVER_ADS + "/allMerchant", function (data) {
+                console.log(data);
+                resolve(data);
+            });
+        });
+    };
+
+    this.getGroupById = function (id) {
         return new Promise((resolve)=> {
             $$.getJSON(SERVER_ADS + "/groupById/" + id, function (data) {
                 resolve(data);
@@ -62,29 +74,45 @@ var AjaxMethods = function () {
 
     };
 
-    this.group = function () {
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {
+        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
 
-        //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
-        //
-        //});
-    };
+        return new Promise(resolve=> {
 
-    this.joinGroup = function () {
-        //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
-        //
-        //});
-        var usrId = $$('#subAccount').val();
-
-        var dishes = [];
-
-        var grpId =
-
-        $$.post(SERVER_ADS + "/joinGroup", {usrId: usrId, dishes: dishes, grpId: grpId}, function (result) {
-            if (result) {
-
-            }
+            $$.post(SERVER_ADS + "/group", {
+                data: JSON.stringify({
+                    grpHostId,
+                    dishes,
+                    metId,
+                    addr,
+                    gorTime
+                })
+            }, function (data) {
+                data = JSON.parse(data);
+                console.log(data);
+                if (data.success === 1) {
+                    resolve();
+                }
+            });
         });
     };
+
+    this.joinGroupPromise = function (usrId, dishes, grpId) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/joinGroup",
+                {
+                    data: JSON.stringify({usrId, dishes, grpId})
+                }, function (data) {
+                    data = JSON.parse(data);
+                    if (data.success === 1) {
+                        resolve(data);
+                    } else {
+                        reject(data);
+                    }
+                });
+        });
+    };
+
 
 };
 

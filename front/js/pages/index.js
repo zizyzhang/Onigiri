@@ -6,7 +6,8 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
-
+const Public = require('../public.js');
+const cookies = require('js-cookie');
 
 class IndexPage {
     constructor(_myApp, _mainView) {
@@ -34,7 +35,9 @@ class IndexPage {
         $$('#btn-login').click(function () {
 
 
-            ajaxMethod.userAuth().then(function (groups) {
+            ajaxMethod.userAuth().then(function (result) {
+                cookies.set('user',result.user);
+
                 myApp.closeModal();
                 mainView.router.loadPage({url: 'my-groups.html'});
             }).catch(function () {
