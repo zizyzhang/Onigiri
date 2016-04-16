@@ -154,8 +154,8 @@ var Server = function Server() {
         });
     });
 
-    app.listen(3000, function () {
-        console.log('' + 'app listening on port 3000!');
+    app.listen(8080, function () {
+        console.log('' + 'app listening on port 8080!');
     });
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
