@@ -19,10 +19,12 @@ class CreateMenuPage { //TODO first
 
     bind() {
         myApp.onPageBeforeInit('create-menu', function (page) {//TODO second
-            this.metId= page.query.metId || this.metId;
-            cookies.set('selectedMerchantId', this.metId);
+
+            let metId =Number(cookies.get('selectedMerchantId'));
             console.log('onPageBeforeInit : create-menu');
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getMerchantById(this.metId), page, ()=> {
+
+
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getMerchantById(metId), page, ()=> {
                 console.log();
 
                 $$('.dih-checkbox').change(function () {
