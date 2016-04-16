@@ -45,7 +45,7 @@ describe('Server', function () {
         it('should return userObject when given correct usrName&usrPwd', function (done) {
             server.userAuth('firstUser', '123', function (data) {
                 assert.isObject(data.user);
-                assert.equal(data.user.usrName,'firstUser');
+                assert.equal(data.user.usrName, 'firstUser');
 
                 done();
             });
@@ -180,14 +180,14 @@ describe('Server', function () {
     });
 
     describe('#joinGroup()', function () {
-        let numberOfGroupOrder = db.GROUP_ORDER.length;
-        it('should insert a gorNum', function (done) {
+        let numberOfOrder = db.ORDER.length;
+        it('should insert a ordNum', function (done) {
             server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 2).then((result)=> {
-                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+                let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
-                assert.isObject(lastInsertedGroupOrder);
+                assert.isObject(lastInsertedOrder);
 
-                assert.equal(numberOfGroupOrder + 2, db.GROUP_ORDER.length);
+                assert.equal(numberOfOrder + 2, db.ORDER.length);
 
                 assert.equal(1, result.success);
                 done();
@@ -195,24 +195,33 @@ describe('Server', function () {
 
         });
 
-        it('should update group order number', function (done) {
+        it('should insert an order ', function (done) {
             server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3).then((result)=> {
-                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+                let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
-                assert.isObject(lastInsertedGroupOrder);
+                assert.isObject(lastInsertedOrder);
 
 
                 assert.equal(1, result.success);
-                numberOfGroupOrder = db.GROUP_ORDER.length;
+                numberOfOrder = db.ORDER.length;
                 return server.joinGroupPromise(2, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3);
             }).then(result=> {
-                let lastInsertedGroupOrder = db.GROUP_ORDER.find(gor=>gor.gorId === _.maxBy(db.GROUP_ORDER, 'gorId').gorId);
+                let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
-                assert.equal(numberOfGroupOrder, db.GROUP_ORDER.length);
-                assert.equal(lastInsertedGroupOrder.gorNum, 2);
+                assert.equal(numberOfOrder + 2, db.ORDER.length);
+                assert.equal(lastInsertedOrder.ordNum, 1);
 
                 done();
             }).catch(done);
+        });
+
+        it('should got an error when join an group twice ', function (done) {
+            server.joinGroupPromise(1, [{dihId: 0, num: 1}, {dihId: 1, num: 1}], 3).then((result)=> {
+                assert.equal(result, null);
+            }).catch(e=> {
+                assert.equal(e, "重复加团!");
+                done();
+            });
         });
 
 
@@ -254,5 +263,64 @@ describe('Server', function () {
         });
 
 
+    });
+
+    describe('#getOrdersByUserId()', function () {
+        it('return an Array of Order Object ', function (done) {
+            server.getOrdersByUserId(1, function (result) {
+                assert.isArray(result);
+                assert.property(result[0], 'ordId');
+                assert.property(result[0], 'grpId');
+                assert.property(result[0], 'usrId');
+                assert.property(result[0], 'dihId');
+                assert.property(result[0], 'ordNum');
+                done();
+            });
+        });
+
+        it('has correct data ', function (done) {
+            server.getOrdersByUserId(1, function (result) {
+                assert.equal(result.find(r=>r.ordId === 1).dihId, 1);
+                assert.equal(result.find(r=>r.ordId === 1).ordNum, 1);
+                done();
+            });
+        });
+    });
+
+
+    describe('#getOrdersByHostId()', function () {
+        it('has "orders" property which is an Array of Order Object ', function (done) {
+            server.getOrdersByHostIdPromise(1).then(result=> {
+                assert.isArray(result.orders);
+                assert.property(result.orders[0], 'ordId');
+                assert.property(result.orders[0], 'grpId');
+                assert.property(result.orders[0], 'usrId');
+                assert.property(result.orders[0], 'dihId');
+                assert.property(result.orders[0], 'ordNum');
+                done();
+            }).catch(done);
+        });
+
+        it('has "orderSums" property which is an Array of OrderSum Object ', function (done) {
+            server.getOrdersByHostIdPromise(1).then(result=> {
+                assert.isArray(result.orders);
+                assert.property(result.orders[0], 'grpId');
+                assert.property(result.orders[0], 'dihId');
+                assert.property(result.orders[0], 'ordNum');
+                done();
+            }).catch(done);
+        });
+
+        it('has correct data ', function (done) {
+            server.getOrdersByHostIdPromise(1).then(result=> {
+                result.orders.map(order=> {
+                    db.GROUP.filter(grp=>grp.grpId === order.grpId).map(g=> {
+                        assert.equal(g.grpHostId, 1);
+                    });
+                });
+                 assert.equal(result.orderSums.find(orm=>orm.dihId===1).ordNum,2);
+                 done();
+            }).catch(done);
+        });
     });
 });

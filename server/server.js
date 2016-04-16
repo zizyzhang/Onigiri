@@ -58,8 +58,8 @@ var Server = function () {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: false}));
 
-    app.get('/db',function(req,res){
-        if(isDebug) {
+    app.get('/db', function (req, res) {
+        if (isDebug) {
             res.json(db);
         }
     });
@@ -149,6 +149,26 @@ var Server = function () {
                 res.json(result);
             });
 
+        }
+    );
+
+    app.get('/ordersByUserId/:id', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var usrId = req.body.usrId;
+
+            console.log(JSON.stringify(req.body));
+
+            self.getOrdersByUserId(usrId, result=>res.json(result));
+        }
+    );
+
+    app.get('/ordersByHostId/:id', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var usrId = req.body.usrId;
+
+            console.log(JSON.stringify(req.body));
+
+            self.getOrdersByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
 
@@ -291,33 +311,64 @@ var Server = function () {
     this.joinGroupPromise = function (usrId, dishes, grpId) {
         console.log(JSON.stringify({usrId, dishes, grpId}));
 
-        return new Promise(resolve=> {
+        return new Promise((resolve, reject)=> {
+            //拒绝用户对同一个group连续点两次餐点
+            if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
+                reject("重复加团!");
+                return;
+            }
 
             for (let {dihId,num} of dishes) {
-                let gor = db.GROUP_ORDER.find(gor=>gor.dihId === dihId && gor.grpId === grpId);
-                if (gor) {
-                    //如果找到了直接增加数字
-                    gor.gorNum += num;
-                } else {
-                    //如果找不到就直接增加object
-                    db.GROUP_ORDER.push({
-                        gorId: _.maxBy(db.GROUP_ORDER, gor=>gor.gorId).gorId + 1,
-                        dihId,
-                        gorNum: num,
-                        grpId
-                    });
-                }
+                db.ORDER.push({
+                    ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                    grpId: grpId,
+                    usrId: usrId,
+                    dihId: dihId,
+                    ordNum: num
+                });
 
             }
 
             db.GROUP_MEMBER.push({
                 gmrId: _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId).gmrId + 1,
                 usrId: usrId,
-                grpId: grpId,
+                grpId: grpId
             });
 
             resolve({success: 1});
         });
+    };
+
+    this.getOrdersByUserId = function (usrId, callback) {
+        callback(db.ORDER.filter(ord=>ord.usrId === usrId));
+    };
+
+    this.getOrdersByHostIdPromise = function (hostId) {
+        let orders = [];
+        let orderSums = [];
+
+        return new Promise(resolve=> {
+            let groupId = db.GROUP.find(grp=>grp.grpHostId === hostId).grpId;
+            orders = db.ORDER.filter(ord=>ord.grpId === groupId);
+            self.formatOrders(orders, (result)=> {
+                orderSums = result;
+            });
+            resolve({orders, orderSums});
+        });
+    };
+
+    this.formatOrders = function (orders, callback) {
+        let orderSums = [];
+        for (let {ordId,grpId,usrId,dihId,ordNum} of orders) {
+            //如果存在直接加
+            let order = orderSums.find(orm=>orm.dihId === dihId && orm.grpId===grpId);
+            if (order) {
+                order.ordNum += ordNum;
+            } else {
+                orderSums.push({grpId, dihId, ordNum});
+            }
+        }
+        callback(orderSums);
     };
 
 

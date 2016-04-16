@@ -136,6 +136,28 @@ var Server = function Server() {
         });
     });
 
+    app.get('/ordersByUserId/:id', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrId = req.body.usrId;
+
+        console.log(JSON.stringify(req.body));
+
+        self.getOrdersByUserId(usrId, function (result) {
+            return res.json(result);
+        });
+    });
+
+    app.get('/ordersByHostId/:id', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrId = req.body.usrId;
+
+        console.log(JSON.stringify(req.body));
+
+        self.getOrdersByHostIdPromise(usrId).then(function (result) {
+            return res.json(result);
+        });
+    });
+
     app.listen(3000, function () {
         console.log('' + 'app listening on port 3000!');
     });
@@ -387,38 +409,32 @@ var Server = function Server() {
     this.joinGroupPromise = function (usrId, dishes, grpId) {
         console.log(JSON.stringify({ usrId: usrId, dishes: dishes, grpId: grpId }));
 
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
+            //拒绝用户对同一个group连续点两次餐点
+            if (db.ORDER.find(function (ord) {
+                return ord.usrId === usrId && ord.grpId === grpId;
+            })) {
+                reject("重复加团!");
+                return;
+            }
+
             var _iteratorNormalCompletion5 = true;
             var _didIteratorError5 = false;
             var _iteratorError5 = undefined;
 
             try {
-                var _loop3 = function _loop3() {
+                for (var _iterator5 = dishes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
                     var _step5$value = _step5.value;
                     var dihId = _step5$value.dihId;
                     var num = _step5$value.num;
 
-                    var gor = db.GROUP_ORDER.find(function (gor) {
-                        return gor.dihId === dihId && gor.grpId === grpId;
+                    db.ORDER.push({
+                        ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                        grpId: grpId,
+                        usrId: usrId,
+                        dihId: dihId,
+                        ordNum: num
                     });
-                    if (gor) {
-                        //如果找到了直接增加数字
-                        gor.gorNum += num;
-                    } else {
-                        //如果找不到就直接增加object
-                        db.GROUP_ORDER.push({
-                            gorId: _.maxBy(db.GROUP_ORDER, function (gor) {
-                                return gor.gorId;
-                            }).gorId + 1,
-                            dihId: dihId,
-                            gorNum: num,
-                            grpId: grpId
-                        });
-                    }
-                };
-
-                for (var _iterator5 = dishes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    _loop3();
                 }
             } catch (err) {
                 _didIteratorError5 = true;
@@ -445,6 +461,77 @@ var Server = function Server() {
 
             resolve({ success: 1 });
         });
+    };
+
+    this.getOrdersByUserId = function (usrId, callback) {
+        callback(db.ORDER.filter(function (ord) {
+            return ord.usrId === usrId;
+        }));
+    };
+
+    this.getOrdersByHostIdPromise = function (hostId) {
+        var orders = [];
+        var orderSums = [];
+
+        return new Promise(function (resolve) {
+            var groupId = db.GROUP.find(function (grp) {
+                return grp.grpHostId === hostId;
+            }).grpId;
+            orders = db.ORDER.filter(function (ord) {
+                return ord.grpId === groupId;
+            });
+            self.formatOrders(orders, function (result) {
+                orderSums = result;
+            });
+            resolve({ orders: orders, orderSums: orderSums });
+        });
+    };
+
+    this.formatOrders = function (orders, callback) {
+        var orderSums = [];
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
+
+        try {
+            var _loop3 = function _loop3() {
+                var _step6$value = _step6.value;
+                var ordId = _step6$value.ordId;
+                var grpId = _step6$value.grpId;
+                var usrId = _step6$value.usrId;
+                var dihId = _step6$value.dihId;
+                var ordNum = _step6$value.ordNum;
+
+                //如果存在直接加
+                var order = orderSums.find(function (orm) {
+                    return orm.dihId === dihId && orm.grpId === grpId;
+                });
+                if (order) {
+                    order.ordNum += ordNum;
+                } else {
+                    orderSums.push({ grpId: grpId, dihId: dihId, ordNum: ordNum });
+                }
+            };
+
+            for (var _iterator6 = orders[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                _loop3();
+            }
+        } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                    _iterator6.return();
+                }
+            } finally {
+                if (_didIteratorError6) {
+                    throw _iteratorError6;
+                }
+            }
+        }
+
+        callback(orderSums);
     };
 };
 module.exports = new Server();

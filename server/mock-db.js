@@ -29,10 +29,19 @@ var MockDb = function () {
     ];
 
     this.ORDER = [
-        //    {
-        //    ordId: '',
-        //    grpId: ''
-        //}
+        {
+            ordId: 1,
+            grpId: 1,
+            usrId: 1,
+            dihId: 1,
+            ordNum: 1
+        },{
+            ordId: 2,
+            grpId: 1,
+            usrId: 2,
+            dihId: 1,
+            ordNum: 1
+        }
     ];
 
     this.MERCHANT = [
@@ -107,15 +116,13 @@ var MockDb = function () {
 
     this.GROUP_ORDER = [//团购中某个餐点的份数
         {
-            gorId :0,
+            gorId: 0,
             grpId: 1,//团号
-            dihId: 1,//餐点名称
-            gorNum: 1 //该餐点份数
-        },{
-            gorId :1,
+            dihId: 1//餐点名称
+        }, {
+            gorId: 1,
             grpId: 1,
-            dihId: 2,
-            gorNum: 1
+            dihId: 2
         }
     ];
 
