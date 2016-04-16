@@ -1,9 +1,9 @@
-<div data-page="group" class="page">
+<div data-page="group-detail" class="page">
     <div class="navbar navbar-trans">
 
-        <div class="navbar-inner  ">
+        <div class="navbar-inner">
             <div class="left"><a href="group.html" class=" link icon-only"><i class="icon icon-back"></i></a></div>
-            <div class="center">韩国纸上烤肉</div>
+            <div class="center">{{merchant.metName}}</div>
         </div>
     </div>
 
@@ -12,7 +12,7 @@
             <a href="#tab-1" class="button button-fill button color-green toolbar-button">
                 查看菜单
             </a>
-            <a onclick="myApp.alert('加入成功!')" href="#tab-2" class="button button-fill color-red toolbar-button">
+            <a  href="#" id="btnJoin" class="button button-fill color-red toolbar-button">
                 加入团购
             </a>
 
@@ -26,13 +26,13 @@
 
             <div class="card-content">
                 <div class="card-content-inner">
-                    <p class="color-gray">发起人: 资管系</p>
+                    <p class="color-gray">发起人: {{grpHostName}}</p>
                     <p>
-                        <span class="ficon icon-user-8">&#x4c;</span>取餐时间: 明天中午 12:00
+                        <span class="ficon icon-user-8">&#x4c;</span>取餐时间: {{grpTime}}
 
                     </p>
                     <p>
-                        <span class="ficon ">M</span>取餐地点: EE栋一楼
+                        <span class="ficon ">M</span>取餐地点: {{grpAddr}}
                     </p>
                 </div>
             </div>

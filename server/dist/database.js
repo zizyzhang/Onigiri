@@ -58,3 +58,5 @@
 //    //加入團
 //
 //};
+"use strict";
+//# sourceMappingURL=database.js.map

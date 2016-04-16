@@ -6,6 +6,8 @@ module.exports = {
     output: {
         filename: './front/dist/js/bundle.js'
     },
+    externals: {
+    },
     module: {
         loaders: [
              {

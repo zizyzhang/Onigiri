@@ -1,6 +1,14 @@
 /**
  * Created by User on 2016/3/24.
  */
+
+'use strict';
+const isDebug = true;
+
+const _ = require('lodash');
+require('source-map-support').install();
+
+
 var Server = function () {
 
     var express = require('express');
@@ -9,16 +17,7 @@ var Server = function () {
 
     var app = express();
 
-    var USER = require('./mock-db').USER;
-    var ORDER = require('./mock-db').ORDER;
-    var MERCHANT = require('./mock-db').MERCHANT;
-    var DISH = require('./mock-db').DISH;
-
-    var GROUP = require('./mock-db').GROUP;
-    var GROUP_DISHES = require('./mock-db').GROUP_DISHES;
-    var GROUP_MEMBER = require('./mock-db').GROUP_MEMBER;
-    var GROUP_ORDER = require('./mock-db').GROUP_ORDER;
-
+    var db = require('./mock-db');
 
     var self = this;
 //
@@ -59,8 +58,15 @@ var Server = function () {
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({extended: false}));
 
+    app.get('/db', function (req, res) {
+        if (isDebug) {
+            res.json(db);
+        }
+    });
 
     app.post('/addUser', function (req, res) {
+
+
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
             var usrMobi = req.body.usrMobi;
@@ -92,21 +98,29 @@ var Server = function () {
         });
     });
 
+    app.get('/groupById/:id', (req, res)=> {
+        self.getGroupById(Number(req.params.id), result=>res.json(result));
+    })
+
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
-        allMerchant(function (result) {
+        self.allMerchant(function (result) {
             res.json(result);
         });
     });
 
-    app.get('/getMerchantById/:id', function (req, res) {
+    app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
-        merchantById(req.params.id, function (result) {
+        self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
     });
 
     app.post('/group', function (req, res) {
+
+            console.log(req.body);
+
+            req.body = JSON.parse(req.body.data);
             var grpHostId = req.body.grpHostId;
             var dishes = req.body.dishes;
             var metId = req.body.metId;
@@ -115,16 +129,15 @@ var Server = function () {
             var minAmount = req.body.minAmount;
 
 
-            console.log(JSON.stringify(req.body));
-
-            group(grpHostId, dishes, metId, addr, gorTime, minAmount, function (result) {
-
+            self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
+                res.json(result);
             });
 
         }
     );
 
     app.post('/joinGroup', function (req, res) {
+            req.body = JSON.parse(req.body.data);
             var usrId = req.body.grpHostId;
             var dishes = req.body.dishes;
             var grpId = req.body.grpId;
@@ -132,10 +145,30 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-            joinGroup(usrId, dishes, grpId, function (result) {
-
+            self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+                res.json(result);
             });
 
+        }
+    );
+
+    app.get('/ordersByUserId/:id', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var usrId = req.body.usrId;
+
+            console.log(JSON.stringify(req.body));
+
+            self.getOrdersByUserId(usrId, result=>res.json(result));
+        }
+    );
+
+    app.get('/ordersByHostId/:id', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var usrId = req.body.usrId;
+
+            console.log(JSON.stringify(req.body));
+
+            self.getOrdersByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
 
@@ -147,18 +180,21 @@ var Server = function () {
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
-        for (var index in USER) {
-            if (USER[index].usrId > usrId) {
-                usrId = USER[index].usrId;
+
+        for (let user of db.USER) {
+            if (user.usrId > usrId) {
+                usrId = user.usrId;
             }
             usrId = Number(usrId) + 1;
         }
 
+
         var usrCreateTime = new Date();
         var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
 
-        if (newUser.usrName.length != 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            USER.push(newUser);
+
+        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+            db.USER.push(newUser);
             callback({success: 1});
             return;
         } else {
@@ -169,9 +205,17 @@ var Server = function () {
 
     this.userAuth = function (usrName, usrPwd, callback) {
         var isSuccess = false;
-        for (var index in USER) {
-            if (USER[index].usrName == usrName && USER[index].usrPwd == usrPwd) {
-                callback({success: 1});
+        for (var index in db.USER) {
+            if (db.USER[index].usrName == usrName && db.USER[index].usrPwd == usrPwd) {
+                callback({
+                    success: 1,
+                    user: {
+                        usrName: db.USER[index].usrName,
+                        usrId: db.USER[index].usrId,
+                        usrMobi: db.USER[index].usrMobi,
+
+                    }
+                });
                 return;
             }
         }
@@ -183,212 +227,144 @@ var Server = function () {
 
 
     this.allGroup = function (callback) {
-        var allGroupdata = [];
-        var grpOrderList = [];
-        var grpDishesList = [];
+        let result = [];
+        for (let group of db.GROUP) {
+            result.push({
+                grpId: group.grpId,
+                grpAddr: group.grpAddr,
+                grpTime: group.grpTime,
+                grpHostName: (db.USER.find(user => user.usrId == group.grpHostId)).usrName,
+                merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
+                grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
+                grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                    grh.dish = _.filter(db.DISH, dish=> dish.dihId === grh.dihId);
+                    return grh;
+                }),
 
-        for (var GIndex in GROUP) {
-            for (var UIndex in USER) {
-                var metName;
+            });
 
-                for (var MIndex in MERCHANT) {
-                    if (GROUP[GIndex].metId == MERCHANT[MIndex].metId) {
-                        metName = MERCHANT[MIndex].metName;
-                        //藉由 GROUP.metId 去抓 MERCHANT.metName
-                    }
-                }
-                for (var GOIndex in GROUP_ORDER) {
-                    if (GROUP[GIndex].grpId == GROUP_ORDER[GOIndex].grpId) {
-                        grpOrderList.push({
-                            grpId: GROUP_ORDER[GOIndex].grpId,
-                            dihId: GROUP_ORDER[GOIndex].dihId,
-                            gorNum: GROUP_ORDER[GOIndex].gorNum
-                        });
-                        //透過相同的grpId，把<餐點ID>跟<餐點數量>從GROUP_ORDER抓出來，放入grpOrderList
-                    }
-                }
-                for (var GDIndex in GROUP_DISHES) {
-
-                    if (GROUP[GIndex].grpId == GROUP_DISHES[GDIndex].grpId)
-                        grpDishesList.push({
-                            gdeId: GROUP_DISHES[GDIndex].gdeId,
-                            dihId: GROUP_DISHES[GDIndex].dihId,
-                            grpId: GROUP_DISHES[GDIndex].grpId
-                        });
-                    //透過相同的grpId，把<餐點ID>從GROUP_ORDER抓出來，放入grpDishesList
-                }
-
-                if (GROUP[GIndex].grpHostId == USER[UIndex].usrId) {
-                    allGroupdata.push({
-                        grpId: GROUP[GIndex].grpId,
-                        grpHostName: USER[UIndex].usrName,
-                        metName: metName,
-                        grpAddr: GROUP[GIndex].grpAddr,
-                        grpTime: GROUP[GIndex].grpTime,
-                        grpOrder: grpOrderList,
-                        grpDishes: grpDishesList
-                    });
-                    grpOrderList = [];
-                    grpDishesList = [];
-                }
-            }
         }
-        //console.log(JSON.stringify(allGroupdata));
+        callback(result);
+    };
 
-        if (allGroupdata.length != 0) {
-            callback(allGroupdata);
-            return;
-        }
-        else {
-            callback({success: 0});
-        }
+    this.getGroupById = function (id, callback) {
+        let group = db.GROUP.find(g=>g.grpId === id);
+        callback({
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
+            merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
+            grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                grh.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                return grh;
+            }),
 
+        });
     };
 
 
     this.allMerchant = function (callback) {
-
-
-        var allMerchantdata = [];
-        var menu = [];
-
-        for (var MIndex in MERCHANT) {
-
-            for (var DIndex in DISH) {
-                if (MERCHANT[MIndex].metId == DISH[DIndex].metId) {
-                    menu.push({
-                            dihName: DISH[DIndex].dihName,
-                            metId: DISH[DIndex].metId,
-                            dihType: DISH[DIndex].dihType,
-                            dihPrice:DISH[DIndex].dihPrice
-                        }
-                    );
-                }
-            }
-
-
-
-            allMerchantdata.push({
-                metId: MERCHANT[MIndex].metId,
-                metName: MERCHANT[MIndex].metName,
-                metPhone: MERCHANT[MIndex].metPhone,
-                menu: menu
-            });
-            menu = [];
+        var result = [];
+        for (let merchant of db.MERCHANT) {
+            merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
+            result.push(
+                merchant
+            );
         }
-
-        //console.log(JSON.stringify(allMerchantdata));
-
-        if (allMerchantdata.length != 0) {
-            callback(allMerchantdata);
-            return;
-        }
-        else {
-            callback({success: 0});
-        }
+        callback(result);
     };
 
 
     this.getMerchantById = function (id, callback) {
-        var isSuccess = false;
-        for (var index in MERCHANT) {
-            if (MERCHANT[index].metId == id) {
-                callback(MERCHANT[index]);
-                return;
-            }
-        }
-
-        if (!isSuccess) {
-            callback({success: 0});
-        }
-
-
+        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
+        result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
+        callback(result);
     };
 
-    this.group = function (grpHostId, dishes, metId, addr, gorTime, callback) {
-
-        var i = GROUP.length + 1;
-        var newGroup = {
-            grpId: i,
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
+        let grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
+        db.GROUP.push({
+            grpId,
             grpHostId: grpHostId,
-            //dishes: dishes,
             metId: metId,
             grpAddr: addr,
             grpTime: gorTime
             //minAmount: minAmount
-        };
-
-        for (var index in dishes) {
-            var gdeId = GROUP_DISHES.length + 1;
-            var grpId = i;
-            var dishesList = {gdeId: gdeId, dihId: dishes[index], grpId: grpId};
-            //console.log("dishesList:"+JSON.stringify(dishesList));
-            GROUP_DISHES.push(dishesList);
+        });
+        for (let dihId of dishes) {
+            let gdh = {
+                gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
+                dihId: Number(dihId),
+                grpId
+            };
+            db.GROUP_DISHES.push(gdh);
         }
-
-        if (newGroup != 0) {
-            GROUP.push(newGroup);
-            //console.log(USER);
-            //callback(GROUP);
-            callback({success: 1});
-        }
-        else {
-            callback({success: 0});
-
-        }
+        callback({success: 1});
     };
 
-    this.joinGroup = function (usrId, dishes, grpId, callback) {
+    this.joinGroupPromise = function (usrId, dishes, grpId) {
+        console.log(JSON.stringify({usrId, dishes, grpId}));
 
-            var newGroupOrder = {};
-            var dihId;
-            var gorNum;
-            var num;
-
-            if (GROUP_ORDER.length == 0) {
-                for (var index in dishes) {
-                    dihId = dishes[index].dihId;
-                    num = dishes[index].num;
-                    newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                    GROUP_ORDER.push(newGroupOrder);
-                    //資料表沒有資料，直接新增
-                }
-            } else {
-                for (var index in GROUP_ORDER) {
-                    for (var index in dishes) {
-                        dihId = dishes[index].dihId;
-                        num = dishes[index].num;
-
-                        if (grpId == GROUP_ORDER[index].grpId && dihId == GROUP_ORDER[index].dihId) {
-                            GROUP_ORDER[index].gorNum = parseInt(GROUP_ORDER[index].gorNum) + num;//直接改值
-                            //尋找相同的<團號>及<商品ID>，有則Updata
-                        }
-                        else {
-                            newGroupOrder = {grpId: grpId, dihId: dihId, gorNum: num};
-                            GROUP_ORDER.push(newGroupOrder);
-                            //無，新增
-                        }
-                    }
-                }
+        return new Promise((resolve, reject)=> {
+            //拒绝用户对同一个group连续点两次餐点
+            if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
+                reject("重复加团!");
+                return;
             }
 
-            var gmrId = GROUP_MEMBER.length + 1;
-            var newGroupMember = {
-                //grpHostId: grpHostId,
-                //dishes: dishes,
-                gmrId: gmrId,
+            for (let {dihId,num} of dishes) {
+                db.ORDER.push({
+                    ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                    grpId: grpId,
+                    usrId: usrId,
+                    dihId: dihId,
+                    ordNum: num
+                });
+
+            }
+
+            db.GROUP_MEMBER.push({
+                gmrId: _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId).gmrId + 1,
                 usrId: usrId,
                 grpId: grpId
-            };
+            });
 
-        if (newGroupMember!=0) {
-            GROUP_MEMBER.push(newGroupMember);
-            callback({success: 1});
+            resolve({success: 1});
+        });
+    };
 
-        } else {
-            callback({success: 0});
+    this.getOrdersByUserId = function (usrId, callback) {
+        callback(db.ORDER.filter(ord=>ord.usrId === usrId));
+    };
+
+    this.getOrdersByHostIdPromise = function (hostId) {
+        let orders = [];
+        let orderSums = [];
+
+        return new Promise(resolve=> {
+            let groupId = db.GROUP.find(grp=>grp.grpHostId === hostId).grpId;
+            orders = db.ORDER.filter(ord=>ord.grpId === groupId);
+            self.formatOrders(orders, (result)=> {
+                orderSums = result;
+            });
+            resolve({orders, orderSums});
+        });
+    };
+
+    this.formatOrders = function (orders, callback) {
+        let orderSums = [];
+        for (let {ordId,grpId,usrId,dihId,ordNum} of orders) {
+            //如果存在直接加
+            let order = orderSums.find(orm=>orm.dihId === dihId && orm.grpId===grpId);
+            if (order) {
+                order.ordNum += ordNum;
+            } else {
+                orderSums.push({grpId, dihId, ordNum});
+            }
         }
-
+        callback(orderSums);
     };
 
 

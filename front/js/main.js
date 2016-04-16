@@ -1,20 +1,57 @@
-var SERVER_ADS = "http://localhost:3000";
+'use strict';
+let isDebug = true;
+
+let ajaxMethod = require('./ajaxMethods.js'),
+    tool = require('./tool.js'),
+    GroupPage = require('./pages/group.js'),
+    GroupDetailPage = require('./pages/group-detail.js'),
+    OrderPage = require('./pages/order.js'),
+    GroupSettingPage = require('./pages/group-setting.js'),
+    SelectMerchantPage = require('./pages/select-merchant.js'),
+    IndexPage = require('./pages/index.js'),
+    CreateMenuPage = require('./pages/create-menu.js'),
+    cookies = require('js-cookie'),
+    Public = require('./public.js');
+
 
 // Initialize app
-var myApp = new Framework7({
+let myApp = new Framework7({
     modalTitle: 'Onigiri',
+    //template7Pages: true,
     // Enable Material theme
-    material: true
+    material: true,
+
 });
 
-// If we need to use custom DOM library, let's save it to $$ variable:
-var $$ = Dom7;
 
+// If we need to use custom DOM library, let's save it to $$ letiable:
+let $$ = Dom7;
+let dish = 1;
 // Add view
-var mainView = myApp.addView('.view-main', {
+let mainView = myApp.addView('.view-main', {
     // Because we want to use dynamic navbar, we need to enable it for this view:
     //dynamicNavbar: true,
+    contentCache: true
 });
+
+//加载page,绑定page的event
+let pageEventBind = function () {
+    let groupPage = new GroupPage(myApp, mainView);
+    let groupDetailPage = new GroupDetailPage(myApp, mainView);
+    let orderPage = new OrderPage(myApp, mainView);
+    let selectMerchantPage = new SelectMerchantPage(myApp, mainView);
+    let groupSettingPage = new GroupSettingPage(myApp, mainView);
+    let indexPage = new IndexPage(myApp, mainView);
+    let createMenuPage = new CreateMenuPage(myApp, mainView);
+
+    groupPage.bind();
+    groupDetailPage.bind();
+    orderPage.bind();
+    selectMerchantPage.bind();
+    groupSettingPage.bind();
+    indexPage.bind();
+    createMenuPage.bind();
+}();
 
 // Show/hide preloader for remote ajax loaded pages
 // Probably should be removed on a production/local app
@@ -25,6 +62,8 @@ $$(document).on('ajaxStart', function (e) {
     }
     myApp.showIndicator();
 });
+
+
 $$(document).on('ajaxComplete', function (e) {
     if (e.detail.xhr.requestUrl.indexOf('autocomplete-languages.json') >= 0) {
         // Don't show preloader for autocomplete demo requests
@@ -33,119 +72,15 @@ $$(document).on('ajaxComplete', function (e) {
     myApp.hideIndicator();
 });
 
-//myApp.onPageInit('about', function (page) {
-//    // Do something here for "about" page
-//    myApp.alert("hi");
-//})
-//
-$$(document).on('pageInit', function (e) {
-    // Do something here when page loaded and initialized
-});
-
-myApp.onPageBeforeInit('group', function () {
-    console.log('before group init')
-});
 
 // TODO CHEAT
-(function(){
-    myApp.closeModal('.login-screen');
-    mainView.router.loadPage('order.html');
+(() => {
+    if (isDebug) {
+        myApp.closeModal();
+        mainView.router.loadPage({url: 'group.html'});
+
+        cookies.set('user',{usrId:1,usrName:'firstUser'});
+        cookies.set('selectedGroupId',1);
+        console.log('cheat');
+    }
 })();
-
-$$('#txtUsrName').on('focus',function(){
-    $$('.usrName').css('color', 'white !important');
-});
-
-
-$$('#btn-sign-up').click(function () {
-    if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-        addUser();
-    }
-    else {
-        console.log("error subSignUp");
-    }
-});
-
-$$('#btn-login').click(function () {
-    console.log('here');
-    userAuth();
-});
-
-//$$("#tpl").load('./template/todoItem.html', null, function () {
-//    allGroup();
-//});
-
-
-function addUser() {
-    var subname = $$('#subAccount').val();
-    var subpwd = $$('#subPwd').val();
-    var submobile = $$('#subMobile').val();
-    $$.post(SERVER_ADS + "/addUser", {usrName: subname, usrPwd: subpwd, usrMobi: submobile}, function (result) {
-        if (result) {
-
-        }
-    });
-}
-
-function userAuth() {
-    //var usrName = $$('#txtUsrName').val();
-    //var usrPwd = $$('#txtUsrPwd').val();
-    //
-    //console.log(usrName, usrPwd);
-    //
-    //$$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-    //    result = JSON.parse(result);
-    //    console.log(result.success);
-    //    if (result.success == 1) {
-            myApp.closeModal();
-            mainView.router.loadPage({url: 'group.html'});
-    //    }
-    //});
-
-}
-
-function allGroup() {
-
-    $$.get("http://localhost:3000/allGroup", function (data) {
-        allGroupList = data;
-
-        var GroupList = $$("#allGroupList");
-        GroupList.html("");
-
-        for (var i = 0; i < data.length; i++) {
-            var compiled = _.template($$('#tpl').html());
-            GroupList.html(GroupList.html() + compiled({
-                    grpHostId: data[i].grpHostId,
-                    metId: data[i].metId,
-                    grpAddr: data[i].grpAddr,
-                    grpTime: data[i].grpTime
-                }));
-        }
-    });
-}
-function allMerchant() {
-
-    $$.get(SERVER_ADS + "/allMerchant", function (data) {
-        allMerchantList = data;
-    });
-}
-
-function merchantById(id) {
-    console.log(id);
-    $$.get(SERVER_ADS + "/getMerchantById" + id, function (data) {
-        merchant = data;
-    });
-}
-
-function group() {
-
-    //$$.post("http://localhost:3000/group",{grpHostId:,[],metId:,addr:,gorTime:,minAmount:},function(){
-    //
-    //});
-}
-
-function joinGroup() {
-    //$$.post("http://localhost:3000/joinGroup",{usrId:,[],grpId:},function(){
-    //
-    //});
-}
