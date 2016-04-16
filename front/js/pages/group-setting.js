@@ -30,7 +30,7 @@ class GroupSettingPage {
 
                  ajaxMethod.postGroup(grpHostId, dishes, metId, addr, gorTime).then(()=> {
                     myApp.alert('开团完成!', function () {
-                        mainView.router.loadPage('group.html');
+                        mainView.router.loadPage('home.html');
                     });
                 });
 

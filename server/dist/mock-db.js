@@ -113,6 +113,10 @@ var MockDb = function MockDb() {
         gorId: 1,
         grpId: 1,
         dihId: 2
+    }, {
+        gorId: 2,
+        grpId: 2,
+        dihId: 3
     }];
 
     this.GROUP_DISHES = [//允许选择的餐点

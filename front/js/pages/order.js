@@ -58,10 +58,10 @@ class OrderPage {
                     console.log(JSON.stringify({usrId, dishes, grpId}));
 
                     ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
-                        myApp.alert('开团成功', function () {
-                            mainView.router.loadPage('group.html');
+                        myApp.alert('加入成功', function () {
+                            mainView.router.loadPage('home.html');
                         });
-                    }).catch(e=> myApp.alert(JSON.stringify(e)+'开团失败'));
+                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失败'));
 
 
                 });

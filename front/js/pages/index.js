@@ -17,42 +17,44 @@ class IndexPage {
     }
 
     bind() {
+        $$(document).on('DOMContentLoaded',function(){
+            $$('#btnCreateGroup').click(function () {
+                mainView.router.loadPage({url: 'select-merchant.html'});
 
-        myApp.onPageBeforeInit('index', function (page) {//TODO second
-            let usrId = cookies.getJSON('user').usrId;
-            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getOrderByUserIdPromise(usrId), page, result=> {
-                $$('#btnCreateGroup').click(function () {
-                    mainView.router.loadPage({url: 'select-merchant.html'});
+            });
 
+            $$('#btnMyGroups').click(function () {
+
+                mainView.router.loadPage({url: 'my-groups.html'});
+
+            });
+
+            $$('#txtUsrName').on('focus', function () {
+                $$('.usrName').css('color', 'white !important');
+            });
+
+
+            $$('#btn-sign-up').click(function () {
+                if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
+                    ajaxMethod.addUser();
+                }
+                else {
+                    console.log("error subSignUp");
+                }
+            });
+
+            $$('#btn-login').click(function () {
+
+
+                ajaxMethod.userAuth().then(function (result) {
+                    cookies.set('user', result.user);
+
+                    myApp.closeModal();
+                    mainView.router.loadPage({url: 'home.html'});
+                }).catch(function () {
+                    myApp.alert('登录失败');
                 });
 
-                $$('#txtUsrName').on('focus', function () {
-                    $$('.usrName').css('color', 'white !important');
-                });
-
-
-                $$('#btn-sign-up').click(function () {
-                    if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-                        ajaxMethod.addUser();
-                    }
-                    else {
-                        console.log("error subSignUp");
-                    }
-                });
-
-                $$('#btn-login').click(function () {
-
-
-                    ajaxMethod.userAuth().then(function (result) {
-                        cookies.set('user', result.user);
-
-                        myApp.closeModal();
-                        mainView.router.loadPage({url: 'group.html'});
-                    }).catch(function () {
-                        myApp.alert('登录失败');
-                    });
-
-                });
             });
         });
 

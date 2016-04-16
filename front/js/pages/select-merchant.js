@@ -39,13 +39,6 @@ class SelectMerchantPage {
 
 
 
-
-                    //if ($$('.item-after menu-checkbox').attr('defaultChecked'));{
-                    //
-                    //
-                    //}
-
-
                 });
 
             });
