@@ -1,0 +1,69 @@
+<div data-page="my-groups" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="group-detail.html" class="back link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">我发起的团购</div>
+         </div>
+    </div>
+
+
+    <div class="page-content">
+        {{#each groupedOrderSums}}
+        <div class="card demo-card-header-pic">
+            <div class="list-block media-list" style="margin-top: 0px;!important;">
+                <div class="card-header item-title-row">
+                    <div>{{group.merchant.metName}}</div>
+                    <div style="color:green">已開團</div>
+                </div>
+                <ul>
+                    {{#each orderSums}}
+                    <li>
+                        <label class="item-content">
+                            <div class="item-media"><img style="border-radius: 50%;"
+                                                         src="./../assets/img/img-dish-01.png" width="36"></div>
+                            <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="item-title">{{dish.dihName}}</div>
+                                    <div class="center">{{ordNum}}份</div>
+                                    <div class="item-after">NT {{dish.dihPrice}}</div>
+                                </div>
+
+                            </div>
+
+                        </label>
+
+                    </li>
+
+
+                    {{/each}}
+
+                    {{#js_compare "this.orderSums.length===0"}}
+                    <li>
+                        <label class="item-content">
+                             <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                     <div class="center">还没有人加入此团购,快去邀请朋友加入吧~</div>
+                                 </div>
+
+                            </div>
+
+                        </label>
+
+                    </li>
+                    {{/js_compare}}
+
+
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="link btn-join btn-join-in-group-page"
+                   data-grp-id="{{grpId}}" style="color:red">聯繫商家</a>
+                <a href="order-details.html" class="link btn-group-detail"
+                   data-grp-id="{{grpId}}" style="color:red">确认已送达</a>
+
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

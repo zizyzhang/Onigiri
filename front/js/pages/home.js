@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Created by Zizy on 4/6/16.
  */
@@ -8,7 +9,8 @@ let tool = require('../tool.js');
 const cookies = require('js-cookie');
 
 
-class GroupPage {
+
+class Home  { //TODO first
     constructor(_myApp, _mainView) {
         myApp = _myApp;
         mainView = _mainView;
@@ -16,12 +18,9 @@ class GroupPage {
     }
 
     bind() {
-
-        myApp.onPageBeforeInit('group', (page) => {
-            console.log('group before init');
-
-            tool.loadTemplateFromJsonPromise(ajaxMethod.getAllGroup(), page, ()=> {
-                //函数绑定要在完成template之后
+        myApp.onPageBeforeInit('home', function (page) {//TODO second
+            console.log('user',cookies.getJSON('user'));
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId),page,result=>{
                 $$('.btn-join-in-group-page').on('click', function () {
 
                     let grpId = $$(this).dataset().grpId;
@@ -43,11 +42,15 @@ class GroupPage {
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
                 });
+
+
             });
+
+
         });
     }
 
-
 }
 
-module.exports = GroupPage;
+module.exports = Home  ;////TODO third
+//TODO fourth : 加入到Main.js里面注册bind方法

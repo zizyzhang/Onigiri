@@ -17,6 +17,7 @@ gulp.task('front',()=>{
             watch: true,
             output: {
                 filename: 'bundle.js',
+                sourceMapFilename:'bundle.map'
             },
             module: {
                 loaders: [
@@ -28,7 +29,9 @@ gulp.task('front',()=>{
                         }
                     }
                 ]
-            }
+            },
+            devtool: 'source-map'
+
         }))
         //.pipe(gulpCommonJS())
         .pipe(gulp.dest('front/dist/js'));

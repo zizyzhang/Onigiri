@@ -113,6 +113,35 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getGroupedOrdersByUserId = function (usrId) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/groupedOrdersByUserId/"+usrId,
+                function (jsonData) {
+                    resolve(jsonData);
+                });
+        });
+    };
+
+    this.getHomePageDataPromise = (usrId) => {
+        let groups;
+        return new Promise(resolve=>{
+            this.getAllGroup().then(_groups=>{
+                groups = _groups;
+                return this.getGroupedOrdersByUserId(usrId);
+            }).then(groupedOrders=>{
+                resolve({groups, groupedOrders});
+            });
+        });
+    };
+
+    this.getGroupedOrdersAndSumsByHostIdPromise= function(hostId) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/"+hostId,
+                function (jsonData) {
+                    resolve(jsonData);
+                });
+        });
+    };
 
 };
 
