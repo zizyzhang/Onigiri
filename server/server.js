@@ -237,10 +237,10 @@ var Server = function () {
                 merchant: db.MERCHANT.find(merchant => merchant.metId == group.metId),
                 grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId == group.grpId),
                 grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                    let grpDish ={};
+                    let grpDish = {};
                     grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
-                    _.assign(grpDish,grh);
-                     return grpDish;
+                    _.assign(grpDish, grh);
+                    return grpDish;
                 }),
 
             });
@@ -259,9 +259,9 @@ var Server = function () {
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId),
             grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                let grpDish ={};
+                let grpDish = {};
                 grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
-                _.assign(grpDish,grh);
+                _.assign(grpDish, grh);
                 return grpDish;
             }),
 
@@ -340,7 +340,16 @@ var Server = function () {
     };
 
     this.getOrdersByUserId = function (usrId, callback) {
-        callback(db.ORDER.filter(ord=>ord.usrId === usrId));
+        callback(db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
+            let newOrd = {
+                ordId: ord.ordId,
+                grpId: ord.grpId,
+                usrId: ord.usrId,
+                dish: db.DISH.find(d=>d.dihId === ord.dihId),
+                ordNum: ord.ordNum,
+            };
+            return newOrd;
+        }));
     };
 
     this.getOrdersByHostIdPromise = function (hostId) {
@@ -349,7 +358,16 @@ var Server = function () {
 
         return new Promise(resolve=> {
             let groupId = db.GROUP.find(grp=>grp.grpHostId === hostId).grpId;
-            orders = db.ORDER.filter(ord=>ord.grpId === groupId);
+            orders = db.ORDER.filter(ord=>ord.grpId === groupId).map(ord=>{
+                let newOrd = {
+                    ordId: ord.ordId,
+                    grpId: ord.grpId,
+                    usrId: ord.usrId,
+                    dish: db.DISH.find(d=>d.dihId === ord.dihId),
+                    ordNum: ord.ordNum,
+                };
+                return newOrd;
+            });
             self.formatOrders(orders, (result)=> {
                 orderSums = result;
             });
@@ -359,13 +377,13 @@ var Server = function () {
 
     this.formatOrders = function (orders, callback) {
         let orderSums = [];
-        for (let {ordId,grpId,usrId,dihId,ordNum} of orders) {
+        for (let {ordId,grpId,usrId,dish,ordNum} of orders) {
             //如果存在直接加
-            let order = orderSums.find(orm=>orm.dihId === dihId && orm.grpId===grpId);
+            let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId && orm.grpId === grpId);
             if (order) {
                 order.ordNum += ordNum;
             } else {
-                orderSums.push({grpId, dihId, ordNum});
+                orderSums.push({grpId, dish, ordNum});
             }
         }
         callback(orderSums);

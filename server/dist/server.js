@@ -466,6 +466,17 @@ var Server = function Server() {
     this.getOrdersByUserId = function (usrId, callback) {
         callback(db.ORDER.filter(function (ord) {
             return ord.usrId === usrId;
+        }).map(function (ord) {
+            var newOrd = {
+                ordId: ord.ordId,
+                grpId: ord.grpId,
+                usrId: ord.usrId,
+                dish: db.DISH.find(function (d) {
+                    return d.dihId === ord.dihId;
+                }),
+                ordNum: ord.ordNum
+            };
+            return newOrd;
         }));
     };
 
@@ -479,6 +490,17 @@ var Server = function Server() {
             }).grpId;
             orders = db.ORDER.filter(function (ord) {
                 return ord.grpId === groupId;
+            }).map(function (ord) {
+                var newOrd = {
+                    ordId: ord.ordId,
+                    grpId: ord.grpId,
+                    usrId: ord.usrId,
+                    dish: db.DISH.find(function (d) {
+                        return d.dihId === ord.dihId;
+                    }),
+                    ordNum: ord.ordNum
+                };
+                return newOrd;
             });
             self.formatOrders(orders, function (result) {
                 orderSums = result;
@@ -499,17 +521,17 @@ var Server = function Server() {
                 var ordId = _step6$value.ordId;
                 var grpId = _step6$value.grpId;
                 var usrId = _step6$value.usrId;
-                var dihId = _step6$value.dihId;
+                var dish = _step6$value.dish;
                 var ordNum = _step6$value.ordNum;
 
                 //如果存在直接加
                 var order = orderSums.find(function (orm) {
-                    return orm.dihId === dihId && orm.grpId === grpId;
+                    return orm.dish.dihId === dish.dihId && orm.grpId === grpId;
                 });
                 if (order) {
                     order.ordNum += ordNum;
                 } else {
-                    orderSums.push({ grpId: grpId, dihId: dihId, ordNum: ordNum });
+                    orderSums.push({ grpId: grpId, dish: dish, ordNum: ordNum });
                 }
             };
 

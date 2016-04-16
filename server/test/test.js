@@ -272,7 +272,7 @@ describe('Server', function () {
                 assert.property(result[0], 'ordId');
                 assert.property(result[0], 'grpId');
                 assert.property(result[0], 'usrId');
-                assert.property(result[0], 'dihId');
+                assert.property(result[0], 'dish');
                 assert.property(result[0], 'ordNum');
                 done();
             });
@@ -280,7 +280,7 @@ describe('Server', function () {
 
         it('has correct data ', function (done) {
             server.getOrdersByUserId(1, function (result) {
-                assert.equal(result.find(r=>r.ordId === 1).dihId, 1);
+                assert.equal(result.find(r=>r.ordId === 1).dish.dihId, 1);
                 assert.equal(result.find(r=>r.ordId === 1).ordNum, 1);
                 done();
             });
@@ -295,7 +295,7 @@ describe('Server', function () {
                 assert.property(result.orders[0], 'ordId');
                 assert.property(result.orders[0], 'grpId');
                 assert.property(result.orders[0], 'usrId');
-                assert.property(result.orders[0], 'dihId');
+                assert.property(result.orders[0], 'dish');
                 assert.property(result.orders[0], 'ordNum');
                 done();
             }).catch(done);
@@ -305,7 +305,7 @@ describe('Server', function () {
             server.getOrdersByHostIdPromise(1).then(result=> {
                 assert.isArray(result.orders);
                 assert.property(result.orders[0], 'grpId');
-                assert.property(result.orders[0], 'dihId');
+                assert.property(result.orders[0], 'dish');
                 assert.property(result.orders[0], 'ordNum');
                 done();
             }).catch(done);
@@ -318,7 +318,7 @@ describe('Server', function () {
                         assert.equal(g.grpHostId, 1);
                     });
                 });
-                 assert.equal(result.orderSums.find(orm=>orm.dihId===1).ordNum,2);
+                 assert.equal(result.orderSums.find(orm=>orm.dish.dihId===1).ordNum,2);
                  done();
             }).catch(done);
         });
