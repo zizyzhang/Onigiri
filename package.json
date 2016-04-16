@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cd server && mocha "
-  },
+    "test": "cd server && mocha ",
+    "start" : "cd server/dist && node server.js"
+   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zizyzhang/Onigiri.git"
