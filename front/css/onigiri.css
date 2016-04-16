@@ -263,3 +263,7 @@ margin-top: 50%;
 .onigiri-left-panel{
     position: relative;
 }
+
+.move-top-one-px {
+    top: 55px !important;
+}

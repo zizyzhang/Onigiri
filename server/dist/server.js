@@ -64,7 +64,7 @@ var Server = function Server() {
         var usrName = req.body.usrName;
         var usrPwd = req.body.usrPwd;
         var usrMobi = req.body.usrMobi;
-        console.log(JSON.stringify(req.body));
+        //console.log(JSON.stringify(req.body));
         addUser(usrName, usrPwd, usrMobi, function (result) {});
     });
 
@@ -72,7 +72,7 @@ var Server = function Server() {
         var usrName = req.body.usrName;
         var usrPwd = req.body.usrPwd;
 
-        console.log(JSON.stringify(req.body));
+        //console.log(JSON.stringify(req.body));
 
         self.userAuth(usrName, usrPwd, function (result) {
             res.json(result);
@@ -108,7 +108,7 @@ var Server = function Server() {
 
     app.post('/group', function (req, res) {
 
-        console.log(req.body);
+        //console.log(req.body);
 
         req.body = JSON.parse(req.body.data);
         var grpHostId = req.body.grpHostId;
@@ -125,35 +125,31 @@ var Server = function Server() {
 
     app.post('/joinGroup', function (req, res) {
         req.body = JSON.parse(req.body.data);
-        var usrId = req.body.grpHostId;
+        var usrId = Number(req.body.usrId);
         var dishes = req.body.dishes;
         var grpId = req.body.grpId;
 
-        console.log(JSON.stringify(req.body));
+        //console.log(JSON.stringify(req.body));
 
         self.joinGroupPromise(usrId, dishes, grpId).then(function (result) {
+            res.json(result);
+        }).catch(function (e) {
+            res.json(e);
+        });
+    });
+
+    app.get('/groupedOrdersByUserId/:id', function (req, res) {
+        var usrId = Number(req.params.id);
+        self.getGroupedOrdersByUserId(usrId, function (result) {
+            //console.log(result);
             res.json(result);
         });
     });
 
-    app.get('/ordersByUserId/:id', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var usrId = req.body.usrId;
+    app.get('/groupedOrdersAndSumsByHostId/:id', function (req, res) {
+        var usrId = Number(req.params.id);
 
-        console.log(JSON.stringify(req.body));
-
-        self.getOrdersByUserId(usrId, function (result) {
-            return res.json(result);
-        });
-    });
-
-    app.get('/ordersByHostId/:id', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var usrId = req.body.usrId;
-
-        console.log(JSON.stringify(req.body));
-
-        self.getOrdersByHostIdPromise(usrId).then(function (result) {
+        self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
         });
     });
@@ -234,38 +230,10 @@ var Server = function Server() {
         var _iteratorError2 = undefined;
 
         try {
-            var _loop = function _loop() {
+            for (var _iterator2 = db.GROUP[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                 var group = _step2.value;
 
-                result.push({
-                    grpId: group.grpId,
-                    grpAddr: group.grpAddr,
-                    grpTime: group.grpTime,
-                    grpHostName: db.USER.find(function (user) {
-                        return user.usrId == group.grpHostId;
-                    }).usrName,
-                    merchant: db.MERCHANT.find(function (merchant) {
-                        return merchant.metId == group.metId;
-                    }),
-                    grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
-                        return grr.grpId == group.grpId;
-                    }),
-                    grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
-                        return grh.grpId === group.grpId;
-                    }).map(function (grh) {
-                        var grpDish = {};
-                        grpDish.dish = _.find(db.DISH, function (dish) {
-                            return dish.dihId === grh.dihId;
-                        });
-                        _.assign(grpDish, grh);
-                        return grpDish;
-                    })
-
-                });
-            };
-
-            for (var _iterator2 = db.GROUP[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                _loop();
+                result.push(self.convertGroupIdToGroupObject(group.grpId));
             }
         } catch (err) {
             _didIteratorError2 = true;
@@ -286,34 +254,8 @@ var Server = function Server() {
     };
 
     this.getGroupById = function (id, callback) {
-        var group = db.GROUP.find(function (g) {
-            return g.grpId === id;
-        });
-        callback({
-            grpId: group.grpId,
-            grpAddr: group.grpAddr,
-            grpTime: group.grpTime,
-            grpHostName: db.USER.find(function (user) {
-                return user.usrId === group.grpHostId;
-            }).usrName,
-            merchant: db.MERCHANT.find(function (merchant) {
-                return merchant.metId === group.metId;
-            }),
-            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
-                return grr.grpId === group.grpId;
-            }),
-            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
-                return grh.grpId === group.grpId;
-            }).map(function (grh) {
-                var grpDish = {};
-                grpDish.dish = _.find(db.DISH, function (dish) {
-                    return dish.dihId === grh.dihId;
-                });
-                _.assign(grpDish, grh);
-                return grpDish;
-            })
-
-        });
+        var group = self.convertGroupIdToGroupObject(id);
+        callback(group);
     };
 
     this.allMerchant = function (callback) {
@@ -323,7 +265,7 @@ var Server = function Server() {
         var _iteratorError3 = undefined;
 
         try {
-            var _loop2 = function _loop2() {
+            var _loop = function _loop() {
                 var merchant = _step3.value;
 
                 merchant.menu = _.filter(db.DISH, function (dish) {
@@ -333,7 +275,7 @@ var Server = function Server() {
             };
 
             for (var _iterator3 = db.MERCHANT[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                _loop2();
+                _loop();
             }
         } catch (err) {
             _didIteratorError3 = true;
@@ -407,7 +349,7 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
-        console.log(JSON.stringify({ usrId: usrId, dishes: dishes, grpId: grpId }));
+        //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise(function (resolve, reject) {
             //拒绝用户对同一个group连续点两次餐点
@@ -463,80 +405,30 @@ var Server = function Server() {
         });
     };
 
-    this.getOrdersByUserId = function (usrId, callback) {
-        callback(db.ORDER.filter(function (ord) {
-            return ord.usrId === usrId;
-        }).map(function (ord) {
-            var newOrd = {
-                ordId: ord.ordId,
-                grpId: ord.grpId,
-                usrId: ord.usrId,
-                dish: db.DISH.find(function (d) {
-                    return d.dihId === ord.dihId;
-                }),
-                ordNum: ord.ordNum
-            };
-            return newOrd;
-        }));
-    };
-
-    this.getOrdersByHostIdPromise = function (hostId) {
-        var orders = [];
-        var orderSums = [];
-
-        return new Promise(function (resolve) {
-            var groupId = db.GROUP.find(function (grp) {
-                return grp.grpHostId === hostId;
-            }).grpId;
-            orders = db.ORDER.filter(function (ord) {
-                return ord.grpId === groupId;
-            }).map(function (ord) {
-                var newOrd = {
-                    ordId: ord.ordId,
-                    grpId: ord.grpId,
-                    usrId: ord.usrId,
-                    dish: db.DISH.find(function (d) {
-                        return d.dihId === ord.dihId;
-                    }),
-                    ordNum: ord.ordNum
-                };
-                return newOrd;
-            });
-            self.formatOrders(orders, function (result) {
-                orderSums = result;
-            });
-            resolve({ orders: orders, orderSums: orderSums });
-        });
-    };
-
-    this.formatOrders = function (orders, callback) {
-        var orderSums = [];
+    this.convertOrdersToGroupedOrders = function (orders) {
+        var groupedOrders = [];
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
         var _iteratorError6 = undefined;
 
         try {
-            var _loop3 = function _loop3() {
-                var _step6$value = _step6.value;
-                var ordId = _step6$value.ordId;
-                var grpId = _step6$value.grpId;
-                var usrId = _step6$value.usrId;
-                var dish = _step6$value.dish;
-                var ordNum = _step6$value.ordNum;
+            var _loop2 = function _loop2() {
+                var order = _step6.value;
 
-                //如果存在直接加
-                var order = orderSums.find(function (orm) {
-                    return orm.dish.dihId === dish.dihId && orm.grpId === grpId;
+                var tOrder = groupedOrders.find(function (gor) {
+                    return gor.group.grpId === order.grpId;
                 });
-                if (order) {
-                    order.ordNum += ordNum;
+                if (tOrder) {
+                    tOrder.orders.push(order);
                 } else {
-                    orderSums.push({ grpId: grpId, dish: dish, ordNum: ordNum });
+
+                    var group = self.convertGroupIdToGroupObject(order.grpId);
+                    groupedOrders.push({ group: group, orders: [order] });
                 }
             };
 
             for (var _iterator6 = orders[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                _loop3();
+                _loop2();
             }
         } catch (err) {
             _didIteratorError6 = true;
@@ -553,7 +445,191 @@ var Server = function Server() {
             }
         }
 
-        callback(orderSums);
+        return groupedOrders;
+    };
+
+    this.convertGroupIdToGroupObject = function (grpId) {
+        var group = db.GROUP.find(function (g) {
+            return g.grpId === grpId;
+        });
+        group = {
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: db.USER.find(function (user) {
+                return user.usrId === group.grpHostId;
+            }).usrName,
+            merchant: db.MERCHANT.find(function (merchant) {
+                return merchant.metId === group.metId;
+            }),
+            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
+                return grr.grpId === group.grpId;
+            }) || [],
+            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
+                return grh.grpId === group.grpId;
+            }).map(function (grh) {
+                var grpDish = {};
+                grpDish.dish = _.find(db.DISH, function (dish) {
+                    return dish.dihId === grh.dihId;
+                });
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || []
+
+        };
+        return group;
+    };
+
+    this.getGroupedOrdersByUserId = function (usrId, callback) {
+        var orders = db.ORDER.filter(function (ord) {
+            return ord.usrId === usrId;
+        }).map(function (ord) {
+            var newOrd = {
+                ordId: ord.ordId,
+                grpId: ord.grpId,
+                usrId: ord.usrId,
+                dish: db.DISH.find(function (d) {
+                    return d.dihId === ord.dihId;
+                }),
+                ordNum: ord.ordNum
+            };
+            return newOrd;
+        });
+
+        var groupedOrders = self.convertOrdersToGroupedOrders(orders);
+
+        callback(groupedOrders);
+    };
+
+    this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
+        return new Promise(function (resolve) {
+            var groupedOrders = [];
+            var groupedOrderSums = [];
+
+            var groupIds = db.GROUP.filter(function (grp) {
+                return grp.grpHostId === hostId;
+            });
+            var orders = db.ORDER.filter(function (ord) {
+                //ord.grpId === groupId
+
+                return db.GROUP.find(function (grp) {
+                    return grp.grpId === ord.grpId;
+                }).grpHostId === hostId;
+            }).map(function (ord) {
+
+                var newOrd = {
+                    ordId: ord.ordId,
+                    grpId: ord.grpId,
+                    usrId: ord.usrId,
+                    dish: db.DISH.find(function (d) {
+                        return d.dihId === ord.dihId;
+                    }),
+                    ordNum: ord.ordNum
+                };
+                return newOrd;
+            });
+
+            //console.log('group',db.GROUP,'groupedOrders', orders);
+
+            groupedOrders = self.convertOrdersToGroupedOrders(orders);
+
+            self.formatOrders(groupedOrders, function (result) {
+                groupedOrderSums = result;
+            });
+
+            //处理空白团
+            var emptyGroups = db.GROUP.filter(function (grp) {
+                return grp.grpHostId === hostId && !db.ORDER.find(function (ord) {
+                    return ord.grpId === grp.grpId;
+                });
+            });
+            if (emptyGroups) {
+                emptyGroups.map(function (eptGroup) {
+                    groupedOrders.push({ group: self.convertGroupIdToGroupObject(eptGroup.grpId), orders: [] });
+                    groupedOrderSums.push({ group: self.convertGroupIdToGroupObject(eptGroup.grpId), orderSums: [] });
+                });
+            }
+
+            resolve({ groupedOrders: groupedOrders, groupedOrderSums: groupedOrderSums });
+        });
+    };
+
+    this.formatOrders = function (groupedOrders, callback) {
+        var groupedOrderSums = [];
+        //console.log('groups',db.GROUP);
+
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
+
+        try {
+            for (var _iterator7 = groupedOrders[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                var _step7$value = _step7.value;
+                var group = _step7$value.group;
+                var orders = _step7$value.orders;
+
+                var orderSums = [];
+
+                var _iteratorNormalCompletion8 = true;
+                var _didIteratorError8 = false;
+                var _iteratorError8 = undefined;
+
+                try {
+                    var _loop3 = function _loop3() {
+                        var _step8$value = _step8.value;
+                        var ordId = _step8$value.ordId;
+                        var group = _step8$value.group;
+                        var usrId = _step8$value.usrId;
+                        var dish = _step8$value.dish;
+                        var ordNum = _step8$value.ordNum;
+
+                        //如果存在直接加
+                        var order = orderSums.find(function (orm) {
+                            return orm.dish.dihId === dish.dihId;
+                        });
+                        if (order) {
+                            order.ordNum += ordNum;
+                        } else {
+                            orderSums.push({ group: group, dish: dish, ordNum: ordNum });
+                        }
+                    };
+
+                    for (var _iterator8 = orders[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                        _loop3();
+                    }
+                } catch (err) {
+                    _didIteratorError8 = true;
+                    _iteratorError8 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                            _iterator8.return();
+                        }
+                    } finally {
+                        if (_didIteratorError8) {
+                            throw _iteratorError8;
+                        }
+                    }
+                }
+
+                groupedOrderSums.push({ group: group, orderSums: orderSums });
+            }
+        } catch (err) {
+            _didIteratorError7 = true;
+            _iteratorError7 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                    _iterator7.return();
+                }
+            } finally {
+                if (_didIteratorError7) {
+                    throw _iteratorError7;
+                }
+            }
+        }
+
+        callback(groupedOrderSums);
     };
 };
 module.exports = new Server();

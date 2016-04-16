@@ -3,14 +3,15 @@ let isDebug = true;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
-    GroupPage = require('./pages/group.js'),
-    GroupDetailPage = require('./pages/group-detail.js'),
+     GroupDetailPage = require('./pages/group-detail.js'),
     OrderPage = require('./pages/order.js'),
     GroupSettingPage = require('./pages/group-setting.js'),
     SelectMerchantPage = require('./pages/select-merchant.js'),
     IndexPage = require('./pages/index.js'),
     CreateMenuPage = require('./pages/create-menu.js'),
     cookies = require('js-cookie'),
+    Home = require('./pages/home.js'),
+    MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js');
 
 
@@ -36,22 +37,27 @@ let mainView = myApp.addView('.view-main', {
 
 //加载page,绑定page的event
 let pageEventBind = function () {
-    let groupPage = new GroupPage(myApp, mainView);
-    let groupDetailPage = new GroupDetailPage(myApp, mainView);
+     let groupDetailPage = new GroupDetailPage(myApp, mainView);
     let orderPage = new OrderPage(myApp, mainView);
     let selectMerchantPage = new SelectMerchantPage(myApp, mainView);
     let groupSettingPage = new GroupSettingPage(myApp, mainView);
     let indexPage = new IndexPage(myApp, mainView);
     let createMenuPage = new CreateMenuPage(myApp, mainView);
+    let home = new Home(myApp, mainView);
+    let myGoups = new MyGroups(myApp, mainView);
 
-    groupPage.bind();
     groupDetailPage.bind();
     orderPage.bind();
     selectMerchantPage.bind();
     groupSettingPage.bind();
-    indexPage.bind();
     createMenuPage.bind();
-}();
+    home .bind();
+    indexPage.bind();
+    myGoups.bind();
+
+ }();
+
+
 
 // Show/hide preloader for remote ajax loaded pages
 // Probably should be removed on a production/local app
@@ -73,14 +79,19 @@ $$(document).on('ajaxComplete', function (e) {
 });
 
 
+
+
 // TODO CHEAT
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
 
-        cookies.set('user',{usrId:1,usrName:'firstUser'});
-        cookies.set('selectedGroupId',1);
-        console.log('cheat');
+        cookies.set('user', {usrId: 1, usrName: 'firstUser'});
+        cookies.set('selectedGroupId', 1);
+
+        mainView.router.loadPage('home.html');
+
+
+         console.log('cheat');
     }
 })();
