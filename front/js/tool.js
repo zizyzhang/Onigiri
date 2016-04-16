@@ -8,7 +8,7 @@ let $$ = Dom7;
 class Tool {
 
     //把一个返回值为Json类型的Promise通过page对应的template加载到page中,当Json为Array时自动把该Array放入data中.
-    loadTemplateFromJsonPromise(promise, page, callback) {
+    loadTemplateFromJsonPromise(myApp,promise, page, callback) {
 
         promise.then((data)=> {
             $$.get(page.url, (template)=> {
@@ -23,6 +23,7 @@ class Tool {
 
 
                 $$(page.container).html(html);
+                myApp.initPage(page.container);
 
                 if (callback) {
                     if (Array.isArray(data)) {
@@ -36,13 +37,7 @@ class Tool {
         });
     }
 
-    //把一个返回值为Json类型的Promise通过page(带有可以被卷动时隐藏的navBar)对应的template加载到page中,当Json为Array时自动把该Array放入data中.
-    loadTemplateWithHideNavBarFromJsonPromise(myApp, promise, page, callback) {
-        this.loadTemplateFromJsonPromise(promise, page, ()=> {
-            callback();
-            myApp.initPageScrollToolbars(page.container);
-        });
-    }
+
 }
 
 module.exports = new Tool();

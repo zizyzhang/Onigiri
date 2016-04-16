@@ -20,7 +20,7 @@ class GroupPage {
         myApp.onPageBeforeInit('group', (page) => {
             console.log('group before init');
 
-            tool.loadTemplateFromJsonPromise(ajaxMethod.getAllGroup(), page, ()=> {
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getAllGroup(), page, ()=> {
                 //函数绑定要在完成template之后
                 $$('.btn-join-in-group-page').on('click', function () {
 

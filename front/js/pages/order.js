@@ -22,7 +22,7 @@ class OrderPage {
             let selectedGroupId = Number(cookies.get('selectedGroupId'));
             self.ordersMap = new Map();
 
-            tool.loadTemplateFromJsonPromise(ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
                 self.dishes = group.grpDishes.map(gdh=>gdh.dish);
 
 

@@ -41,6 +41,12 @@ var MockDb = function () {
             usrId: 2,
             dihId: 1,
             ordNum: 1
+        },{
+            ordId: 3,
+            grpId: 1,
+            usrId: 1,
+            dihId: 2,
+            ordNum: 1
         }
     ];
 

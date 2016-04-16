@@ -23,7 +23,7 @@ class SelectMerchantPage {
         myApp.onPageBeforeInit('select-merchant',  function (page){
             console.log('select-merchant before init');
 
-            tool.loadTemplateFromJsonPromise(ajaxMethod.allMerchant(), page, ()=> {
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.allMerchant(), page, ()=> {
                 //函数绑定要在完成template之后
                 $$('.isChecked').on('click',function(){
                     metId = $$(this).dataset().metId;

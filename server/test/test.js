@@ -265,62 +265,72 @@ describe('Server', function () {
 
     });
 
-    describe('#getOrdersByUserId()', function () {
-        it('return an Array of Order Object ', function (done) {
-            server.getOrdersByUserId(1, function (result) {
+    describe('#getGroupedOrdersByUserId()', function () {
+        it('return an Array of Grouped Order Object ', function (done) {
+            server.getGroupedOrdersByUserId(1, function (result) {
                 assert.isArray(result);
-                assert.property(result[0], 'ordId');
-                assert.property(result[0], 'grpId');
-                assert.property(result[0], 'usrId');
-                assert.property(result[0], 'dish');
-                assert.property(result[0], 'ordNum');
+                console.log(JSON.stringify(result));
+                assert.property(result[0].orders[0], 'ordId');
+                assert.property(result[0].orders[0], 'group');
+                assert.property(result[0].orders[0], 'usrId');
+                assert.property(result[0].orders[0], 'dish');
+                assert.property(result[0].orders[0], 'ordNum');
                 done();
             });
         });
 
         it('has correct data ', function (done) {
-            server.getOrdersByUserId(1, function (result) {
-                assert.equal(result.find(r=>r.ordId === 1).dish.dihId, 1);
-                assert.equal(result.find(r=>r.ordId === 1).ordNum, 1);
+            server.getGroupedOrdersByUserId(1, function (result) {
+                let assertionGroupedOrders = result.find(r=>r.grpId === 1).orders;
+                assert.equal(assertionGroupedOrders.find(r=>r.ordId === 1).dish.dihId, 1);
+                assert.equal(assertionGroupedOrders.find(r=>r.ordId === 1).ordNum, 1);
                 done();
             });
         });
     });
 
 
-    describe('#getOrdersByHostId()', function () {
-        it('has "orders" property which is an Array of Order Object ', function (done) {
-            server.getOrdersByHostIdPromise(1).then(result=> {
-                assert.isArray(result.orders);
-                assert.property(result.orders[0], 'ordId');
-                assert.property(result.orders[0], 'grpId');
-                assert.property(result.orders[0], 'usrId');
-                assert.property(result.orders[0], 'dish');
-                assert.property(result.orders[0], 'ordNum');
+
+    describe('#getGroupedOrdersAndSumsByHostIdPromise()', function () {
+        it('returns an array of Grouped OrdersAndSums ', function (done) {
+            server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
+                console.log(result);
+                assert.isArray(result.groupedOrders);
+                assert.isArray(result.groupedOrderSums);
                 done();
             }).catch(done);
         });
 
-        it('has "orderSums" property which is an Array of OrderSum Object ', function (done) {
-            server.getOrdersByHostIdPromise(1).then(result=> {
-                assert.isArray(result.orders);
-                assert.property(result.orders[0], 'grpId');
-                assert.property(result.orders[0], 'dish');
-                assert.property(result.orders[0], 'ordNum');
+
+        it('has "groupedOrderSums" and "groupedOrders" properties which are  Arrays of GroupedSum|GroupedOrder Object ', function (done) {
+            server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
+                 assert.property(result.groupedOrders[0].orders[0], 'group');
+                assert.property(result.groupedOrders[0].orders[0], 'dish');
+                assert.property(result.groupedOrders[0].orders[0], 'ordNum');
+                assert.property(result.groupedOrders[0].orders[0], 'usrId');
+
+                console.log(result.groupedOrderSums[0]);
+                assert.property(result.groupedOrderSums[0].orderSums[0], 'group');
+                assert.property(result.groupedOrderSums[0].orderSums[0], 'dish');
+                assert.property(result.groupedOrderSums[0].orderSums[0], 'ordNum');
                 done();
             }).catch(done);
         });
 
         it('has correct data ', function (done) {
-            server.getOrdersByHostIdPromise(1).then(result=> {
-                result.orders.map(order=> {
+            server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
+                result.groupedOrders[0].orders.map(order=> {
                     db.GROUP.filter(grp=>grp.grpId === order.grpId).map(g=> {
                         assert.equal(g.grpHostId, 1);
                     });
                 });
-                 assert.equal(result.orderSums.find(orm=>orm.dish.dihId===1).ordNum,2);
-                 done();
+                console.log(result.groupedOrderSums.find(gos=>gos.grpId===1));
+                let assertionOrderSums = result.groupedOrderSums.find(gos=>gos.grpId === 1).orderSums;
+                assert.equal(assertionOrderSums.find(arm=>arm.dish.dihId===1).ordNum,2);
+                done();
             }).catch(done);
         });
     });
+
+
 });

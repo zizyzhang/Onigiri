@@ -137,21 +137,15 @@ var Server = function Server() {
     });
 
     app.get('/ordersByUserId/:id', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var usrId = req.body.usrId;
-
-        console.log(JSON.stringify(req.body));
-
+        var usrId = Number(req.params.id);
         self.getOrdersByUserId(usrId, function (result) {
-            return res.json(result);
+            console.log(result);
+            res.json(result);
         });
     });
 
     app.get('/ordersByHostId/:id', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var usrId = req.body.usrId;
-
-        console.log(JSON.stringify(req.body));
+        var usrId = req.params.id;
 
         self.getOrdersByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
@@ -463,13 +457,32 @@ var Server = function Server() {
         });
     };
 
-    this.getOrdersByUserId = function (usrId, callback) {
-        callback(db.ORDER.filter(function (ord) {
+    // this.getOrdersByUserId = function (usrId, callback) {
+    //    let orders =  db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
+    //        let newOrd = {
+    //            ordId: ord.ordId,
+    //            group: db.GROUP.find(g=>g.grpId===ord.grpId),
+    //            usrId: ord.usrId,
+    //            dish: db.DISH.find(d=>d.dihId === ord.dihId),
+    //            ordNum: ord.ordNum,
+    //        };
+    //        return newOrd;
+    //    });
+    //
+    //
+    //
+    //    callback(orders);
+    //};
+
+    this.getGroupedOrdersByUserId = function (usrId, callback) {
+        var orders = db.ORDER.filter(function (ord) {
             return ord.usrId === usrId;
         }).map(function (ord) {
             var newOrd = {
                 ordId: ord.ordId,
-                grpId: ord.grpId,
+                group: db.GROUP.find(function (g) {
+                    return g.grpId === ord.grpId;
+                }),
                 usrId: ord.usrId,
                 dish: db.DISH.find(function (d) {
                     return d.dihId === ord.dihId;
@@ -477,61 +490,24 @@ var Server = function Server() {
                 ordNum: ord.ordNum
             };
             return newOrd;
-        }));
-    };
-
-    this.getOrdersByHostIdPromise = function (hostId) {
-        var orders = [];
-        var orderSums = [];
-
-        return new Promise(function (resolve) {
-            var groupId = db.GROUP.find(function (grp) {
-                return grp.grpHostId === hostId;
-            }).grpId;
-            orders = db.ORDER.filter(function (ord) {
-                return ord.grpId === groupId;
-            }).map(function (ord) {
-                var newOrd = {
-                    ordId: ord.ordId,
-                    grpId: ord.grpId,
-                    usrId: ord.usrId,
-                    dish: db.DISH.find(function (d) {
-                        return d.dihId === ord.dihId;
-                    }),
-                    ordNum: ord.ordNum
-                };
-                return newOrd;
-            });
-            self.formatOrders(orders, function (result) {
-                orderSums = result;
-            });
-            resolve({ orders: orders, orderSums: orderSums });
         });
-    };
 
-    this.formatOrders = function (orders, callback) {
-        var orderSums = [];
+        var groupedOrders = [];
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
         var _iteratorError6 = undefined;
 
         try {
             var _loop3 = function _loop3() {
-                var _step6$value = _step6.value;
-                var ordId = _step6$value.ordId;
-                var grpId = _step6$value.grpId;
-                var usrId = _step6$value.usrId;
-                var dish = _step6$value.dish;
-                var ordNum = _step6$value.ordNum;
+                var order = _step6.value;
 
-                //如果存在直接加
-                var order = orderSums.find(function (orm) {
-                    return orm.dish.dihId === dish.dihId && orm.grpId === grpId;
+                var tOrder = groupedOrders.find(function (gor) {
+                    return gor.grpId === order.group.grpId;
                 });
-                if (order) {
-                    order.ordNum += ordNum;
+                if (tOrder) {
+                    tOrder.orders.push(order);
                 } else {
-                    orderSums.push({ grpId: grpId, dish: dish, ordNum: ordNum });
+                    groupedOrders.push({ grpId: order.group.grpId, orders: [order] });
                 }
             };
 
@@ -553,7 +529,152 @@ var Server = function Server() {
             }
         }
 
-        callback(orderSums);
+        callback(groupedOrders);
+    };
+
+    this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
+
+        return new Promise(function (resolve) {
+            var groupedOrders = [];
+            var groupedOrderSums = [];
+
+            var groupId = db.GROUP.find(function (grp) {
+                return grp.grpHostId === hostId;
+            }).grpId;
+            var orders = db.ORDER.filter(function (ord) {
+                return ord.grpId === groupId;
+            }).map(function (ord) {
+                var newOrd = {
+                    ordId: ord.ordId,
+                    group: db.GROUP.find(function (g) {
+                        return g.grpId === ord.grpId;
+                    }),
+                    usrId: ord.usrId,
+                    dish: db.DISH.find(function (d) {
+                        return d.dihId === ord.dihId;
+                    }),
+                    ordNum: ord.ordNum
+                };
+                return newOrd;
+            });
+
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
+
+            try {
+                var _loop4 = function _loop4() {
+                    var order = _step7.value;
+
+                    var tOrder = groupedOrders.find(function (gor) {
+                        return gor.grpId === order.group.grpId;
+                    });
+                    if (tOrder) {
+                        tOrder.orders.push(order);
+                    } else {
+                        groupedOrders.push({ grpId: order.group.grpId, orders: [order] });
+                    }
+                };
+
+                for (var _iterator7 = orders[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    _loop4();
+                }
+            } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
+                    }
+                } finally {
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
+                    }
+                }
+            }
+
+            self.formatOrders(groupedOrders, function (result) {
+                groupedOrderSums = result;
+            });
+
+            resolve({ groupedOrders: groupedOrders, groupedOrderSums: groupedOrderSums });
+        });
+    };
+
+    this.formatOrders = function (groupedOrders, callback) {
+        var groupedOrderSums = [];
+        var _iteratorNormalCompletion8 = true;
+        var _didIteratorError8 = false;
+        var _iteratorError8 = undefined;
+
+        try {
+            for (var _iterator8 = groupedOrders[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                var _step8$value = _step8.value;
+                var grpId = _step8$value.grpId;
+                var orders = _step8$value.orders;
+
+                var orderSums = [];
+                var _iteratorNormalCompletion9 = true;
+                var _didIteratorError9 = false;
+                var _iteratorError9 = undefined;
+
+                try {
+                    var _loop5 = function _loop5() {
+                        var _step9$value = _step9.value;
+                        var ordId = _step9$value.ordId;
+                        var group = _step9$value.group;
+                        var usrId = _step9$value.usrId;
+                        var dish = _step9$value.dish;
+                        var ordNum = _step9$value.ordNum;
+
+                        //如果存在直接加
+                        var order = orderSums.find(function (orm) {
+                            return orm.dish.dihId === dish.dihId;
+                        });
+                        if (order) {
+                            order.ordNum += ordNum;
+                        } else {
+                            orderSums.push({ group: group, dish: dish, ordNum: ordNum });
+                        }
+                    };
+
+                    for (var _iterator9 = orders[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                        _loop5();
+                    }
+                } catch (err) {
+                    _didIteratorError9 = true;
+                    _iteratorError9 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                            _iterator9.return();
+                        }
+                    } finally {
+                        if (_didIteratorError9) {
+                            throw _iteratorError9;
+                        }
+                    }
+                }
+
+                groupedOrderSums.push({ grpId: grpId, orderSums: orderSums });
+            }
+        } catch (err) {
+            _didIteratorError8 = true;
+            _iteratorError8 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                    _iterator8.return();
+                }
+            } finally {
+                if (_didIteratorError8) {
+                    throw _iteratorError8;
+                }
+            }
+        }
+
+        callback(groupedOrderSums);
     };
 };
 module.exports = new Server();

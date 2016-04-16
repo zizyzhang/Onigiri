@@ -11,6 +11,7 @@ let ajaxMethod = require('./ajaxMethods.js'),
     IndexPage = require('./pages/index.js'),
     CreateMenuPage = require('./pages/create-menu.js'),
     cookies = require('js-cookie'),
+    MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js');
 
 
@@ -43,7 +44,7 @@ let pageEventBind = function () {
     let groupSettingPage = new GroupSettingPage(myApp, mainView);
     let indexPage = new IndexPage(myApp, mainView);
     let createMenuPage = new CreateMenuPage(myApp, mainView);
-
+    let myGroups = new MyGroups(myApp, mainView);
     groupPage.bind();
     groupDetailPage.bind();
     orderPage.bind();
@@ -51,7 +52,11 @@ let pageEventBind = function () {
     groupSettingPage.bind();
     indexPage.bind();
     createMenuPage.bind();
+    myGroups .bind();
+
 }();
+
+
 
 // Show/hide preloader for remote ajax loaded pages
 // Probably should be removed on a production/local app
@@ -73,14 +78,19 @@ $$(document).on('ajaxComplete', function (e) {
 });
 
 
+
+
 // TODO CHEAT
 (() => {
     if (isDebug) {
         myApp.closeModal();
-        mainView.router.loadPage({url: 'group.html'});
 
-        cookies.set('user',{usrId:1,usrName:'firstUser'});
-        cookies.set('selectedGroupId',1);
-        console.log('cheat');
+        cookies.set('user', {usrId: 1, usrName: 'firstUser'});
+        cookies.set('selectedGroupId', 1);
+
+        mainView.router.loadPage('my-groups.html');
+
+
+         console.log('cheat');
     }
 })();

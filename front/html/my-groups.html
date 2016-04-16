@@ -1,0 +1,117 @@
+<div data-page="my-groups" class='page with-subnavbar toolbar-fixed page-on-center'>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" data-panel="left" class="link open-panel icon-only"><i
+                    class="icon icon-bars"></i></a></div>
+            <div class="center">饭团 Onigiri</div>
+        </div>
+    </div>
+    <div class="toolbar tabbar">
+        <div class="toolbar-inner"><a href="#tabGroups" class="tab-link active">附近的團購</a><a href="#tabMyOrders"
+                                                                                            class="tab-link">我的訂單</a><span
+                class="tab-link-highlight" style="width: 33.3333%; transform: translate3d(0%, 0px, 0px);"></span></div>
+    </div>
+    <div class="tabs-swipeable-wrap swiper-container swiper-container-horizontal swiper-container-android">
+        <div class="tabs swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
+            <div id="tabGroups" class="page-content tab swiper-slide swiper-slide-active active" style="width: 420px;">
+                <div class="content-block">
+                    <!--<div data-page="group" class="page">-->
+                    <div class="page-content">
+
+
+                        <div class="card demo-card-header-pic">
+                            <div style="background-image:url('../assets/img/img-store-01.jpg' );" valign="bottom"
+                                 class="card-img ">
+                                <img src="../assets/img/img-store-01.jpg"
+                                     style="visibility: hidden; width: 100%; max-height: 40%;display: block;"/>
+
+
+                                <div class="card-img-text" style="color: white;"> </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-content-inner">
+                                    <p class="color-gray">发起人:  </p>
+                                    <p>
+                                        取餐时间: 今天中午
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="link btn-join btn-join-in-group-page"
+                                   data-grp-id="{{grpId}}">加入團購</a>
+                                <a href="group-detail.html" class="link btn-group-detail"
+                                   data-grp-id="{{grpId}}">查看詳情</a>
+
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <!--</div>-->
+                    <p>This is tab 1 content</p>
+
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum mi quis felis
+                        scelerisque faucibus. Aliquam ut commodo justo. Mauris vitae pharetra arcu. Sed tincidunt dui et
+                        nibh auctor pretium. Nam accumsan fermentum sem. Suspendisse potenti. Nulla sed orci malesuada,
+                        pellentesque elit vitae, cursus lorem. Praesent et vehicula sapien, ut rhoncus quam. Lorem ipsum
+                        dolor sit amet, consectetur adipiscing elit. In vitae mi nec lorem aliquet venenatis quis nec
+                        nibh. Aenean sit amet leo ligula. Fusce in massa et nisl dictum ultricies et vitae dui. Sed
+                        sagittis quis diam sed lobortis. Donec in massa pharetra, tristique purus vitae, consequat
+                        mauris. Aliquam tellus ante, pharetra in mattis ut, dictum quis erat.</p>
+
+                    <p>Ut ac lobortis lacus, non pellentesque arcu. Quisque sodales sapien malesuada, condimentum nunc
+                        at, viverra lacus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+                        inceptos himenaeos. Vivamus eu pulvinar turpis, id tristique quam. Aenean venenatis molestie
+                        diam, sit amet condimentum nisl pretium id. Donec diam tortor, mollis in vehicula id, vehicula
+                        consectetur nulla. Quisque posuere rutrum mauris, eu rutrum turpis blandit at. Proin volutpat
+                        tortor sit amet metus porttitor accumsan. Class aptent taciti sociosqu ad litora torquent per
+                        conubia nostra, per inceptos himenaeos. Ut dapibus posuere dictum.</p>
+                </div>
+            </div>
+            <div id="tabMyOrders" class="page-content tab swiper-slide " style="width: 420px;">
+                <div class="card demo-card-header-pic">
+                    <div class="list-block media-list" style="margin-top: 0px;!important;">
+                        <div class="card-header item-title-row">
+                            <div></div>
+                            <div style="color:green">已開團</div>
+                        </div>
+                        <ul>
+                            {{#each orders}}
+                            <li>
+                                <label class="item-content">
+                                    <div class="item-media"><img style="border-radius: 50%;"
+                                                                 src="./../assets/img/img-dish-01.png" width="36"></div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row" style="line-height: 36px;">
+                                            <div class="item-title">{{dish.dihName}}</div>
+                                                <div class="center">{{ordNum}}份</div>
+                                            <div class="item-after">NT {{dish.dihPrice}}</div>
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </li>
+                            {{/each}}
+
+
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="link btn-join btn-join-in-group-page"
+                           data-grp-id="{{grpId}}" style="color:red">聯繫團長</a>
+                        <a href="order-details.html" class="link btn-group-detail"
+                           data-grp-id="{{grpId}}" style="color:red">訂單詳情</a>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>

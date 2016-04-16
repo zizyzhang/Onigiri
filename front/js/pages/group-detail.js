@@ -21,7 +21,7 @@ class GroupDetailPage {
             console.log('group-detail onPageBeforeInit');
             console.log(page.query);
 
-            tool.loadTemplateWithHideNavBarFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
                 $$('#btnJoin').on('click', function () {
                     mainView.router.loadPage('order.html');
                 });

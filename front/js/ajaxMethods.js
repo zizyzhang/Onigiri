@@ -113,6 +113,34 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getOrderByUserIdPromise = function (usrId) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/ordersByUserId/"+usrId,
+                function (jsonData) {
+                    resolve(jsonData);
+                });
+        });
+    };
+
+    this.getHomePageDataPromise = (usrId) => {
+        let groups;
+        return new Promise(resolve=>{
+            this.getAllGroup().then(groups=>{
+                return this.getOrderByUserIdPromise(usrId);
+            }).then(orders=>{
+                let groupOrders= [];
+                for(let order of orders) {
+                    let tOrder = groupOrders.find(gor=>gor.grpId === order.group.grpId);
+                    if(tOrder){
+                        tOrder.orders.push(order);
+                    }else{
+                        tOrder.push({grpId:order.group.grpId,orders:[order]});
+                    }
+                }
+                resolve({groups, groupOrders});
+            });
+        });
+    };
 
 };
 

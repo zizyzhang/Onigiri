@@ -153,20 +153,17 @@ var Server = function () {
     );
 
     app.get('/ordersByUserId/:id', function (req, res) {
-            req.body = JSON.parse(req.body.data);
-            var usrId = req.body.usrId;
-
-            console.log(JSON.stringify(req.body));
-
-            self.getOrdersByUserId(usrId, result=>res.json(result));
+            var usrId = Number(req.params.id);
+            self.getOrdersByUserId(usrId, result=> {
+                console.log(result);
+                res.json(result);
+            });
         }
     );
 
     app.get('/ordersByHostId/:id', function (req, res) {
-            req.body = JSON.parse(req.body.data);
-            var usrId = req.body.usrId;
+            var usrId = req.params.id;
 
-            console.log(JSON.stringify(req.body));
 
             self.getOrdersByHostIdPromise(usrId).then(result=>res.json(result));
         }
@@ -339,54 +336,102 @@ var Server = function () {
         });
     };
 
-    this.getOrdersByUserId = function (usrId, callback) {
-        callback(db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
+    // this.getOrdersByUserId = function (usrId, callback) {
+    //    let orders =  db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
+    //        let newOrd = {
+    //            ordId: ord.ordId,
+    //            group: db.GROUP.find(g=>g.grpId===ord.grpId),
+    //            usrId: ord.usrId,
+    //            dish: db.DISH.find(d=>d.dihId === ord.dihId),
+    //            ordNum: ord.ordNum,
+    //        };
+    //        return newOrd;
+    //    });
+    //
+    //
+    //
+    //    callback(orders);
+    //};
+
+    this.getGroupedOrdersByUserId = function (usrId, callback) {
+        let orders = db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
             let newOrd = {
                 ordId: ord.ordId,
-                grpId: ord.grpId,
+                group: db.GROUP.find(g=>g.grpId === ord.grpId),
                 usrId: ord.usrId,
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
                 ordNum: ord.ordNum,
             };
             return newOrd;
-        }));
+        });
+
+        let groupedOrders = [];
+        for (let order of orders) {
+            let tOrder = groupedOrders.find(gor=>gor.grpId === order.group.grpId);
+            if (tOrder) {
+                tOrder.orders.push(order);
+            } else {
+                groupedOrders.push({grpId: order.group.grpId, orders: [order]});
+            }
+        }
+
+        callback(groupedOrders);
     };
 
-    this.getOrdersByHostIdPromise = function (hostId) {
-        let orders = [];
-        let orderSums = [];
+    this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
+
 
         return new Promise(resolve=> {
+            let groupedOrders = [];
+            let groupedOrderSums = [];
+
             let groupId = db.GROUP.find(grp=>grp.grpHostId === hostId).grpId;
-            orders = db.ORDER.filter(ord=>ord.grpId === groupId).map(ord=>{
+            let orders = db.ORDER.filter(ord=>ord.grpId === groupId).map(ord=> {
                 let newOrd = {
                     ordId: ord.ordId,
-                    grpId: ord.grpId,
+                    group: db.GROUP.find(g=>g.grpId === ord.grpId),
                     usrId: ord.usrId,
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
                     ordNum: ord.ordNum,
                 };
                 return newOrd;
             });
-            self.formatOrders(orders, (result)=> {
-                orderSums = result;
+
+
+            for (let order of orders) {
+                let tOrder = groupedOrders.find(gor=>gor.grpId === order.group.grpId);
+                if (tOrder) {
+                    tOrder.orders.push(order);
+                } else {
+                    groupedOrders.push({grpId: order.group.grpId, orders: [order]});
+                }
+            }
+
+            self.formatOrders(groupedOrders, (result)=> {
+                groupedOrderSums = result;
             });
-            resolve({orders, orderSums});
+
+            resolve({groupedOrders, groupedOrderSums});
         });
     };
 
-    this.formatOrders = function (orders, callback) {
-        let orderSums = [];
-        for (let {ordId,grpId,usrId,dish,ordNum} of orders) {
-            //如果存在直接加
-            let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId && orm.grpId === grpId);
-            if (order) {
-                order.ordNum += ordNum;
-            } else {
-                orderSums.push({grpId, dish, ordNum});
+    this.formatOrders = function (groupedOrders, callback) {
+        let groupedOrderSums = [];
+        for (let {grpId,orders} of groupedOrders) {
+            let orderSums = [];
+            for (let {ordId,group,usrId,dish,ordNum} of orders) {
+                //如果存在直接加
+                let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId);
+                if (order) {
+                    order.ordNum += ordNum;
+                } else {
+                    orderSums.push({group, dish, ordNum});
+                }
             }
+            groupedOrderSums.push({grpId, orderSums});
         }
-        callback(orderSums);
+
+        callback(groupedOrderSums);
     };
 
 
