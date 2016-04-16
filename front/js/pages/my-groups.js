@@ -17,9 +17,9 @@ class MyGroups { //TODO first
     }
 
     bind() {
-        let hostId = cookies.getJSON('user').usrId;
 
         myApp.onPageBeforeInit('my-groups', function (page) {//TODO second
+            let hostId = cookies.getJSON('user').usrId;
             tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
 
             });
