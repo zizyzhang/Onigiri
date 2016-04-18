@@ -11,10 +11,13 @@ class Tool {
     loadTemplateFromJsonPromise(myApp,promise, page, callback) {
 
         promise.then((data)=> {
+
+            $$(page.container).html('');
+
             $$.get(page.url, (template)=> {
                 console.log(data);
-                let compiledTemplate = Template7.compile(template.substring(template.indexOf('>') + 1, template.lastIndexOf('<')));
                 let html = '';
+                let compiledTemplate = Template7.compile(template.substring(template.indexOf('>') + 1, template.lastIndexOf('<')));
                 if (Array.isArray(data)) {
                     html = compiledTemplate({data});
                 } else {

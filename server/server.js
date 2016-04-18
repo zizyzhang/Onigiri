@@ -7,7 +7,7 @@ const isDebug = true;
 
 const _ = require('lodash');
 require('source-map-support').install();
-
+const standardClassFactory = require('./standard-class-factory.js');
 
 var Server = function () {
 
@@ -226,16 +226,17 @@ var Server = function () {
 
     this.allGroup = function (callback) {
         let result = [];
-        for (let group of db.GROUP) {
-            result.push(self.convertGroupIdToGroupObject(group.grpId));
+        for (let _group of db.GROUP) {
+            let group = standardClassFactory.createClassGroupByGroupId(_group.grpId);
+            result.push(group);
 
         }
         callback(result);
     };
 
     this.getGroupById = function (id, callback) {
-        let group = self.convertGroupIdToGroupObject(id);
-         callback(group);
+        let group = standardClassFactory.createClassGroupByGroupId(id);
+        callback(group);
     };
 
 
@@ -318,32 +319,13 @@ var Server = function () {
                 tOrder.orders.push(order);
             } else {
 
-                let group = self.convertGroupIdToGroupObject(order.grpId);
+                let group = standardClassFactory.createClassGroupByGroupId(order.grpId);
                 groupedOrders.push({group: group, orders: [order]});
             }
         }
         return groupedOrders;
     };
 
-    this.convertGroupIdToGroupObject = function(grpId){
-        let group = db.GROUP.find(g=>g.grpId === grpId);
-        group = {
-            grpId: group.grpId,
-            grpAddr: group.grpAddr,
-            grpTime: group.grpTime,
-            grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
-            merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
-            grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId)||[],
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                let grpDish = {};
-                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
-                _.assign(grpDish, grh);
-                return grpDish;
-            })||[],
-
-        }
-        return group;
-    };
 
 
     this.getGroupedOrdersByUserId = function (usrId, callback) {
@@ -400,8 +382,9 @@ var Server = function () {
              let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
              if(emptyGroups) {
                  emptyGroups.map(eptGroup=>{
-                     groupedOrders.push({group:self.convertGroupIdToGroupObject(eptGroup.grpId), orders:[]});
-                     groupedOrderSums.push({group:self.convertGroupIdToGroupObject(eptGroup.grpId),orderSums:[]});
+                     let group = standardClassFactory.createClassGroupByGroupId(eptGroup.grpId);
+                     groupedOrders.push({group, orders:[]});
+                     groupedOrderSums.push({group,orderSums:[]});
                  });
              }
 

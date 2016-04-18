@@ -21,7 +21,10 @@ class MyGroups { //TODO first
         myApp.onPageBeforeInit('my-groups', function (page) {//TODO second
             let hostId = cookies.getJSON('user').usrId;
             tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
+                $$('.btn-contact-merchant').click(function () {
 
+                    window.location.href = 'tel:'+$$(this).data('met-phone');
+                });
             });
 
         });

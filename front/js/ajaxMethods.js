@@ -1,7 +1,7 @@
 // POST 方法需要传入的参数是JSON.stringify之后的String.
 
 var $$ = Dom7;
-var SERVER_ADS = "http://120.96.99.70:8080";
+var SERVER_ADS = "http://localhost:8080";
 
 var AjaxMethods = function () {
     'use strict';

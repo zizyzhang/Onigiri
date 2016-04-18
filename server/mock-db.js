@@ -54,7 +54,7 @@ var MockDb = function () {
         {
             metId: 1,
             metName: '韩国纸上烤肉',
-            metPhone: '123123123'
+            metPhone: '867'
         }, {
             metId: 2,
             metName: '麦当劳',
