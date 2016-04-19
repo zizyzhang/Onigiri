@@ -6,6 +6,7 @@ const _ = require('lodash');
 
 class StandardClassFactory {
     createClassGroupByGroupId(grpId){
+        let that = this;
         let group = db.GROUP.find(g=>g.grpId === grpId);
         group = {
             grpId: group.grpId,
@@ -20,7 +21,7 @@ class StandardClassFactory {
                 _.assign(grpDish, grh);
                 return grpDish;
             })||[],
-            grpHost : this.createUserByUserId(group.grpHostId),
+            grpHost : that.createUserByUserId(group.grpHostId),
 
 
         };
