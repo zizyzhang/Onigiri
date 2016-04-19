@@ -1,14 +1,28 @@
+'use strict';
+
 /**
  * Created by User on 2016/3/24.
  */
 
-'use strict';
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+require('source-map-support').install();
 
 var isDebug = true;
-
 var _ = require('lodash');
-require('source-map-support').install();
-var standardClassFactory = require('./standard-class-factory.js');
+//let db = require('./mock-db');
+
+var JsonDB = require('node-json-db');
+var jsonDb = new JsonDB("onigiri", true, true);
+var db = jsonDb.getData('/db');
+
+for (var index in db) {
+    if (_typeof(db[index]) === 'object') {
+        Array.observe(db[index], function (change) {
+            jsonDb.push('/db', db);
+        });
+    }
+}
 
 var Server = function Server() {
 
@@ -18,27 +32,7 @@ var Server = function Server() {
 
     var app = express();
 
-    var db = require('./mock-db');
-
     var self = this;
-    //
-    //var group1 = [
-    //    {
-    //        grpHostId: 'c',
-    //        dishes: '111',
-    //        metId: '567',
-    //        addr:"qqqqq",
-    //        gorTime:"00:0",
-    //        minAmount:"9999"
-    //    }
-    //
-    //]
-
-    var joinGroup1 = [{
-        usrId: 'd',
-        dishes: '0.1',
-        grpId: '6666'
-    }];
 
     var allowCrossDomain = function allowCrossDomain(req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -226,6 +220,7 @@ var Server = function Server() {
 
     this.allGroup = function (callback) {
         var result = [];
+
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -234,7 +229,7 @@ var Server = function Server() {
             for (var _iterator2 = db.GROUP[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                 var _group = _step2.value;
 
-                var group = standardClassFactory.createClassGroupByGroupId(_group.grpId);
+                var group = this.createClassGroupByGroupId(_group.grpId);
                 result.push(group);
             }
         } catch (err) {
@@ -256,7 +251,7 @@ var Server = function Server() {
     };
 
     this.getGroupById = function (id, callback) {
-        var group = standardClassFactory.createClassGroupByGroupId(id);
+        var group = this.createClassGroupByGroupId(id);
         callback(group);
     };
 
@@ -308,7 +303,8 @@ var Server = function Server() {
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
-        var grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
+        var lastGroup = _.maxBy(db.GROUP, 'grpId');
+        var grpId = lastGroup ? lastGroup.grpId + 1 : 1;
         db.GROUP.push({
             grpId: grpId,
             grpHostId: grpHostId,
@@ -325,8 +321,9 @@ var Server = function Server() {
             for (var _iterator4 = dishes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                 var dihId = _step4.value;
 
+                var lastDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
                 var gdh = {
-                    gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
+                    gdeId: lastDish ? lastDish.gdeId + 1 : 1,
                     dihId: Number(dihId),
                     grpId: grpId
                 };
@@ -372,8 +369,12 @@ var Server = function Server() {
                     var dihId = _step5$value.dihId;
                     var num = _step5$value.num;
 
+                    if (num === 0 || !_.isNumber(num)) {
+                        continue;
+                    }
+                    var lastOrder = _.maxBy(db.ORDER, 'ordId');
                     db.ORDER.push({
-                        ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                        ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                         grpId: grpId,
                         usrId: usrId,
                         dihId: dihId,
@@ -395,10 +396,11 @@ var Server = function Server() {
                 }
             }
 
+            var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
+                return gmr.gmrId;
+            });
             db.GROUP_MEMBER.push({
-                gmrId: _.maxBy(db.GROUP_MEMBER, function (gmr) {
-                    return gmr.gmrId;
-                }).gmrId + 1,
+                gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId
             });
@@ -408,6 +410,8 @@ var Server = function Server() {
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
+        var _this = this;
+
         var groupedOrders = [];
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
@@ -424,7 +428,7 @@ var Server = function Server() {
                     tOrder.orders.push(order);
                 } else {
 
-                    var group = standardClassFactory.createClassGroupByGroupId(order.grpId);
+                    var group = _this.createClassGroupByGroupId(order.grpId);
                     groupedOrders.push({ group: group, orders: [order] });
                 }
             };
@@ -472,6 +476,8 @@ var Server = function Server() {
     };
 
     this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
+        var that = this;
+
         return new Promise(function (resolve) {
             var groupedOrders = [];
             var groupedOrderSums = [];
@@ -515,7 +521,7 @@ var Server = function Server() {
             });
             if (emptyGroups) {
                 emptyGroups.map(function (eptGroup) {
-                    var group = standardClassFactory.createClassGroupByGroupId(eptGroup.grpId);
+                    var group = that.createClassGroupByGroupId(eptGroup.grpId);
                     groupedOrders.push({ group: group, orders: [] });
                     groupedOrderSums.push({ group: group, orderSums: [] });
                 });
@@ -602,7 +608,54 @@ var Server = function Server() {
 
         callback(groupedOrderSums);
     };
+
+    this.createClassGroupByGroupId = function (grpId) {
+        var that = this;
+        var group = db.GROUP.find(function (g) {
+            return g.grpId === grpId;
+        });
+        group = {
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: db.USER.find(function (user) {
+                return user.usrId === group.grpHostId;
+            }).usrName,
+            merchant: db.MERCHANT.find(function (merchant) {
+                return merchant.metId === group.metId;
+            }),
+            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
+                return grr.grpId === group.grpId;
+            }) || [],
+            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
+                return grh.grpId === group.grpId;
+            }).map(function (grh) {
+                var grpDish = {};
+                grpDish.dish = _.find(db.DISH, function (dish) {
+                    return dish.dihId === grh.dihId;
+                });
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || [],
+            grpHost: that.createUserByUserId(group.grpHostId)
+
+        };
+
+        return group;
+    };
+
+    this.createUserByUserId = function (usrId) {
+        var _usr = db.USER.find(function (usr) {
+            return usr.usrId === usrId;
+        });
+        var user = {
+            usrId: _usr.usrId,
+            usrName: _usr.usrName,
+            usrMobi: _usr.usrMobi
+        };
+
+        return user;
+    };
 };
 module.exports = new Server();
-//console.log( new Date());
 //# sourceMappingURL=server.js.map

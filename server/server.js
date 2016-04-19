@@ -1,13 +1,26 @@
+'use strict';
+
 /**
  * Created by User on 2016/3/24.
  */
-
-'use strict';
-const isDebug = true;
-
-const _ = require('lodash');
 require('source-map-support').install();
-const standardClassFactory = require('./standard-class-factory.js');
+
+const isDebug = true;
+const _ = require('lodash');
+//let db = require('./mock-db');
+
+let JsonDB = require('node-json-db');
+let jsonDb = new JsonDB("onigiri", true, true);
+let db = jsonDb.getData('/db');
+
+for (let index in db) {
+    if (typeof  db[index] === 'object') {
+        Array.observe(db[index], change=> {
+            jsonDb.push('/db', db);
+        });
+    }
+}
+
 
 var Server = function () {
 
@@ -17,31 +30,8 @@ var Server = function () {
 
     var app = express();
 
-    var db = require('./mock-db');
 
     var self = this;
-//
-//var group1 = [
-//    {
-//        grpHostId: 'c',
-//        dishes: '111',
-//        metId: '567',
-//        addr:"qqqqq",
-//        gorTime:"00:0",
-//        minAmount:"9999"
-//    }
-//
-//]
-
-    var joinGroup1 = [
-        {
-            usrId: 'd',
-            dishes: '0.1',
-            grpId: '6666'
-        }
-
-    ];
-
 
     var allowCrossDomain = function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -147,7 +137,7 @@ var Server = function () {
 
             self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
                 res.json(result);
-            }).catch(e=>{
+            }).catch(e=> {
                 res.json(e);
             });
 
@@ -226,8 +216,9 @@ var Server = function () {
 
     this.allGroup = function (callback) {
         let result = [];
+
         for (let _group of db.GROUP) {
-            let group = standardClassFactory.createClassGroupByGroupId(_group.grpId);
+            let group = this.createClassGroupByGroupId(_group.grpId);
             result.push(group);
 
         }
@@ -235,7 +226,7 @@ var Server = function () {
     };
 
     this.getGroupById = function (id, callback) {
-        let group = standardClassFactory.createClassGroupByGroupId(id);
+        let group = this.createClassGroupByGroupId(id);
         callback(group);
     };
 
@@ -259,7 +250,8 @@ var Server = function () {
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
-        let grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
+        let lastGroup = _.maxBy(db.GROUP, 'grpId');
+        let grpId = lastGroup ? lastGroup.grpId + 1 : 1;
         db.GROUP.push({
             grpId,
             grpHostId: grpHostId,
@@ -269,8 +261,9 @@ var Server = function () {
             //minAmount: minAmount
         });
         for (let dihId of dishes) {
+            let lastDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
             let gdh = {
-                gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
+                gdeId: lastDish ? lastDish.gdeId + 1 : 1,
                 dihId: Number(dihId),
                 grpId
             };
@@ -290,8 +283,12 @@ var Server = function () {
             }
 
             for (let {dihId,num} of dishes) {
+                if (num === 0 || !_.isNumber(num)) {
+                    continue;
+                }
+                let lastOrder = _.maxBy(db.ORDER, 'ordId');
                 db.ORDER.push({
-                    ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                    ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
                     dihId: dihId,
@@ -300,8 +297,9 @@ var Server = function () {
 
             }
 
+            let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
             db.GROUP_MEMBER.push({
-                gmrId: _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId).gmrId + 1,
+                gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId
             });
@@ -312,20 +310,19 @@ var Server = function () {
 
 
     this.convertOrdersToGroupedOrders = function (orders) {
-         let groupedOrders = [];
+        let groupedOrders = [];
         for (let order of orders) {
             let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
             if (tOrder) {
                 tOrder.orders.push(order);
             } else {
 
-                let group = standardClassFactory.createClassGroupByGroupId(order.grpId);
+                let group = this.createClassGroupByGroupId(order.grpId);
                 groupedOrders.push({group: group, orders: [order]});
             }
         }
         return groupedOrders;
     };
-
 
 
     this.getGroupedOrdersByUserId = function (usrId, callback) {
@@ -347,19 +344,21 @@ var Server = function () {
     };
 
     this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
-         return new Promise(resolve=> {
+        let that = this;
+
+        return new Promise(resolve=> {
             let groupedOrders = [];
             let groupedOrderSums = [];
 
 
             let groupIds = db.GROUP.filter(grp=>grp.grpHostId === hostId);
-             let orders = db.ORDER.filter(ord=>{
-                 //ord.grpId === groupId
+            let orders = db.ORDER.filter(ord=> {
+                //ord.grpId === groupId
 
-                 return db.GROUP.find(grp=>grp.grpId === ord.grpId).grpHostId === hostId;
-             }).map(ord=> {
+                return db.GROUP.find(grp=>grp.grpId === ord.grpId).grpHostId === hostId;
+            }).map(ord=> {
 
-                    let newOrd = {
+                let newOrd = {
                     ordId: ord.ordId,
                     grpId: ord.grpId,
                     usrId: ord.usrId,
@@ -369,7 +368,7 @@ var Server = function () {
                 return newOrd;
             });
 
-             //console.log('group',db.GROUP,'groupedOrders', orders);
+            //console.log('group',db.GROUP,'groupedOrders', orders);
 
             groupedOrders =
                 self.convertOrdersToGroupedOrders(orders);
@@ -378,15 +377,15 @@ var Server = function () {
                 groupedOrderSums = result;
             });
 
-             //处理空白团
-             let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
-             if(emptyGroups) {
-                 emptyGroups.map(eptGroup=>{
-                     let group = standardClassFactory.createClassGroupByGroupId(eptGroup.grpId);
-                     groupedOrders.push({group, orders:[]});
-                     groupedOrderSums.push({group,orderSums:[]});
-                 });
-             }
+            //处理空白团
+            let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
+            if (emptyGroups) {
+                emptyGroups.map(eptGroup=> {
+                    let group = that.createClassGroupByGroupId(eptGroup.grpId);
+                    groupedOrders.push({group, orders: []});
+                    groupedOrderSums.push({group, orderSums: []});
+                });
+            }
 
             resolve({groupedOrders, groupedOrderSums});
         });
@@ -414,7 +413,41 @@ var Server = function () {
         callback(groupedOrderSums);
     };
 
+    this.createClassGroupByGroupId = function (grpId) {
+        let that = this;
+        let group = db.GROUP.find(g=>g.grpId === grpId);
+        group = {
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
+            merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
+            grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId) || [],
+            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                let grpDish = {};
+                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || [],
+            grpHost: that.createUserByUserId(group.grpHostId),
+
+
+        };
+
+        return group;
+    }
+
+    this.createUserByUserId = function (usrId) {
+        let _usr = db.USER.find(usr=>usr.usrId === usrId);
+        let user = {
+            usrId: _usr.usrId,
+            usrName: _usr.usrName,
+            usrMobi: _usr.usrMobi,
+        };
+
+        return user;
+    }
+
 
 };
 module.exports = new Server();
-//console.log( new Date());

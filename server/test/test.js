@@ -2,11 +2,15 @@
 
 const assert = require('chai').assert;
 const server = require('./../dist/server');
-const db = require('../dist/mock-db');
+let db = require('../dist/mock-db');
 const _ = require('lodash');
 require('source-map-support').install();
 
 describe('Server', function () {
+    describe('#jsonDb',()=>{
+
+    });
+
     describe('#addUser()', function () {
         it('should insert an user : Jack,qqq,02-1231212 ', function (done) {
             server.addUser('Jack', 'qqq', '02-1231212', function (result) {
@@ -247,7 +251,7 @@ describe('Server', function () {
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
                 assert.property(result, 'grpHost');
-                assert.property(result.grpHost, 'usrMobi}}');
+                assert.property(result.grpHost, 'usrMobi');
                 assert.property(result.grpDishes[0], 'dish');
                 assert.property(result.grpDishes[0].dish, 'dihId');
                 done();

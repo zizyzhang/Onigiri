@@ -28,7 +28,7 @@ class OrderPage {
 
                 for (let groupDish of group.grpDishes) {
 
-                    self.ordersMap.set(groupDish.dish.dihId, '0');
+                    self.ordersMap.set(groupDish.dish.dihId, 0);
                 }
                 //console.log('map', self.ordersMap);
 
@@ -51,6 +51,9 @@ class OrderPage {
                 $$('#btnJoinGroup').click(()=> {
                     let dishes = [];
                     for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
+                        if(odrDishNum===0) {
+                            continue;
+                        }
                         dishes.push({dihId: odrDishId, num: odrDishNum});
                     }
                     let grpId = Number(cookies.get('selectedGroupId'));
