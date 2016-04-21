@@ -9,10 +9,16 @@ const isDebug = true;
 
 const _ = require('lodash');
 //let db = require('./mock-db');
+const path = require('path');
 
 let JsonDB = require('node-json-db');
-let jsonDb = new JsonDB("onigiri", true, true);
+
+//debugger;
+let jsonDb = new JsonDB("./onigiri", true, true);
 let db = jsonDb.getData('/db');
+//console.log(__dirname);
+
+
 db.pushToJsonDb = function (table, value) {
          jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
@@ -24,7 +30,7 @@ var Server = function () {
         if(isDebug) {
             db.pushToJsonDb = function (table, value) {
                 db[table].push(value);
-            };
+             };
         }
     };
 
@@ -425,6 +431,11 @@ var Server = function () {
     this.createClassGroupByGroupId = function (grpId) {
         let that = this;
         let group = db.GROUP.find(g=>g.grpId === grpId);
+
+        if(!group){
+            return null;
+        }
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,

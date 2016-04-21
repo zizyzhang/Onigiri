@@ -10,10 +10,15 @@ var isDebug = true;
 
 var _ = require('lodash');
 //let db = require('./mock-db');
+var path = require('path');
 
 var JsonDB = require('node-json-db');
-var jsonDb = new JsonDB("onigiri", true, true);
+
+//debugger;
+var jsonDb = new JsonDB("./onigiri", true, true);
 var db = jsonDb.getData('/db');
+//console.log(__dirname);
+
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
@@ -353,8 +358,7 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
-        console.log(JSON.stringify({usrId, dishes, grpId}));
-        console.log(JSON.stringify(db.ORDER,db.GROUP));
+        //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise(function (resolve, reject) {
             //拒绝用户对同一个group连续点两次餐点
@@ -620,6 +624,11 @@ var Server = function Server() {
         var group = db.GROUP.find(function (g) {
             return g.grpId === grpId;
         });
+
+        if (!group) {
+            return null;
+        }
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
