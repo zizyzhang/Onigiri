@@ -7,6 +7,7 @@
 require('source-map-support').install();
 
 var isDebug = true;
+
 var _ = require('lodash');
 //let db = require('./mock-db');
 
@@ -14,11 +15,19 @@ var JsonDB = require('node-json-db');
 var jsonDb = new JsonDB("onigiri", true, true);
 var db = jsonDb.getData('/db');
 db.pushToJsonDb = function (table, value) {
-    db[table].push(value);
-    jsonDb.push('/db/' + table, value);
+    jsonDb.push('/db/' + table + '[]', value);
+    //    db[table].push(value);
 };
 
 var Server = function Server() {
+
+    this.testMode = function () {
+        if (isDebug) {
+            db.pushToJsonDb = function (table, value) {
+                db[table].push(value);
+            };
+        }
+    };
 
     var express = require('express');
     var bodyParser = require('body-parser');
@@ -27,6 +36,8 @@ var Server = function Server() {
     var app = express();
 
     var self = this;
+
+    this.db = isDebug ? db : undefined;
 
     var allowCrossDomain = function allowCrossDomain(req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -342,7 +353,8 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
-        //console.log(JSON.stringify({usrId, dishes, grpId}));
+        console.log(JSON.stringify({usrId, dishes, grpId}));
+        console.log(JSON.stringify(db.ORDER,db.GROUP));
 
         return new Promise(function (resolve, reject) {
             //拒绝用户对同一个group连续点两次餐点

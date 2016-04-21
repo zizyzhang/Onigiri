@@ -35,6 +35,13 @@
                 "usrPwd": "qqq",
                 "usrCreateTime": "2016-04-20T12:23:29.058Z",
                 "usrMobi": "02-1231212"
+            },
+            {
+                "usrId": 6,
+                "usrName": "Jack",
+                "usrPwd": "qqq",
+                "usrCreateTime": "2016-04-21T08:35:24.444Z",
+                "usrMobi": "02-1231212"
             }
         ],
         "ORDER": [
@@ -183,6 +190,20 @@
                 "metId": 1,
                 "grpAddr": "daor",
                 "grpTime": "00:00"
+            },
+            {
+                "grpId": 7,
+                "grpHostId": 1,
+                "metId": 1,
+                "grpAddr": "daor",
+                "grpTime": "00:00"
+            },
+            {
+                "grpId": 8,
+                "grpHostId": 1,
+                "metId": 1,
+                "grpAddr": "daor",
+                "grpTime": "00:00"
             }
         ],
         "GROUP_MEMBER": [
@@ -299,6 +320,36 @@
                 "gdeId": 14,
                 "dihId": 3,
                 "grpId": 6
+            },
+            {
+                "gdeId": 15,
+                "dihId": 1,
+                "grpId": 7
+            },
+            {
+                "gdeId": 16,
+                "dihId": 2,
+                "grpId": 7
+            },
+            {
+                "gdeId": 17,
+                "dihId": 3,
+                "grpId": 7
+            },
+            {
+                "gdeId": 18,
+                "dihId": 1,
+                "grpId": 8
+            },
+            {
+                "gdeId": 19,
+                "dihId": 2,
+                "grpId": 8
+            },
+            {
+                "gdeId": 20,
+                "dihId": 3,
+                "grpId": 8
             }
         ]
     }

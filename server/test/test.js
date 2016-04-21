@@ -2,14 +2,12 @@
 
 const assert = require('chai').assert;
 const server = require('./../dist/server');
-let db = require('../dist/mock-db');
+let db = server.db;
 const _ = require('lodash');
 require('source-map-support').install();
 
 describe('Server', function () {
-    describe('#jsonDb',()=>{
-
-    });
+   server.testMode();
 
     describe('#addUser()', function () {
         it('should insert an user : Jack,qqq,02-1231212 ', function (done) {
@@ -361,18 +359,7 @@ describe('Server', function () {
         });
     });
 
-    describe('#Observe',()=>{
 
-        it.only('observe an array',done=>{
-            let array = [{id:1}, 2, 3];
-            Array.observe(array,change=>{
-                console.log(change);
-                done();
-            });
-            array.push(1);
-            array[0].id = 2 ;
-        });
 
-    });
 
 });
