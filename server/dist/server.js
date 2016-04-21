@@ -4,27 +4,35 @@
  * Created by User on 2016/3/24.
  */
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 require('source-map-support').install();
 
 var isDebug = true;
+
 var _ = require('lodash');
 //let db = require('./mock-db');
+var path = require('path');
 
 var JsonDB = require('node-json-db');
-var jsonDb = new JsonDB("onigiri", true, true);
-var db = jsonDb.getData('/db');
 
-for (var index in db) {
-    if (_typeof(db[index]) === 'object') {
-        Array.observe(db[index], function (change) {
-            jsonDb.push('/db', db);
-        });
-    }
-}
+//debugger;
+var jsonDb = new JsonDB("./onigiri", true, true);
+var db = jsonDb.getData('/db');
+//console.log(__dirname);
+
+db.pushToJsonDb = function (table, value) {
+    jsonDb.push('/db/' + table + '[]', value);
+    //    db[table].push(value);
+};
 
 var Server = function Server() {
+
+    this.testMode = function () {
+        if (isDebug) {
+            db.pushToJsonDb = function (table, value) {
+                db[table].push(value);
+            };
+        }
+    };
 
     var express = require('express');
     var bodyParser = require('body-parser');
@@ -33,6 +41,8 @@ var Server = function Server() {
     var app = express();
 
     var self = this;
+
+    this.db = isDebug ? db : undefined;
 
     var allowCrossDomain = function allowCrossDomain(req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -188,7 +198,7 @@ var Server = function Server() {
         var newUser = { usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi };
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            db.USER.push(newUser);
+            db.pushToJsonDb('USER', newUser);
             callback({ success: 1 });
             return;
         } else {
@@ -305,7 +315,7 @@ var Server = function Server() {
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         var lastGroup = _.maxBy(db.GROUP, 'grpId');
         var grpId = lastGroup ? lastGroup.grpId + 1 : 1;
-        db.GROUP.push({
+        db.pushToJsonDb('GROUP', {
             grpId: grpId,
             grpHostId: grpHostId,
             metId: metId,
@@ -327,7 +337,7 @@ var Server = function Server() {
                     dihId: Number(dihId),
                     grpId: grpId
                 };
-                db.GROUP_DISHES.push(gdh);
+                db.pushToJsonDb("GROUP_DISHES", gdh);
             }
         } catch (err) {
             _didIteratorError4 = true;
@@ -373,7 +383,7 @@ var Server = function Server() {
                         continue;
                     }
                     var lastOrder = _.maxBy(db.ORDER, 'ordId');
-                    db.ORDER.push({
+                    db.pushToJsonDb("ORDER", {
                         ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                         grpId: grpId,
                         usrId: usrId,
@@ -399,7 +409,7 @@ var Server = function Server() {
             var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
                 return gmr.gmrId;
             });
-            db.GROUP_MEMBER.push({
+            db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId
@@ -614,6 +624,11 @@ var Server = function Server() {
         var group = db.GROUP.find(function (g) {
             return g.grpId === grpId;
         });
+
+        if (!group) {
+            return null;
+        }
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,

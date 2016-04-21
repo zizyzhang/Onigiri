@@ -21,58 +21,10 @@
                 "usrPwd": "",
                 "usrCreateTime": "16/03/25/00:33:22",
                 "usrMobi": "094573321"
-            },
-            {
-                "usrId": 4,
-                "usrName": "Jack",
-                "usrPwd": "qqq",
-                "usrCreateTime": "2016-04-19T13:53:24.146Z",
-                "usrMobi": "02-1231212"
             }
         ],
         "ORDER": [
-            {
-                "ordId": 1,
-                "grpId": 1,
-                "usrId": 1,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 2,
-                "grpId": 1,
-                "usrId": 2,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 3,
-                "grpId": 1,
-                "usrId": 1,
-                "dihId": 2,
-                "ordNum": 1
-            },
-            {
-                "ordId": 4,
-                "grpId": 2,
-                "usrId": 1,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 5,
-                "grpId": 3,
-                "usrId": 1,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 6,
-                "grpId": 3,
-                "usrId": 2,
-                "dihId": 1,
-                "ordNum": 1
-            }
+
         ],
         "MERCHANT": [
             {
@@ -135,120 +87,16 @@
             }
         ],
         "GROUP": [
-            {
-                "grpId": 1,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "road",
-                "grpTime": "13:33"
-            },
-            {
-                "grpId": 2,
-                "grpHostId": 2,
-                "metId": 2,
-                "grpAddr": "road",
-                "grpTime": "13:33"
-            },
-            {
-                "grpId": 3,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00"
-            },
-            {
-                "grpId": 4,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00"
-            }
+
         ],
         "GROUP_MEMBER": [
-            {
-                "gmrId": 1,
-                "grpId": 1,
-                "usrId": 2
-            },
-            {
-                "gmrId": 2,
-                "grpId": 1,
-                "usrId": 3
-            },
-            {
-                "gmrId": 3,
-                "usrId": 1,
-                "grpId": 2
-            },
-            {
-                "gmrId": 4,
-                "usrId": 1,
-                "grpId": 3
-            },
-            {
-                "gmrId": 5,
-                "usrId": 2,
-                "grpId": 3
-            }
+
         ],
         "GROUP_ORDER": [
-            {
-                "gorId": 0,
-                "grpId": 1,
-                "dihId": 1
-            },
-            {
-                "gorId": 1,
-                "grpId": 1,
-                "dihId": 2
-            },
-            {
-                "gorId": 2,
-                "grpId": 2,
-                "dihId": 3
-            }
+
         ],
         "GROUP_DISHES": [
-            {
-                "gdeId": 1,
-                "dihId": 1,
-                "grpId": 1
-            },
-            {
-                "gdeId": 2,
-                "dihId": 2,
-                "grpId": 1
-            },
-            {
-                "gdeId": 3,
-                "dihId": 1,
-                "grpId": 3
-            },
-            {
-                "gdeId": 4,
-                "dihId": 2,
-                "grpId": 3
-            },
-            {
-                "gdeId": 5,
-                "dihId": 3,
-                "grpId": 3
-            },
-            {
-                "gdeId": 6,
-                "dihId": 1,
-                "grpId": 4
-            },
-            {
-                "gdeId": 7,
-                "dihId": 2,
-                "grpId": 4
-            },
-            {
-                "gdeId": 8,
-                "dihId": 3,
-                "grpId": 4
-            }
+
         ]
     }
 }
