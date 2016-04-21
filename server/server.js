@@ -12,14 +12,11 @@ const _ = require('lodash');
 let JsonDB = require('node-json-db');
 let jsonDb = new JsonDB("onigiri", true, true);
 let db = jsonDb.getData('/db');
+db.pushToJsonDb = function(table,value){
+    db[table].push(value);
+    jsonDb.push('/db/'+table, value);
+};
 
-for (let index in db) {
-    if (typeof  db[index] === 'object') {
-        Array.observe(db[index], change=> {
-            jsonDb.push('/db', db);
-        });
-    }
-}
 
 
 var Server = function () {
@@ -182,7 +179,7 @@ var Server = function () {
 
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            db.USER.push(newUser);
+            db.pushToJsonDb('USER', newUser);
             callback({success: 1});
             return;
         } else {
@@ -252,7 +249,7 @@ var Server = function () {
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         let lastGroup = _.maxBy(db.GROUP, 'grpId');
         let grpId = lastGroup ? lastGroup.grpId + 1 : 1;
-        db.GROUP.push({
+        db.pushToJsonDb('GROUP',{
             grpId,
             grpHostId: grpHostId,
             metId: metId,
@@ -267,7 +264,7 @@ var Server = function () {
                 dihId: Number(dihId),
                 grpId
             };
-            db.GROUP_DISHES.push(gdh);
+            db.pushToJsonDb("GROUP_DISHES",gdh);
         }
         callback({success: 1});
     };
@@ -287,7 +284,7 @@ var Server = function () {
                     continue;
                 }
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
-                db.ORDER.push({
+                db.pushToJsonDb("ORDER",{
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
@@ -298,7 +295,7 @@ var Server = function () {
             }
 
             let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
-            db.GROUP_MEMBER.push({
+            db.pushToJsonDb("GROUP_MEMBER",{
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId

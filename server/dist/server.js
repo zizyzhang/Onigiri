@@ -4,8 +4,6 @@
  * Created by User on 2016/3/24.
  */
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 require('source-map-support').install();
 
 var isDebug = true;
@@ -15,14 +13,10 @@ var _ = require('lodash');
 var JsonDB = require('node-json-db');
 var jsonDb = new JsonDB("onigiri", true, true);
 var db = jsonDb.getData('/db');
-
-for (var index in db) {
-    if (_typeof(db[index]) === 'object') {
-        Array.observe(db[index], function (change) {
-            jsonDb.push('/db', db);
-        });
-    }
-}
+db.pushToJsonDb = function (table, value) {
+    db[table].push(value);
+    jsonDb.push('/db/' + table, value);
+};
 
 var Server = function Server() {
 
@@ -188,7 +182,7 @@ var Server = function Server() {
         var newUser = { usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi };
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            db.USER.push(newUser);
+            db.pushToJsonDb('USER', newUser);
             callback({ success: 1 });
             return;
         } else {
@@ -305,7 +299,7 @@ var Server = function Server() {
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
         var lastGroup = _.maxBy(db.GROUP, 'grpId');
         var grpId = lastGroup ? lastGroup.grpId + 1 : 1;
-        db.GROUP.push({
+        db.pushToJsonDb('GROUP', {
             grpId: grpId,
             grpHostId: grpHostId,
             metId: metId,
@@ -327,7 +321,7 @@ var Server = function Server() {
                     dihId: Number(dihId),
                     grpId: grpId
                 };
-                db.GROUP_DISHES.push(gdh);
+                db.pushToJsonDb("GROUP_DISHES", gdh);
             }
         } catch (err) {
             _didIteratorError4 = true;
@@ -373,7 +367,7 @@ var Server = function Server() {
                         continue;
                     }
                     var lastOrder = _.maxBy(db.ORDER, 'ordId');
-                    db.ORDER.push({
+                    db.pushToJsonDb("ORDER", {
                         ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                         grpId: grpId,
                         usrId: usrId,
@@ -399,7 +393,7 @@ var Server = function Server() {
             var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
                 return gmr.gmrId;
             });
-            db.GROUP_MEMBER.push({
+            db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId

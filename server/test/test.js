@@ -361,5 +361,18 @@ describe('Server', function () {
         });
     });
 
+    describe('#Observe',()=>{
+
+        it.only('observe an array',done=>{
+            let array = [{id:1}, 2, 3];
+            Array.observe(array,change=>{
+                console.log(change);
+                done();
+            });
+            array.push(1);
+            array[0].id = 2 ;
+        });
+
+    });
 
 });
