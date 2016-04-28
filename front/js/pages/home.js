@@ -32,6 +32,10 @@ class Home  { //TODO first
 
                 });
 
+                $$('.js-btn-contact-host').click(function () {
+                    window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
+                });
+
                 $$('.btn-group-detail').on('click', function () {
 
                     let grpId = $$(this).dataset().grpId;

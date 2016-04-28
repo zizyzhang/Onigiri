@@ -10,6 +10,7 @@ let $$ = Dom7; // jshint ignore:line
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
 let metId=0;
+const cookies = require('js-cookie');
 
 class SelectMerchantPage {
     constructor(_myApp, _mainView) {
@@ -25,19 +26,19 @@ class SelectMerchantPage {
 
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.allMerchant(), page, ()=> {
                 //函数绑定要在完成template之后
-                $$('.isChecked').on('click',function(){
-                    metId = $$(this).dataset().metId;
-                    console.log(`radio-metId : ${metId}`);
+                //$$('.isChecked').on('touchstart',function(){
+                //  });
 
-                });
                 $$('#btn-create-menu').on('click', function () {
                     //let metId = $$(this).dataset().metId;
                     //let metId = $$('').dataset().metId;
 
+
+                    metId = $$('input:checked').dataset().metId;
+
                     console.log(`metId : ${metId}`);
                     mainView.router.loadPage(`create-menu.html?metId=${metId}`); //傳 id
-
-
+                    cookies.set('selectedMerchantId', metId);
 
                 });
 

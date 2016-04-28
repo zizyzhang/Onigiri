@@ -3,7 +3,7 @@ let isDebug = true;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
-     GroupDetailPage = require('./pages/group-detail.js'),
+    GroupDetailPage = require('./pages/group-detail.js'),
     OrderPage = require('./pages/order.js'),
     GroupSettingPage = require('./pages/group-setting.js'),
     SelectMerchantPage = require('./pages/select-merchant.js'),
@@ -35,9 +35,24 @@ let mainView = myApp.addView('.view-main', {
     contentCache: true
 });
 
+// TODO CHEAT
+(() => {
+    if (isDebug) {
+        cookies.set('user', {usrId: 1, usrName: 'firstUser'});
+        cookies.set('selectedGroupId', 1);
+        myApp.closeModal();
+
+
+        mainView.router.loadPage('home.html');
+        //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
+        console.log('cheat');
+    }
+})();
+
+
 //加载page,绑定page的event
 let pageEventBind = function () {
-     let groupDetailPage = new GroupDetailPage(myApp, mainView);
+    let groupDetailPage = new GroupDetailPage(myApp, mainView);
     let orderPage = new OrderPage(myApp, mainView);
     let selectMerchantPage = new SelectMerchantPage(myApp, mainView);
     let groupSettingPage = new GroupSettingPage(myApp, mainView);
@@ -51,12 +66,11 @@ let pageEventBind = function () {
     selectMerchantPage.bind();
     groupSettingPage.bind();
     createMenuPage.bind();
-    home .bind();
+    home.bind();
     indexPage.bind();
     myGoups.bind();
 
- }();
-
+}();
 
 
 // Show/hide preloader for remote ajax loaded pages
@@ -80,18 +94,3 @@ $$(document).on('ajaxComplete', function (e) {
 
 
 
-
-// TODO CHEAT
-(() => {
-    if (isDebug) {
-        myApp.closeModal();
-
-        cookies.set('user', {usrId: 1, usrName: 'firstUser'});
-        cookies.set('selectedGroupId', 1);
-
-        mainView.router.loadPage('home.html');
-
-
-         console.log('cheat');
-    }
-})();
