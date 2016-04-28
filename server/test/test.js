@@ -243,17 +243,21 @@ describe('Server', function () {
 
         it('should get an instance of Group object', function (done) {
             server.getGroupById(1, function (result) {
+                console.log(result);
+
                 assert.property(result, 'grpId');
                 assert.property(result, 'grpHostName');
                 assert.property(result, 'merchant');
-                assert.property(result, 'grpAddr');
+                 assert.property(result, 'grpAddr');
                 assert.property(result, 'grpTime');
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
                 assert.property(result, 'grpHost');
+                assert.property(result, 'grpStatus');
                 assert.property(result.grpHost, 'usrMobi');
                 assert.property(result.grpDishes[0], 'dish');
                 assert.property(result.grpDishes[0].dish, 'dihId');
+                assert.equal(result.grpStatus,0);
                 done();
             });
         });
@@ -296,7 +300,6 @@ describe('Server', function () {
             });
         });
     });
-
 
     describe('#getGroupedOrdersAndSumsByHostIdPromise()', function () {
         it('returns an array of Grouped OrdersAndSums ', function (done) {
@@ -362,5 +365,15 @@ describe('Server', function () {
         });
     });
 
+    describe('#StatusPassedByGroupId()',function(){
+        console.log(db.GROUP);
+        it('return a status',function(done){
+            server.getStatus(1).then(result=> {
+                 assert.isNumber(result);
+                assert.equal(0,result);
+                done();
+            }).catch(done);
 
+        });
+    });
 });

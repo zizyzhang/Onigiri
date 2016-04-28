@@ -92,8 +92,9 @@ var MockDb = function () {
             //dishes: [],
             metId: 1,//商家Id
             grpAddr: 'road',//取餐地点
-            grpTime: "13:33"//取餐时间
+            grpTime: "13:33",//取餐时间
             //minAmount: '9999'
+            status : 0
         },
         {
             grpId: 2,//团的Id
@@ -101,8 +102,9 @@ var MockDb = function () {
             //dishes: [],
             metId: 2,//商家Id
             grpAddr: 'road',//取餐地点
-            grpTime: "13:33"//取餐时间
+            grpTime: "13:33",//取餐时间
             //minAmount: '9999'
+            status : 1
         }
 
     ];
