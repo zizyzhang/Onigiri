@@ -143,13 +143,6 @@ var Server = function Server() {
         });
     });
 
-    app.get('/StatusPassedByGroupId/:id', function (req, res) {
-        var groupId = Number(req.params.id);
-        self.getStatus(groupId, function (result) {
-            res.json(result);
-        });
-    });
-
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
         var usrId = Number(req.params.id);
         self.getGroupedOrdersByUserId(usrId, function (result) {
@@ -163,6 +156,13 @@ var Server = function Server() {
 
         self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
+        });
+    });
+
+    app.get('/StatusPassedByGroupId/:id', function (req, res) {
+        var groupId = Number(req.params.id);
+        self.getStatus(groupId, function (result) {
+            res.json(result);
         });
     });
 
@@ -315,15 +315,6 @@ var Server = function Server() {
         callback(result);
     };
 
-    this.getStatus = function (grpId) {
-        return new Promise(function (resolve) {
-            var status = db.GROUP.find(function (g) {
-                return grpId === g.grpId;
-            }).grpStatus;
-            resolve(status);
-        });
-    };
-
     this.getMerchantById = function (id, callback) {
         var result = db.MERCHANT.find(function (merchant) {
             return merchant.metId === id;
@@ -345,8 +336,8 @@ var Server = function Server() {
             grpTime: gorTime,
             grpStatus: 0
 
+            //minAmount: minAmount
         });
-        //minAmount: minAmount
         var _iteratorNormalCompletion4 = true;
         var _didIteratorError4 = false;
         var _iteratorError4 = undefined;
@@ -678,7 +669,6 @@ var Server = function Server() {
             }) || [],
             grpHost: that.createUserByUserId(group.grpHostId),
             grpStatus: group.grpStatus
-
         };
 
         return group;
@@ -696,6 +686,31 @@ var Server = function Server() {
 
         return user;
     };
+    this.getStatus = function (grpId) {
+        return new Promise(function (resolve) {
+            var status = db.GROUP.find(function (g) {
+                return grpId === g.grpId;
+            }).grpStatus;
+            resolve(status);
+        });
+    };
+
+    this.groupStatusChanged = function (grpId, grpStatus, callback) {
+
+        var status = db.GROUP.find(function (s) {
+            return grpId === s.grpId;
+        }).grpStatus;
+
+        if (status !== -1 && grpStatus - status === 1) {
+            db.GROUP.find(function (s) {
+                return grpId === s.grpId;
+            }).grpStatus = grpStatus;
+            callback({ success: 1 });
+        } else {
+            callback({ success: 0 });
+        }
+    };
 };
+
 module.exports = new Server();
 //# sourceMappingURL=server.js.map

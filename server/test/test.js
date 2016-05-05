@@ -243,7 +243,7 @@ describe('Server', function () {
 
         it('should get an instance of Group object', function (done) {
             server.getGroupById(1, function (result) {
-                console.log(result);
+                //console.log(result);
 
                 assert.property(result, 'grpId');
                 assert.property(result, 'grpHostName');
@@ -281,8 +281,8 @@ describe('Server', function () {
             debugger;
             server.getGroupedOrdersByUserId(1, function (result) {
                 assert.isArray(result);
-                console.log(JSON.stringify(result));
-                console.log(db.ORDER);
+                //console.log(JSON.stringify(result));
+                //console.log(db.ORDER);
                 assert.property(result[0].orders[0], 'ordId');
                 assert.property(result[0].orders[0], 'usrId');
                 assert.property(result[0].orders[0], 'dish');
@@ -304,12 +304,12 @@ describe('Server', function () {
     describe('#getGroupedOrdersAndSumsByHostIdPromise()', function () {
         it('returns an array of Grouped OrdersAndSums ', function (done) {
             server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
-                console.log(result);
+                //console.log(result);
                 assert.isArray(result.groupedOrders);
                 assert.isArray(result.groupedOrderSums);
 
                 //has Group Object
-                console.log(result.groupedOrders[0].group);
+                //console.log(result.groupedOrders[0].group);
                 assert.property(result.groupedOrders[0].group, 'grpId');
                 assert.property(result.groupedOrders[0].group, 'grpHostName');
                 assert.property(result.groupedOrders[0].group, 'merchant');
@@ -329,7 +329,7 @@ describe('Server', function () {
                 assert.property(result.groupedOrders[0].orders[0], 'ordNum');
                 assert.property(result.groupedOrders[0].orders[0], 'usrId');
 
-                console.log(result.groupedOrderSums[0]);
+                //console.log(result.groupedOrderSums[0]);
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'group');
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'dish');
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'ordNum');
@@ -342,6 +342,7 @@ describe('Server', function () {
                 server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
                     result.groupedOrders[0].orders.map(order=> {
                         db.GROUP.filter(grp=>grp.grpId === order.grpId).map(g=> {
+                            //console.log(g.grpHostId);
                             assert.equal(g.grpHostId, 1);
                         });
                     });
@@ -351,7 +352,7 @@ describe('Server', function () {
 
                     let assertionOrder = result.groupedOrders.find(gos=>gos.group.grpId === 2);
 
-                    console.log(result.groupedOrders);
+                    //console.log(result.groupedOrders);
 
                     assert.equal(2, result.groupedOrders.length);
 
@@ -366,7 +367,7 @@ describe('Server', function () {
     });
 
     describe('#StatusPassedByGroupId()',function(){
-        console.log(db.GROUP);
+        //console.log(db.GROUP);
         it('return a status',function(done){
             server.getStatus(1).then(result=> {
                  assert.isNumber(result);
@@ -376,4 +377,20 @@ describe('Server', function () {
 
         });
     });
+    describe('#groupStatusChanged()',function(){
+
+        it('Group Status has Changed 1 from 0',function(done){
+            server.groupStatusChanged(1,1,function (result) {
+                assert.equal(1,result.success);
+                done();
+            });
+        });
+        it('Group Status Change failed',function(done){
+            server.groupStatusChanged(2,2,function (result) {
+                assert.equal(0,result.success);
+                done();
+            });
+        });
+    });
+
 });
