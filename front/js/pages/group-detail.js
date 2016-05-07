@@ -21,12 +21,18 @@ class GroupDetailPage {
             console.log('group-detail onPageBeforeInit');
             console.log(page.query);
 
+
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
                 $$('#btnJoin').on('click', function () {
                     mainView.router.loadPage('order.html');
+
+
                 });
 
+
             });
+
+
         });
 
         myApp.onPageInit('group-detail', (page) => {

@@ -6,8 +6,11 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let home = require('./home.js');
 const Public = require('../public.js');
 const cookies = require('js-cookie');
+
+
 
 class IndexPage {
     constructor(_myApp, _mainView) {
@@ -18,10 +21,32 @@ class IndexPage {
 
     bind() {
         $$(document).on('DOMContentLoaded',function(){
+            //var foo = $$import("home.jsl");
             $$('#btnCreateGroup').click(function () {
                 mainView.router.loadPage({url: 'select-merchant.html'});
 
             });
+
+            //$$('#btnNearGroup').click(function () {
+            //    mainView.router.loadPage({url: 'select-merchant.html'});
+            //    console.log("aa");
+            //});
+
+            $$('#btnNearGroup').click(function () {
+                console.log("aa");
+                //mainView.router.loadPage({url: 'home.html'});
+                mainView.router.loadPage({url: 'home.html'});
+
+                home.changeGroupTab();
+            });
+            $$('#myOrder').click(function () {
+                console.log("aa");
+                mainView.router.loadPage({url: 'home.html'});
+                //mainView.router.loadPage({url: 'home.html'});
+            });
+
+
+
 
             $$('#btnMyGroups').click(function () {
 
@@ -56,6 +81,13 @@ class IndexPage {
                 });
 
             });
+
+            //$$.getScript("home.js", function(){
+            //    changeGroupTab();
+            //});
+
+
+
         });
 
 
