@@ -46,15 +46,34 @@ class Home  { //TODO first
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
                 });
+                $$('.card-img').on('click', function () {
 
+                    let grpId = $$(this).dataset().grpId;
+                    console.log(`grpId : ${grpId}`);
+
+                    cookies.set('selectedGroupId', grpId);
+
+                    mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+                });
+                $$('#aaa').on('click', function () {
+                    changeTabGroup();
+                    //console.log("asdfasdfas");
+                    //myApp.showTab('#tabMyOrders');
+
+                });
 
             });
-
-
         });
+
     }
+   //static function changeTabGroup(){
+   //       console.log("asdfasdfas");
+        // myApp.showTab('#tabMyOrders');
+    //}
+
 
 }
+
 
 module.exports = Home  ;////TODO third
 //TODO fourth : 加入到Main.js里面注册bind方法
