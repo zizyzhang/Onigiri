@@ -20,17 +20,17 @@ let db = jsonDb.getData('/db');
 
 
 db.pushToJsonDb = function (table, value) {
-         jsonDb.push('/db/' + table + '[]', value);
+    jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
 };
 
 var Server = function () {
 
-    this.testMode = function(){
-        if(isDebug) {
+    this.testMode = function () {
+        if (isDebug) {
             db.pushToJsonDb = function (table, value) {
                 db[table].push(value);
-             };
+            };
         }
     };
 
@@ -44,8 +44,6 @@ var Server = function () {
     var self = this;
 
     this.db = isDebug ? db : undefined;
-
-
 
 
     var allowCrossDomain = function (req, res, next) {
@@ -159,6 +157,7 @@ var Server = function () {
         }
     );
 
+
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
             var usrId = Number(req.params.id);
             self.getGroupedOrdersByUserId(usrId, result=> {
@@ -174,6 +173,15 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
+
+    app.get('/StatusPassedByGroupId/:id', function (req, res) {
+            var groupId = Number(req.params.id);
+            self.getStatus(groupId, result => {
+                res.json(result);
+            });
+        }
+    );
+
 
     app.listen(8080, function () {
         console.log('' +
@@ -193,7 +201,13 @@ var Server = function () {
 
 
         var usrCreateTime = new Date();
-        var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
+        var newUser = {
+            usrId: usrId,
+            usrName: usrName,
+            usrPwd: usrPwd,
+            usrCreateTime: usrCreateTime,
+            usrMobi: usrMobi
+        };
 
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
@@ -272,7 +286,9 @@ var Server = function () {
             grpHostId: grpHostId,
             metId: metId,
             grpAddr: addr,
-            grpTime: gorTime
+            grpTime: gorTime,
+            grpStatus: 0
+
             //minAmount: minAmount
         });
         for (let dihId of dishes) {
@@ -347,7 +363,7 @@ var Server = function () {
                 grpId: ord.grpId,
                 usrId: ord.usrId,
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                ordNum: ord.ordNum,
+                ordNum: ord.ordNum
             };
             return newOrd;
         });
@@ -378,7 +394,7 @@ var Server = function () {
                     grpId: ord.grpId,
                     usrId: ord.usrId,
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                    ordNum: ord.ordNum,
+                    ordNum: ord.ordNum
                 };
                 return newOrd;
             });
@@ -432,7 +448,7 @@ var Server = function () {
         let that = this;
         let group = db.GROUP.find(g=>g.grpId === grpId);
 
-        if(!group){
+        if (!group) {
             return null;
         }
 
@@ -450,24 +466,46 @@ var Server = function () {
                 return grpDish;
             }) || [],
             grpHost: that.createUserByUserId(group.grpHostId),
-
-
+            grpStatus: group.grpStatus
         };
 
         return group;
-    }
+    };
 
     this.createUserByUserId = function (usrId) {
         let _usr = db.USER.find(usr=>usr.usrId === usrId);
         let user = {
             usrId: _usr.usrId,
             usrName: _usr.usrName,
-            usrMobi: _usr.usrMobi,
+            usrMobi: _usr.usrMobi
         };
 
         return user;
-    }
+    };
+    this.getStatus = function (grpId) {
+        return new Promise(resolve=> {
+            let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
+            resolve(status);
+        });
+    };
+
+    this.groupStatusChanged = function (grpId, grpStatus,callback) {
+
+        let status = db.GROUP.find(s=>grpId === s.grpId).grpStatus;
+
+        if (status !== -1 && grpStatus - status === 1) {
+            db.GROUP.find(s=>grpId === s.grpId).grpStatus = grpStatus;
+            callback({success:1});
+        }
+        else{
+            callback({success:0});
+        }
+    };
+
 
 
 };
+
+
 module.exports = new Server();
+

@@ -6,9 +6,13 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let home = require('./home.js');
+
 const Public = require('../public.js');
 const cookies = require('js-cookie');
 
+
+let homejschange = new home();
 class IndexPage {
     constructor(_myApp, _mainView) {
         myApp = _myApp;
@@ -17,7 +21,8 @@ class IndexPage {
     }
 
     bind() {
-        $$(document).on('DOMContentLoaded',function(){
+        $$(document).on('DOMContentLoaded', function () {
+
             $$('#btnCreateGroup').click(function () {
                 mainView.router.loadPage({url: 'select-merchant.html'});
 
@@ -56,6 +61,16 @@ class IndexPage {
                 });
 
             });
+
+            $$('#tabNearGroups').click(function () {
+                homejschange.changeTabGroup();
+            });
+            $$('#tabOrders').click(function () {
+
+                homejschange.changeTabOrder();
+                //changeTabGroup();
+            });
+
         });
 
 

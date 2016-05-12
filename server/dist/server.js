@@ -159,6 +159,13 @@ var Server = function Server() {
         });
     });
 
+    app.get('/StatusPassedByGroupId/:id', function (req, res) {
+        var groupId = Number(req.params.id);
+        self.getStatus(groupId, function (result) {
+            res.json(result);
+        });
+    });
+
     app.listen(8080, function () {
         console.log('' + 'app listening on port 8080!');
     });
@@ -195,7 +202,13 @@ var Server = function Server() {
         }
 
         var usrCreateTime = new Date();
-        var newUser = { usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi };
+        var newUser = {
+            usrId: usrId,
+            usrName: usrName,
+            usrPwd: usrPwd,
+            usrCreateTime: usrCreateTime,
+            usrMobi: usrMobi
+        };
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
             db.pushToJsonDb('USER', newUser);
@@ -320,7 +333,9 @@ var Server = function Server() {
             grpHostId: grpHostId,
             metId: metId,
             grpAddr: addr,
-            grpTime: gorTime
+            grpTime: gorTime,
+            grpStatus: 0
+
             //minAmount: minAmount
         });
         var _iteratorNormalCompletion4 = true;
@@ -652,8 +667,8 @@ var Server = function Server() {
                 _.assign(grpDish, grh);
                 return grpDish;
             }) || [],
-            grpHost: that.createUserByUserId(group.grpHostId)
-
+            grpHost: that.createUserByUserId(group.grpHostId),
+            grpStatus: group.grpStatus
         };
 
         return group;
@@ -671,6 +686,31 @@ var Server = function Server() {
 
         return user;
     };
+    this.getStatus = function (grpId) {
+        return new Promise(function (resolve) {
+            var status = db.GROUP.find(function (g) {
+                return grpId === g.grpId;
+            }).grpStatus;
+            resolve(status);
+        });
+    };
+
+    this.groupStatusChanged = function (grpId, grpStatus, callback) {
+
+        var status = db.GROUP.find(function (s) {
+            return grpId === s.grpId;
+        }).grpStatus;
+
+        if (status !== -1 && grpStatus - status === 1) {
+            db.GROUP.find(function (s) {
+                return grpId === s.grpId;
+            }).grpStatus = grpStatus;
+            callback({ success: 1 });
+        } else {
+            callback({ success: 0 });
+        }
+    };
 };
+
 module.exports = new Server();
 //# sourceMappingURL=server.js.map
