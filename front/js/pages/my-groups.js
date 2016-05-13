@@ -25,9 +25,21 @@ class MyGroups { //TODO first
 
                     window.location.href = 'tel:'+$$(this).data('met-phone');
                 });
+
             });
 
+            //console.log(document.getElementById("a").innerHTML==" ");
+          //if(mainView.getElementById(a).innerHTML=="已送達"){
+          //    console.log("出現吧!!");
+          //}
+          //    console.log("asdfasdf"+"為");
+          //    $$('.statusa').html("未達到開團金額") ;
+          //
+          //}
+
         });
+
+
     }
 
 }

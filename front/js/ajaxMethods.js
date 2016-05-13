@@ -115,7 +115,7 @@ var AjaxMethods = function () {
 
     this.getGroupedOrdersByUserId = function (usrId) {
         return new Promise((resolve, reject)=> {
-            $$.getJSON(SERVER_ADS + "/groupedOrdersByUserId/"+usrId,
+            $$.getJSON(SERVER_ADS + "/groupedOrdersByUserId/" + usrId,
                 function (jsonData) {
                     resolve(jsonData);
                 });
@@ -124,21 +124,41 @@ var AjaxMethods = function () {
 
     this.getHomePageDataPromise = (usrId) => {
         let groups;
-        return new Promise(resolve=>{
-            this.getAllGroup().then(_groups=>{
+        return new Promise(resolve=> {
+            this.getAllGroup().then(_groups=> {
                 groups = _groups;
                 return this.getGroupedOrdersByUserId(usrId);
-            }).then(groupedOrders=>{
+            }).then(groupedOrders=> {
                 resolve({groups, groupedOrders});
             });
         });
     };
 
-    this.getGroupedOrdersAndSumsByHostIdPromise= function(hostId) {
+    this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
         return new Promise((resolve, reject)=> {
-            $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/"+hostId,
+            $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/" + hostId,
                 function (jsonData) {
                     resolve(jsonData);
+                    for(let a=0;jsonData.groupedOrderSums.length;a++){
+                        switch(jsonData.groupedOrderSums[a].group.grpStatus) {
+                            case 0:
+                                jsonData.groupedOrderSums[a].group.grpStatus = "未達外送金額";
+                                break;
+                            case 1:
+                                jsonData.groupedOrderSums[a].group.grpStatus = "已開團";
+                                break;
+                            case 2:
+                                jsonData.groupedOrderSums[a].group.grpStatus = "已送達";
+
+                                break;
+                            case 3:
+                                jsonData.groupedOrderSums[a].group.grpStatus = "已完成";
+                                break;
+                            case -1:
+                                jsonData.groupedOrderSums[a].group.grpStatus = "開團失敗";
+                                break;
+                        }
+                    }
                 });
         });
     };
