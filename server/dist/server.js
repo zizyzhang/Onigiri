@@ -430,6 +430,14 @@ var Server = function Server() {
                 grpId: grpId
             });
 
+            //最小外送金額
+            var metId = db.GROUP.find(function (g) {
+                return g.grpId === grpId;
+            }).metId;
+            var metMinPrice = db.MERCHANT.find(function (m) {
+                return m.metId === metId;
+            }).metMinPrice;
+
             resolve({ success: 1 });
         });
     };
