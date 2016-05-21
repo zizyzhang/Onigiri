@@ -377,6 +377,7 @@ describe('Server', function () {
 
         });
     });
+
     describe('#groupStatusChanged()',function(){
 
         it('Group Status has Changed 1 from 0',function(done){
@@ -391,6 +392,13 @@ describe('Server', function () {
                 done();
             });
         });
+
+        it('cleanGroup',function(done){
+            server.cleanGroup();
+
+            done();
+        });
     });
+
 
 });

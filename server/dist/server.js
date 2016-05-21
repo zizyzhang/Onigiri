@@ -373,6 +373,8 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId) {
+        var _this = this;
+
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise(function (resolve, reject) {
@@ -431,28 +433,79 @@ var Server = function Server() {
             });
 
             //最小外送金額
-            var metId = db.GROUP.find(function (g) {
+            var g = db.GROUP.find(function (g) {
                 return g.grpId === grpId;
-            }).metId;
+            });
+            var metId = g.metId;
+            var hostId = g.grpHostId;
             var metMinPrice = db.MERCHANT.find(function (m) {
                 return m.metId === metId;
             }).metMinPrice;
+            var amount = 0;
+
+            _this.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
+                //console.log(result.groupedOrderSums);
+                var groupOrderSum = result.groupedOrderSums.find(function (orderSum) {
+                    return orderSum.group.grpId === grpId;
+                });
+                console.log("groupOrderSum", groupOrderSum);
+
+                var _iteratorNormalCompletion6 = true;
+                var _didIteratorError6 = false;
+                var _iteratorError6 = undefined;
+
+                try {
+                    for (var _iterator6 = groupOrderSum.orderSums[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                        var orderSum = _step6.value;
+
+                        var price = orderSum.dish.dihPrice;
+                        var num = orderSum.ordNum;
+                        var total = price * num;
+                        amount += total;
+                    }
+                } catch (err) {
+                    _didIteratorError6 = true;
+                    _iteratorError6 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                            _iterator6.return();
+                        }
+                    } finally {
+                        if (_didIteratorError6) {
+                            throw _iteratorError6;
+                        }
+                    }
+                }
+
+                console.log("amount", amount);
+            }).catch(function (e) {
+                return console.log(e);
+            });
+
+            if (amount >= metMinPrice) {
+                //console.log("達到外送金額",g.grpStatus);
+                g.grpStatus = 1;
+            }
+            //else {
+            //    console.log("未到外送金額",g.grpStatus);
+            //}
 
             resolve({ success: 1 });
         });
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
-        var _this = this;
+        var _this2 = this;
 
         var groupedOrders = [];
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
         try {
             var _loop2 = function _loop2() {
-                var order = _step6.value;
+                var order = _step7.value;
 
                 var tOrder = groupedOrders.find(function (gor) {
                     return gor.group.grpId === order.grpId;
@@ -461,25 +514,25 @@ var Server = function Server() {
                     tOrder.orders.push(order);
                 } else {
 
-                    var group = _this.createClassGroupByGroupId(order.grpId);
+                    var group = _this2.createClassGroupByGroupId(order.grpId);
                     groupedOrders.push({ group: group, orders: [order] });
                 }
             };
 
-            for (var _iterator6 = orders[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            for (var _iterator7 = orders[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
                 _loop2();
             }
         } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
+            _didIteratorError7 = true;
+            _iteratorError7 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                    _iterator6.return();
+                if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                    _iterator7.return();
                 }
             } finally {
-                if (_didIteratorError6) {
-                    throw _iteratorError6;
+                if (_didIteratorError7) {
+                    throw _iteratorError7;
                 }
             }
         }
@@ -568,30 +621,30 @@ var Server = function Server() {
         var groupedOrderSums = [];
         //console.log('groups',db.GROUP);
 
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
+        var _iteratorNormalCompletion8 = true;
+        var _didIteratorError8 = false;
+        var _iteratorError8 = undefined;
 
         try {
-            for (var _iterator7 = groupedOrders[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                var _step7$value = _step7.value;
-                var group = _step7$value.group;
-                var orders = _step7$value.orders;
+            for (var _iterator8 = groupedOrders[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                var _step8$value = _step8.value;
+                var group = _step8$value.group;
+                var orders = _step8$value.orders;
 
                 var orderSums = [];
 
-                var _iteratorNormalCompletion8 = true;
-                var _didIteratorError8 = false;
-                var _iteratorError8 = undefined;
+                var _iteratorNormalCompletion9 = true;
+                var _didIteratorError9 = false;
+                var _iteratorError9 = undefined;
 
                 try {
                     var _loop3 = function _loop3() {
-                        var _step8$value = _step8.value;
-                        var ordId = _step8$value.ordId;
-                        var group = _step8$value.group;
-                        var usrId = _step8$value.usrId;
-                        var dish = _step8$value.dish;
-                        var ordNum = _step8$value.ordNum;
+                        var _step9$value = _step9.value;
+                        var ordId = _step9$value.ordId;
+                        var group = _step9$value.group;
+                        var usrId = _step9$value.usrId;
+                        var dish = _step9$value.dish;
+                        var ordNum = _step9$value.ordNum;
 
                         //如果存在直接加
                         var order = orderSums.find(function (orm) {
@@ -604,20 +657,20 @@ var Server = function Server() {
                         }
                     };
 
-                    for (var _iterator8 = orders[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                    for (var _iterator9 = orders[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
                         _loop3();
                     }
                 } catch (err) {
-                    _didIteratorError8 = true;
-                    _iteratorError8 = err;
+                    _didIteratorError9 = true;
+                    _iteratorError9 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                            _iterator8.return();
+                        if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                            _iterator9.return();
                         }
                     } finally {
-                        if (_didIteratorError8) {
-                            throw _iteratorError8;
+                        if (_didIteratorError9) {
+                            throw _iteratorError9;
                         }
                     }
                 }
@@ -625,16 +678,16 @@ var Server = function Server() {
                 groupedOrderSums.push({ group: group, orderSums: orderSums });
             }
         } catch (err) {
-            _didIteratorError7 = true;
-            _iteratorError7 = err;
+            _didIteratorError8 = true;
+            _iteratorError8 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                    _iterator7.return();
+                if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                    _iterator8.return();
                 }
             } finally {
-                if (_didIteratorError7) {
-                    throw _iteratorError7;
+                if (_didIteratorError8) {
+                    throw _iteratorError8;
                 }
             }
         }
@@ -717,6 +770,18 @@ var Server = function Server() {
         } else {
             callback({ success: 0 });
         }
+    };
+
+    this.cleanGroup = function () {
+        var today = new Date();
+
+        this.allGroup(function (result) {
+            //let timing = result[0].grpTime.replace(/月/,"/");
+            console.log(result[0].grpTime);
+            console.log(JSON.stringify(result));
+        });
+
+        //let t = setTimeout('Timer()', 500);
     };
 };
 
