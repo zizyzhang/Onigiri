@@ -363,8 +363,35 @@ var Server = function () {
             });
 
             //最小外送金額
-            let metId = db.GROUP.find(g=>g.grpId === grpId).metId;
+            let g = db.GROUP.find(g=>g.grpId === grpId);
+            let metId = g.metId;
+            let hostId = g.grpHostId;
             let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
+            let amount = 0;
+
+            this.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
+                //console.log(result.groupedOrderSums);
+                let groupOrderSum = result.groupedOrderSums.find(orderSum=>orderSum.group.grpId === grpId);
+                console.log("groupOrderSum", groupOrderSum);
+
+                for (let orderSum of groupOrderSum.orderSums) {
+                    let price = orderSum.dish.dihPrice;
+                    let num = orderSum.ordNum;
+                    let total = price * num;
+                    amount += total;
+                }
+                console.log("amount", amount);
+
+            }).catch(e=>console.log(e));
+
+            if (amount >= metMinPrice) {
+                //console.log("達到外送金額",g.grpStatus);
+                g.grpStatus = 1;
+            }
+            //else {
+            //    console.log("未到外送金額",g.grpStatus);
+            //}
+
 
             resolve({success: 1});
         });
@@ -528,9 +555,21 @@ var Server = function () {
                 reject({success: 0});
             }
         });
+
     };
 
+    this.cleanGroup = function () {
+        let today = new Date();
 
+        this.allGroup(function (result){
+            //let timing = result[0].grpTime.replace(/月/,"/");
+            console.log(result[0].grpTime);
+            console.log(JSON.stringify(result));
+        });
+
+
+        //let t = setTimeout('Timer()', 500);
+    }
 
     this.getStatus = function (grpId) {
         return new Promise(resolve=> {

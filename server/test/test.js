@@ -377,7 +377,8 @@ describe('Server', function () {
 
         });
     });
-    describe('#groupStatusChanged()', function () {
+
+    describe('#groupStatusChanged()',function(){
 
         it('Group Status has Changed 1 from 0', function (done) {
             server.updateGroupStatusPromise(1, 1).then(result => {
@@ -391,6 +392,12 @@ describe('Server', function () {
             }).catch(done);
         });
 
+        it('cleanGroup',function(done){
+            server.cleanGroup();
+
+            done();
+        });
     });
+
 
 });
