@@ -2,11 +2,15 @@
 
 const assert = require('chai').assert;
 const server = require('./../dist/server');
-const db = require('../dist/mock-db');
+let db = server.db;
 const _ = require('lodash');
 require('source-map-support').install();
 
 describe('Server', function () {
+    //console.log(__dirname(require.main.filename));
+
+    server.testMode();
+
     describe('#addUser()', function () {
         it('should insert an user : Jack,qqq,02-1231212 ', function (done) {
             server.addUser('Jack', 'qqq', '02-1231212', function (result) {
@@ -52,34 +56,6 @@ describe('Server', function () {
         });
     });
 
-    describe('#allGroup()', function () {
-        it('should return an array by allGroup', function (done) {
-            server.allGroup(function (result) {
-                assert.typeOf(result, 'array');
-                assert.typeOf(result[0].grpOrder, 'array');
-                assert.typeOf(result[0].grpDishes, 'array');
-                done();
-            });
-
-
-        });
-
-        it('should has same length as groups', function (done) {
-            server.allGroup(function (result) {
-                assert.equal(db.GROUP.length, result.length);
-                done();
-            });
-        });
-
-        it('has merchant object', function (done) {
-            server.allGroup(function (result) {
-                assert.equal('韩国纸上烤肉', result[0].merchant.metName);
-                done();
-            });
-        });
-
-
-    });
 
     describe('#allMerchant()', function () {
         it('should return an array by allMerchant', function (done) {
@@ -156,7 +132,7 @@ describe('Server', function () {
     describe('#group()', function () {
 
         it('should insert a group ', function (done) {
-            server.postGroup(1, [1,2,3], 1, 'daor', '00:00', function (result) {
+            server.postGroup(1, [1, 2, 3], 1, 'daor', '00:00', function (result) {
                 //(grpHostId, dishes, metId, addr, gorTime , callback)
                 let lastGroup = _.maxBy(db.GROUP, 'grpId');
                 let lastGroupDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
@@ -178,11 +154,12 @@ describe('Server', function () {
             });
         });
     });
-
     describe('#joinGroup()', function () {
+
         let numberOfOrder = db.ORDER.length;
         it('should insert a ordNum', function (done) {
-            server.joinGroupPromise(1, [  {dihId: 1, num: 1}], 2).then((result)=> {
+
+            server.joinGroupPromise(1, [{dihId: 1, num: 1}], 1).then((result)=> {
                 let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
                 assert.isObject(lastInsertedOrder);
@@ -196,7 +173,7 @@ describe('Server', function () {
         });
 
         it('should insert an order ', function (done) {
-            server.joinGroupPromise(1, [ {dihId: 1, num: 1}], 3).then((result)=> {
+            server.joinGroupPromise(2, [{dihId: 1, num: 1}], 1).then((result)=> {
                 let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
                 assert.isObject(lastInsertedOrder);
@@ -204,7 +181,7 @@ describe('Server', function () {
 
                 assert.equal(1, result.success);
                 numberOfOrder = db.ORDER.length;
-                return server.joinGroupPromise(2, [ {dihId: 1, num: 1}], 3);
+                return server.joinGroupPromise(3, [{dihId: 1, num: 1}], 1);
             }).then(result=> {
                 let lastInsertedOrder = db.ORDER.find(ord=>ord.ordId === _.maxBy(db.ORDER, 'ordId').ordId);
 
@@ -216,7 +193,7 @@ describe('Server', function () {
         });
 
         it('should got an error when join an group twice ', function (done) {
-            server.joinGroupPromise(1, [  {dihId: 1, num: 1}], 3).then((result)=> {
+            server.joinGroupPromise(1, [{dihId: 1, num: 1}], 1).then((result)=> {
                 assert.equal(result, null);
             }).catch(e=> {
                 assert.equal(e, "重复加团!");
@@ -226,7 +203,34 @@ describe('Server', function () {
 
 
     });
+    describe('#allGroup()', function () {
+        it('should return an array by allGroup', function (done) {
+            server.allGroup(function (result) {
+                assert.typeOf(result, 'array');
+                assert.typeOf(result[0].grpOrder, 'array');
+                assert.typeOf(result[0].grpDishes, 'array');
+                done();
+            });
 
+
+        });
+
+        it('should has same length as groups', function (done) {
+            server.allGroup(function (result) {
+                assert.equal(db.GROUP.length, result.length);
+                done();
+            });
+        });
+
+        it('has merchant object', function (done) {
+            server.allGroup(function (result) {
+                assert.equal('韩国纸上烤肉', result[0].merchant.metName);
+                done();
+            });
+        });
+
+
+    });
     describe('#getGroupById()', function () {
         it('should return an object', function (done) {
             server.getGroupById(1, function (result) {
@@ -239,15 +243,21 @@ describe('Server', function () {
 
         it('should get an instance of Group object', function (done) {
             server.getGroupById(1, function (result) {
+                //console.log(result);
+
                 assert.property(result, 'grpId');
                 assert.property(result, 'grpHostName');
                 assert.property(result, 'merchant');
-                assert.property(result, 'grpAddr');
+                 assert.property(result, 'grpAddr');
                 assert.property(result, 'grpTime');
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
+                assert.property(result, 'grpHost');
+                assert.property(result, 'grpStatus');
+                assert.property(result.grpHost, 'usrMobi');
                 assert.property(result.grpDishes[0], 'dish');
                 assert.property(result.grpDishes[0].dish, 'dihId');
+                assert.equal(result.grpStatus,0);
                 done();
             });
         });
@@ -266,12 +276,15 @@ describe('Server', function () {
     });
 
     describe('#getGroupedOrdersByUserId()', function () {
+
         it('return an Array of Grouped Order Object ', function (done) {
+            debugger;
             server.getGroupedOrdersByUserId(1, function (result) {
                 assert.isArray(result);
-                console.log(JSON.stringify(result));
+                //console.log(JSON.stringify(result));
+                //console.log(db.ORDER);
                 assert.property(result[0].orders[0], 'ordId');
-                 assert.property(result[0].orders[0], 'usrId');
+                assert.property(result[0].orders[0], 'usrId');
                 assert.property(result[0].orders[0], 'dish');
                 assert.property(result[0].orders[0], 'ordNum');
                 done();
@@ -288,24 +301,22 @@ describe('Server', function () {
         });
     });
 
-
-
     describe('#getGroupedOrdersAndSumsByHostIdPromise()', function () {
         it('returns an array of Grouped OrdersAndSums ', function (done) {
             server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
-                console.log(result);
+                //console.log(result);
                 assert.isArray(result.groupedOrders);
                 assert.isArray(result.groupedOrderSums);
 
                 //has Group Object
-                console.log(result.groupedOrders[0].group);
-                assert.property(result.groupedOrders[0].group,'grpId');
-                assert.property(result.groupedOrders[0].group,'grpHostName');
-                assert.property(result.groupedOrders[0].group,'merchant');
-                assert.property(result.groupedOrders[0].group,'grpAddr');
-                assert.property(result.groupedOrders[0].group,'grpTime');
-                assert.property(result.groupedOrders[0].group,'grpOrder');
-                assert.property(result.groupedOrders[0].group,'grpDishes');
+                //console.log(result.groupedOrders[0].group);
+                assert.property(result.groupedOrders[0].group, 'grpId');
+                assert.property(result.groupedOrders[0].group, 'grpHostName');
+                assert.property(result.groupedOrders[0].group, 'merchant');
+                assert.property(result.groupedOrders[0].group, 'grpAddr');
+                assert.property(result.groupedOrders[0].group, 'grpTime');
+                assert.property(result.groupedOrders[0].group, 'grpOrder');
+                assert.property(result.groupedOrders[0].group, 'grpDishes');
                 done();
             }).catch(done);
         });
@@ -313,12 +324,12 @@ describe('Server', function () {
 
         it('has "groupedOrderSums" and "groupedOrders" properties which are  Arrays of GroupedSum|GroupedOrder Object ', function (done) {
             server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
-                 assert.property(result.groupedOrders[0].orders[0], 'grpId');
+                assert.property(result.groupedOrders[0].orders[0], 'grpId');
                 assert.property(result.groupedOrders[0].orders[0], 'dish');
                 assert.property(result.groupedOrders[0].orders[0], 'ordNum');
                 assert.property(result.groupedOrders[0].orders[0], 'usrId');
 
-                console.log(result.groupedOrderSums[0]);
+                //console.log(result.groupedOrderSums[0]);
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'group');
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'dish');
                 assert.property(result.groupedOrderSums[0].orderSums[0], 'ordNum');
@@ -327,25 +338,25 @@ describe('Server', function () {
         });
 
         it('has correct data ', function (done) {
-            server.postGroup(1, [1,2,3], 1, 'daor', '00:00', function (result01) {
+            server.postGroup(1, [1, 2, 3], 1, 'daor', '00:00', function (result01) {
                 server.getGroupedOrdersAndSumsByHostIdPromise(1).then(result=> {
                     result.groupedOrders[0].orders.map(order=> {
                         db.GROUP.filter(grp=>grp.grpId === order.grpId).map(g=> {
+                            //console.log(g.grpHostId);
                             assert.equal(g.grpHostId, 1);
                         });
                     });
 
                     let assertionOrderSums = result.groupedOrderSums.find(gos=>gos.group.grpId === 1).orderSums;
-                     assert.equal(assertionOrderSums.find(arm=>arm.dish.dihId===1).ordNum,2);
+                    assert.equal(assertionOrderSums.find(arm=>arm.dish.dihId === 1).ordNum, 3);
 
-                    let assertionOrder = result.groupedOrders.find(gos=>gos.group.grpId === 4);
+                    let assertionOrder = result.groupedOrders.find(gos=>gos.group.grpId === 2);
 
-                    console.log(result.groupedOrders);
+                    //console.log(result.groupedOrders);
 
-                    assert.equal(3,result.groupedOrders.length);
+                    assert.equal(2, result.groupedOrders.length);
 
                     assert.isTrue(!!assertionOrder);
-
 
 
                     done();
@@ -355,5 +366,31 @@ describe('Server', function () {
         });
     });
 
+    describe('#StatusPassedByGroupId()',function(){
+        //console.log(db.GROUP);
+        it('return a status',function(done){
+            server.getStatus(1).then(result=> {
+                 assert.isNumber(result);
+                assert.equal(0,result);
+                done();
+            }).catch(done);
+
+        });
+    });
+    describe('#groupStatusChanged()',function(){
+
+        it('Group Status has Changed 1 from 0',function(done){
+            server.groupStatusChanged(1,1,function (result) {
+                assert.equal(1,result.success);
+                done();
+            });
+        });
+        it('Group Status Change failed',function(done){
+            server.groupStatusChanged(2,2,function (result) {
+                assert.equal(0,result.success);
+                done();
+            });
+        });
+    });
 
 });

@@ -1,15 +1,38 @@
+'use strict';
+
 /**
  * Created by User on 2016/3/24.
  */
 
-'use strict';
+require('source-map-support').install();
 
 var isDebug = true;
 
 var _ = require('lodash');
-require('source-map-support').install();
+//let db = require('./mock-db');
+var path = require('path');
+
+var JsonDB = require('node-json-db');
+
+//debugger;
+var jsonDb = new JsonDB("./onigiri", true, true);
+var db = jsonDb.getData('/db');
+//console.log(__dirname);
+
+db.pushToJsonDb = function (table, value) {
+    jsonDb.push('/db/' + table + '[]', value);
+    //    db[table].push(value);
+};
 
 var Server = function Server() {
+
+    this.testMode = function () {
+        if (isDebug) {
+            db.pushToJsonDb = function (table, value) {
+                db[table].push(value);
+            };
+        }
+    };
 
     var express = require('express');
     var bodyParser = require('body-parser');
@@ -17,27 +40,9 @@ var Server = function Server() {
 
     var app = express();
 
-    var db = require('./mock-db');
-
     var self = this;
-    //
-    //var group1 = [
-    //    {
-    //        grpHostId: 'c',
-    //        dishes: '111',
-    //        metId: '567',
-    //        addr:"qqqqq",
-    //        gorTime:"00:0",
-    //        minAmount:"9999"
-    //    }
-    //
-    //]
 
-    var joinGroup1 = [{
-        usrId: 'd',
-        dishes: '0.1',
-        grpId: '6666'
-    }];
+    this.db = isDebug ? db : undefined;
 
     var allowCrossDomain = function allowCrossDomain(req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -154,8 +159,15 @@ var Server = function Server() {
         });
     });
 
-    app.listen(3000, function () {
-        console.log('' + 'app listening on port 3000!');
+    app.get('/StatusPassedByGroupId/:id', function (req, res) {
+        var groupId = Number(req.params.id);
+        self.getStatus(groupId, function (result) {
+            res.json(result);
+        });
+    });
+
+    app.listen(8080, function () {
+        console.log('' + 'app listening on port 8080!');
     });
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
@@ -190,10 +202,16 @@ var Server = function Server() {
         }
 
         var usrCreateTime = new Date();
-        var newUser = { usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi };
+        var newUser = {
+            usrId: usrId,
+            usrName: usrName,
+            usrPwd: usrPwd,
+            usrCreateTime: usrCreateTime,
+            usrMobi: usrMobi
+        };
 
         if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
-            db.USER.push(newUser);
+            db.pushToJsonDb('USER', newUser);
             callback({ success: 1 });
             return;
         } else {
@@ -225,15 +243,17 @@ var Server = function Server() {
 
     this.allGroup = function (callback) {
         var result = [];
+
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
             for (var _iterator2 = db.GROUP[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var group = _step2.value;
+                var _group = _step2.value;
 
-                result.push(self.convertGroupIdToGroupObject(group.grpId));
+                var group = this.createClassGroupByGroupId(_group.grpId);
+                result.push(group);
             }
         } catch (err) {
             _didIteratorError2 = true;
@@ -254,7 +274,7 @@ var Server = function Server() {
     };
 
     this.getGroupById = function (id, callback) {
-        var group = self.convertGroupIdToGroupObject(id);
+        var group = this.createClassGroupByGroupId(id);
         callback(group);
     };
 
@@ -306,13 +326,16 @@ var Server = function Server() {
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
-        var grpId = _.maxBy(db.GROUP, 'grpId').grpId + 1;
-        db.GROUP.push({
+        var lastGroup = _.maxBy(db.GROUP, 'grpId');
+        var grpId = lastGroup ? lastGroup.grpId + 1 : 1;
+        db.pushToJsonDb('GROUP', {
             grpId: grpId,
             grpHostId: grpHostId,
             metId: metId,
             grpAddr: addr,
-            grpTime: gorTime
+            grpTime: gorTime,
+            grpStatus: 0
+
             //minAmount: minAmount
         });
         var _iteratorNormalCompletion4 = true;
@@ -323,12 +346,13 @@ var Server = function Server() {
             for (var _iterator4 = dishes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                 var dihId = _step4.value;
 
+                var lastDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
                 var gdh = {
-                    gdeId: _.maxBy(db.GROUP_DISHES, 'gdeId').gdeId + 1,
+                    gdeId: lastDish ? lastDish.gdeId + 1 : 1,
                     dihId: Number(dihId),
                     grpId: grpId
                 };
-                db.GROUP_DISHES.push(gdh);
+                db.pushToJsonDb("GROUP_DISHES", gdh);
             }
         } catch (err) {
             _didIteratorError4 = true;
@@ -370,8 +394,12 @@ var Server = function Server() {
                     var dihId = _step5$value.dihId;
                     var num = _step5$value.num;
 
-                    db.ORDER.push({
-                        ordId: _.maxBy(db.ORDER, 'ordId').ordId + 1,
+                    if (num === 0 || !_.isNumber(num)) {
+                        continue;
+                    }
+                    var lastOrder = _.maxBy(db.ORDER, 'ordId');
+                    db.pushToJsonDb("ORDER", {
+                        ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                         grpId: grpId,
                         usrId: usrId,
                         dihId: dihId,
@@ -393,19 +421,30 @@ var Server = function Server() {
                 }
             }
 
-            db.GROUP_MEMBER.push({
-                gmrId: _.maxBy(db.GROUP_MEMBER, function (gmr) {
-                    return gmr.gmrId;
-                }).gmrId + 1,
+            var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
+                return gmr.gmrId;
+            });
+            db.pushToJsonDb("GROUP_MEMBER", {
+                gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
                 grpId: grpId
             });
+
+            //最小外送金額
+            var metId = db.GROUP.find(function (g) {
+                return g.grpId === grpId;
+            }).metId;
+            var metMinPrice = db.MERCHANT.find(function (m) {
+                return m.metId === metId;
+            }).metMinPrice;
 
             resolve({ success: 1 });
         });
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
+        var _this = this;
+
         var groupedOrders = [];
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
@@ -422,7 +461,7 @@ var Server = function Server() {
                     tOrder.orders.push(order);
                 } else {
 
-                    var group = self.convertGroupIdToGroupObject(order.grpId);
+                    var group = _this.createClassGroupByGroupId(order.grpId);
                     groupedOrders.push({ group: group, orders: [order] });
                 }
             };
@@ -448,38 +487,6 @@ var Server = function Server() {
         return groupedOrders;
     };
 
-    this.convertGroupIdToGroupObject = function (grpId) {
-        var group = db.GROUP.find(function (g) {
-            return g.grpId === grpId;
-        });
-        group = {
-            grpId: group.grpId,
-            grpAddr: group.grpAddr,
-            grpTime: group.grpTime,
-            grpHostName: db.USER.find(function (user) {
-                return user.usrId === group.grpHostId;
-            }).usrName,
-            merchant: db.MERCHANT.find(function (merchant) {
-                return merchant.metId === group.metId;
-            }),
-            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
-                return grr.grpId === group.grpId;
-            }) || [],
-            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
-                return grh.grpId === group.grpId;
-            }).map(function (grh) {
-                var grpDish = {};
-                grpDish.dish = _.find(db.DISH, function (dish) {
-                    return dish.dihId === grh.dihId;
-                });
-                _.assign(grpDish, grh);
-                return grpDish;
-            }) || []
-
-        };
-        return group;
-    };
-
     this.getGroupedOrdersByUserId = function (usrId, callback) {
         var orders = db.ORDER.filter(function (ord) {
             return ord.usrId === usrId;
@@ -502,6 +509,8 @@ var Server = function Server() {
     };
 
     this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
+        var that = this;
+
         return new Promise(function (resolve) {
             var groupedOrders = [];
             var groupedOrderSums = [];
@@ -545,8 +554,9 @@ var Server = function Server() {
             });
             if (emptyGroups) {
                 emptyGroups.map(function (eptGroup) {
-                    groupedOrders.push({ group: self.convertGroupIdToGroupObject(eptGroup.grpId), orders: [] });
-                    groupedOrderSums.push({ group: self.convertGroupIdToGroupObject(eptGroup.grpId), orderSums: [] });
+                    var group = that.createClassGroupByGroupId(eptGroup.grpId);
+                    groupedOrders.push({ group: group, orders: [] });
+                    groupedOrderSums.push({ group: group, orderSums: [] });
                 });
             }
 
@@ -631,7 +641,84 @@ var Server = function Server() {
 
         callback(groupedOrderSums);
     };
+
+    this.createClassGroupByGroupId = function (grpId) {
+        var that = this;
+        var group = db.GROUP.find(function (g) {
+            return g.grpId === grpId;
+        });
+
+        if (!group) {
+            return null;
+        }
+
+        group = {
+            grpId: group.grpId,
+            grpAddr: group.grpAddr,
+            grpTime: group.grpTime,
+            grpHostName: db.USER.find(function (user) {
+                return user.usrId === group.grpHostId;
+            }).usrName,
+            merchant: db.MERCHANT.find(function (merchant) {
+                return merchant.metId === group.metId;
+            }),
+            grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
+                return grr.grpId === group.grpId;
+            }) || [],
+            grpDishes: _.filter(db.GROUP_DISHES, function (grh) {
+                return grh.grpId === group.grpId;
+            }).map(function (grh) {
+                var grpDish = {};
+                grpDish.dish = _.find(db.DISH, function (dish) {
+                    return dish.dihId === grh.dihId;
+                });
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || [],
+            grpHost: that.createUserByUserId(group.grpHostId),
+            grpStatus: group.grpStatus
+        };
+
+        return group;
+    };
+
+    this.createUserByUserId = function (usrId) {
+        var _usr = db.USER.find(function (usr) {
+            return usr.usrId === usrId;
+        });
+        var user = {
+            usrId: _usr.usrId,
+            usrName: _usr.usrName,
+            usrMobi: _usr.usrMobi
+        };
+
+        return user;
+    };
+    this.getStatus = function (grpId) {
+        return new Promise(function (resolve) {
+            var status = db.GROUP.find(function (g) {
+                return grpId === g.grpId;
+            }).grpStatus;
+            resolve(status);
+        });
+    };
+
+    this.groupStatusChanged = function (grpId, grpStatus, callback) {
+
+        var status = db.GROUP.find(function (s) {
+            return grpId === s.grpId;
+        }).grpStatus;
+
+        if (status !== -1 && grpStatus - status === 1) {
+            db.GROUP.find(function (s) {
+                return grpId === s.grpId;
+            }).grpStatus = grpStatus;
+            callback({ success: 1 });
+        } else {
+            callback({ success: 0 });
+        }
+    };
 };
+
 module.exports = new Server();
-//console.log( new Date());
 //# sourceMappingURL=server.js.map

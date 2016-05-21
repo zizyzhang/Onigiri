@@ -54,7 +54,7 @@ var MockDb = function () {
         {
             metId: 1,
             metName: '韩国纸上烤肉',
-            metPhone: '123123123'
+            metPhone: '867'
         }, {
             metId: 2,
             metName: '麦当劳',
@@ -92,8 +92,9 @@ var MockDb = function () {
             //dishes: [],
             metId: 1,//商家Id
             grpAddr: 'road',//取餐地点
-            grpTime: "13:33"//取餐时间
+            grpTime: "13:33",//取餐时间
             //minAmount: '9999'
+            status : 0
         },
         {
             grpId: 2,//团的Id
@@ -101,8 +102,9 @@ var MockDb = function () {
             //dishes: [],
             metId: 2,//商家Id
             grpAddr: 'road',//取餐地点
-            grpTime: "13:33"//取餐时间
+            grpTime: "13:33",//取餐时间
             //minAmount: '9999'
+            status : 1
         }
 
     ];
