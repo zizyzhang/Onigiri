@@ -335,6 +335,10 @@ var Server = function () {
                 grpId: grpId
             });
 
+            //最小外送金額
+            let metId = db.GROUP.find(g=>g.grpId===grpId).metId;
+            let metMinPrice = db.MERCHANT.find(m=>m.metId===metId).metMinPrice;
+
             resolve({success: 1});
         });
     };
