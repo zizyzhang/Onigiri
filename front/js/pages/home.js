@@ -55,7 +55,12 @@ class Home { //TODO first
 
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
                 });
+                $$('.link').on('click', function () {
 
+                    let grpId = $$(this).dataset().grpId;
+                    mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
+
+                });
 
 
             });

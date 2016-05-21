@@ -521,6 +521,7 @@ var Server = function () {
             if (group.grpStatus >=0 && group.grpStatus <=2 ) {
                 db.setValueToJsonDb('GROUP', row=>row.grpId===group.grpId ,'grpStatus', grpStatus);
                 //group.grpStatus = grpStatus;
+
                 resolve({success: 1});
             }
             else {
@@ -537,6 +538,7 @@ var Server = function () {
             resolve(status);
         });
     };
+
 };
 
 

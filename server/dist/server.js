@@ -754,6 +754,7 @@ var Server = function Server() {
                     return row.grpId === group.grpId;
                 }, 'grpStatus', grpStatus);
                 //group.grpStatus = grpStatus;
+
                 resolve({ success: 1 });
             } else {
                 reject({ success: 0 });
