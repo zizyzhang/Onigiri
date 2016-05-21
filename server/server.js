@@ -24,6 +24,15 @@ db.pushToJsonDb = function (table, value) {
     //    db[table].push(value);
 };
 
+db.setValueToJsonDb = function (table, condition ,setKey,newValue) {
+    let index = db[table].findIndex(condition);
+    let oldObj = db[table].find(condition);
+    oldObj[setKey]=newValue;
+
+    jsonDb.push('/db/' + table + `[${index}]`,oldObj);
+    //    db[table].push(value);
+};
+
 var Server = function () {
 
     this.testMode = function () {
@@ -96,7 +105,7 @@ var Server = function () {
 
     app.get('/allGroup', function (req, res) {
         // Pass to next layer of middleware
-        self.allGroup(function (result) {
+        self.allAvailableGroup(function (result) {
             res.json(result);
         });
     });
@@ -160,7 +169,7 @@ var Server = function () {
     app.post('/groupStatus', function (req, res) {
             req.body = JSON.parse(req.body.data);
             var grpId = Number(req.body.grpId);
-            var grpStatus = req.body.grpStatus;
+            var grpStatus = Number(req.body.grpStatus);
 
 
             self.updateGroupStatusPromise(grpId,grpStatus).then(result=> {
@@ -254,6 +263,17 @@ var Server = function () {
         let result = [];
 
         for (let _group of db.GROUP) {
+            let group = this.createClassGroupByGroupId(_group.grpId);
+            result.push(group);
+
+        }
+        callback(result);
+    };
+
+    this.allAvailableGroup = function (callback) {
+        let result = [];
+
+        for (let _group of db.GROUP.filter(g=>g.grpStatus===0||g.grpStatus===1)) {
             let group = this.createClassGroupByGroupId(_group.grpId);
             result.push(group);
 
@@ -493,24 +513,28 @@ var Server = function () {
 
         return user;
     };
-    this.getStatus = function (grpId) {
-        return new Promise(resolve=> {
-            let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
-            resolve(status);
-        });
-    };
 
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
         return new Promise((resolve,reject)=>{
             let group = db.GROUP.find(s=>grpId === s.grpId);
 
-            if (group.grpStatus !== -1 ) {
-                group.grpStatus = grpStatus;
+            if (group.grpStatus >=0 && group.grpStatus <=2 ) {
+                db.setValueToJsonDb('GROUP', row=>row.grpId===group.grpId ,'grpStatus', grpStatus);
+                //group.grpStatus = grpStatus;
                 resolve({success: 1});
             }
             else {
                 reject({success: 0});
             }
+        });
+    };
+
+
+
+    this.getStatus = function (grpId) {
+        return new Promise(resolve=> {
+            let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
+            resolve(status);
         });
     };
 };

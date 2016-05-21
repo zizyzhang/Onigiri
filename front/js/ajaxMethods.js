@@ -140,28 +140,36 @@ var AjaxMethods = function () {
                 function (jsonData) {
                     resolve(jsonData);
                     for (let a = 0; jsonData.groupedOrderSums.length; a++) {
-                        switch (jsonData.groupedOrderSums[a].group.grpStatus) {
+                        let group =jsonData.groupedOrderSums[a].group;
+                        switch (group .grpStatus) {
                             case 0:
-                                jsonData.groupedOrderSums[a].group.grpStatusCh = "未達外送金額";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusName = "未開團";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusDisable = true;
+                                group.grpStatusCh = "未達外送金額";
+                                group.btnChangeStatusName = "未開團";
+                                group.grpNextStatus= 1;
+
+                                group.btnChangeStatusDisable = true;
                                 break;
                             case 1:
-                                jsonData.groupedOrderSums[a].group.grpStatusCh = "已開團";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusName = "確認已開團";
+                                group.grpStatusCh = "已開團";
+                                group.btnChangeStatusName = "確認已送達";
+                                group.grpNextStatus= 2;
+
                                 break;
                             case 2:
-                                jsonData.groupedOrderSums[a].group.grpStatusCh = "已送達";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusName = "確認訂單已完成";
+                                group.grpStatusCh = "已送達";
+                                group.btnChangeStatusName = "確認訂單已完成";
+                                group.grpNextStatus= 3;
                                 break;
                             case 3:
-                                jsonData.groupedOrderSums[a].group.grpStatusCh = "已完成";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusName = "";
+                                group.grpStatusCh = "已完成";
+                                group.btnChangeStatusName = "";
+                                group.grpNextStatus= 4;
                                 break;
                             case -1:
-                                jsonData.groupedOrderSums[a].group.grpStatusCh = "開團失敗";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusName = "";
-                                jsonData.groupedOrderSums[a].group.btnChangeStatusDisable = true;
+                                group.grpStatusCh = "開團失敗";
+                                group.btnChangeStatusName = "";
+                                group.btnChangeStatusDisable = true;
+                                group.grpNextStatus= -2;
                                 break;
                         }
                     }
@@ -171,7 +179,7 @@ var AjaxMethods = function () {
 
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
         return new Promise((resolve, reject)=> {
-             $$.post(SERVER_ADS + "/groupStatus", {data: JSON.stringify({grpId, grpStatus})},
+             $$.post(SERVER_ADS + "/groupStatus?date="+new Date(), {data: JSON.stringify({grpId, grpStatus})},
                 function (result) {
                     resolve(result);
                 });

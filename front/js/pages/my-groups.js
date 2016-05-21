@@ -32,12 +32,12 @@ class MyGroups { //TODO first
                 });
 
                 $$('.btn-group-detail').click(function () {
-                    let grpStatus = $$(this).dataset().grpStatus;
+                    let grpNextStatus = $$(this).dataset().grpNextStatus;
                     let grpId = $$(this).dataset().grpId;
 
-                    console.log("statusOld",grpStatus);
-                    ajaxMethod.updateGroupStatusPromise(grpId,grpStatus).then(result=>{
-                        window.location.reload();
+                    console.log("grpNextStatus",grpNextStatus);
+                    ajaxMethod.updateGroupStatusPromise(grpId,grpNextStatus).then(result=>{
+                        mainView.router.refreshPage();
                     });
 
                 });

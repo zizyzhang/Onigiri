@@ -248,7 +248,7 @@ describe('Server', function () {
                 assert.property(result, 'grpId');
                 assert.property(result, 'grpHostName');
                 assert.property(result, 'merchant');
-                 assert.property(result, 'grpAddr');
+                assert.property(result, 'grpAddr');
                 assert.property(result, 'grpTime');
                 assert.property(result, 'grpOrder');
                 assert.property(result, 'grpDishes');
@@ -257,7 +257,7 @@ describe('Server', function () {
                 assert.property(result.grpHost, 'usrMobi');
                 assert.property(result.grpDishes[0], 'dish');
                 assert.property(result.grpDishes[0].dish, 'dihId');
-                assert.equal(result.grpStatus,0);
+                assert.equal(result.grpStatus, 0);
                 done();
             });
         });
@@ -366,31 +366,31 @@ describe('Server', function () {
         });
     });
 
-    describe('#StatusPassedByGroupId()',function(){
+    describe('#StatusPassedByGroupId()', function () {
         //console.log(db.GROUP);
-        it('return a status',function(done){
+        it('return a status', function (done) {
             server.getStatus(1).then(result=> {
-                 assert.isNumber(result);
-                assert.equal(0,result);
+                assert.isNumber(result);
+                assert.equal(0, result);
                 done();
             }).catch(done);
 
         });
     });
-    describe('#groupStatusChanged()',function(){
+    describe('#groupStatusChanged()', function () {
 
-        it('Group Status has Changed 1 from 0',function(done){
-            server.groupStatusChanged(1,1,function (result) {
-                assert.equal(1,result.success);
+        it('Group Status has Changed 1 from 0', function (done) {
+            server.updateGroupStatusPromise(1, 1).then(result => {
+                assert.equal(1, result.success);
+
+
+                return server.getStatus(1);
+            }).then(result=> {
+                assert.equal(1, 1);
                 done();
-            });
+            }).catch(done);
         });
-        it('Group Status Change failed',function(done){
-            server.groupStatusChanged(2,2,function (result) {
-                assert.equal(0,result.success);
-                done();
-            });
-        });
+
     });
 
 });
