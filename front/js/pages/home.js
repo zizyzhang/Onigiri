@@ -43,7 +43,7 @@ class Home { //TODO first
 
                     cookies.set('selectedGroupId', grpId);
 
-                    mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+                        mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
                 });
                 $$('.card-img').on('click', function () {
@@ -61,6 +61,7 @@ class Home { //TODO first
                     mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
 
                 });
+
 
             });
         });

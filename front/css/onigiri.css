@@ -267,3 +267,6 @@ margin-top: 50%;
 .move-top-one-px {
     top: 55px !important;
 }
+.font-gray{
+    color:gray;
+}

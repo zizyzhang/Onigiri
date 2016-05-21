@@ -15,8 +15,6 @@ class Tool {
         promise.then((data)=> {
             console.log(data);
 
-
-
             let html = '';
             let compiledTemplate = Template7.compile(template);
             if (Array.isArray(data)) {
@@ -24,6 +22,8 @@ class Tool {
             } else {
                 html = compiledTemplate(data);
             }
+
+
 
 
             $$(page.container).html(html);
