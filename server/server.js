@@ -534,16 +534,30 @@ var Server = function () {
     };
 
     this.cleanGroup = function () {
+        // yyyy/mm/dd , hh:mm
         let today = new Date();
+        let deadLine;
+        console.log(today);
 
-        this.allGroup(function (result){
-            //let timing = result[0].grpTime.replace(/月/,"/");
-            console.log(result[0].grpTime);
+        let time = "5月 22日, 0:44";
+        deadLine = new Date("2016/" + time.replace(/月/, "/").replace(/日/, ""));
+        //console.log(deadLine);
+
+        this.allGroup(function (result) {
+            for (let g of result) {
+                time = g.grpTime;
+                //console.log(g.grpTime);
+                deadLine = new Date("2016/" + time.replace(/月/, "/").replace(/日/, ""));
+                console.log(deadLine);
+
+                if (today >= deadLine) {
+                    g.grpStatus = -1;
+                    //console.log("超過時間拉",g.grpStatus);
+                }
+            }
             console.log(JSON.stringify(result));
         });
-
-
-        //let t = setTimeout('Timer()', 500);
+        let t = setTimeout('cleanGroup()', 60000);
     }
 
 };

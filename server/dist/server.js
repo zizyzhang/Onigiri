@@ -773,15 +773,52 @@ var Server = function Server() {
     };
 
     this.cleanGroup = function () {
+        // yyyy/mm/dd , hh:mm
         var today = new Date();
+        var deadLine = void 0;
+        console.log(today);
+
+        var time = "5月 22日, 0:44";
+        deadLine = new Date("2016/" + time.replace(/月/, "/").replace(/日/, ""));
+        //console.log(deadLine);
 
         this.allGroup(function (result) {
-            //let timing = result[0].grpTime.replace(/月/,"/");
-            console.log(result[0].grpTime);
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
+
+            try {
+                for (var _iterator10 = result[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                    var g = _step10.value;
+
+                    time = g.grpTime;
+                    //console.log(g.grpTime);
+                    deadLine = new Date("2016/" + time.replace(/月/, "/").replace(/日/, ""));
+                    console.log(deadLine);
+
+                    if (today >= deadLine) {
+                        g.grpStatus = -1;
+                        //console.log("超過時間拉",g.grpStatus);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError10 = true;
+                _iteratorError10 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                        _iterator10.return();
+                    }
+                } finally {
+                    if (_didIteratorError10) {
+                        throw _iteratorError10;
+                    }
+                }
+            }
+
             console.log(JSON.stringify(result));
         });
-
-        //let t = setTimeout('Timer()', 500);
+        var t = setTimeout('cleanGroup()', 60000);
     };
 };
 
