@@ -20,22 +20,38 @@ class MyGroups { //TODO first
 
         myApp.onPageBeforeInit('my-groups', function (page) {//TODO second
             let hostId = cookies.getJSON('user').usrId;
-            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
-                $$('.btn-contact-merchant').click(function () {
 
-                    window.location.href = 'tel:'+$$(this).data('met-phone');
+            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
+
+                //let grpStatus = this.arrayOfSelectedDishIds = page.query.arrayOfSelectedDishIds || this.arrayOfSelectedDishIds;
+                console.log(page.query + "567");
+
+                $$('.btn-contact-merchant').click(function () {
+                    console.log("asp");
+                    window.location.href = 'tel:' + $$(this).data('met-phone');
+                });
+
+                $$('.btn-group-detail').click(function () {
+                    let grpStatus = $$(this).dataset().grpStatus;
+                    let grpId = $$(this).dataset().grpId;
+
+                    console.log("statusOld",grpStatus);
+                    ajaxMethod.updateGroupStatusPromise(grpId,grpStatus).then(result=>{
+                        window.location.reload();
+                    });
+
                 });
 
             });
 
             //console.log(document.getElementById("a").innerHTML==" ");
-          //if(mainView.getElementById(a).innerHTML=="已送達"){
-          //    console.log("出現吧!!");
-          //}
-          //    console.log("asdfasdf"+"為");
-          //    $$('.statusa').html("未達到開團金額") ;
-          //
-          //}
+            //if(mainView.getElementById(a).innerHTML=="已送達"){
+            //    console.log("出現吧!!");
+            //}
+            //    console.log("asdfasdf"+"為");
+            //    $$('.statusa').html("未達到開團金額") ;
+            //
+            //}
 
         });
 

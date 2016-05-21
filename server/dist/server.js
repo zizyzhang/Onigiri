@@ -143,6 +143,18 @@ var Server = function Server() {
         });
     });
 
+    app.post('/groupStatus', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var grpId = Number(req.body.grpId);
+        var grpStatus = req.body.grpStatus;
+
+        self.updateGroupStatusPromise(grpId, grpStatus).then(function (result) {
+            res.json(result);
+        }).catch(function (e) {
+            res.json(e);
+        });
+    });
+
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
         var usrId = Number(req.params.id);
         self.getGroupedOrdersByUserId(usrId, function (result) {
@@ -156,13 +168,6 @@ var Server = function Server() {
 
         self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
-        });
-    });
-
-    app.get('/StatusPassedByGroupId/:id', function (req, res) {
-        var groupId = Number(req.params.id);
-        self.getStatus(groupId, function (result) {
-            res.json(result);
         });
     });
 
@@ -430,6 +435,14 @@ var Server = function Server() {
                 grpId: grpId
             });
 
+            //最小外送金額
+            var metId = db.GROUP.find(function (g) {
+                return g.grpId === grpId;
+            }).metId;
+            var metMinPrice = db.MERCHANT.find(function (m) {
+                return m.metId === metId;
+            }).metMinPrice;
+
             resolve({ success: 1 });
         });
     };
@@ -695,20 +708,19 @@ var Server = function Server() {
         });
     };
 
-    this.groupStatusChanged = function (grpId, grpStatus, callback) {
-
-        var status = db.GROUP.find(function (s) {
-            return grpId === s.grpId;
-        }).grpStatus;
-
-        if (status !== -1 && grpStatus - status === 1) {
-            db.GROUP.find(function (s) {
+    this.updateGroupStatusPromise = function (grpId, grpStatus) {
+        return new Promise(function (resolve, reject) {
+            var group = db.GROUP.find(function (s) {
                 return grpId === s.grpId;
-            }).grpStatus = grpStatus;
-            callback({ success: 1 });
-        } else {
-            callback({ success: 0 });
-        }
+            });
+
+            if (group.grpStatus !== -1) {
+                group.grpStatus = grpStatus;
+                resolve({ success: 1 });
+            } else {
+                reject({ success: 0 });
+            }
+        });
     };
 };
 

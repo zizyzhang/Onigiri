@@ -13,7 +13,7 @@
             <div class="list-block media-list" style="margin-top: 0px;!important;">
                 <div class="card-header item-title-row">
                     <div>{{group.merchant.metName}}</div>
-                    <div  id="{{group.grpId}}" class="status" style="color:green">{{group.grpStatus}}</div>
+                    <div  id="{{group.grpId}}" class="status" style="color:green">{{group.grpStatusCh}}</div>
                 </div>
                 <ul>
                     {{#each orderSums}}
@@ -60,10 +60,10 @@
                 <a href="#"  class="btn-contact-merchant link btn-join btn-join-in-group-page"
                    data-met-phone="{{group.merchant.metPhone}}"
                     style="color:red">聯繫商家</a>
-                <a href="order-details.html" class="link btn-group-detail" data-grp-id="{{group.grpId}}"
-                   style="color:red">確認已送達</a>
-
-            </div>
+                <a href="#" class="link btn-group-detail" data-grp-id="{{group.grpId}}"
+                   data-grp-status="{{group.grpStatus}}"
+                style="{{#if this.group.btnChangeStatusDisable}} color:gray;{{else}} color:red; {{/if}}"  >{{group.btnChangeStatusName}}</a>
+              </div>
         </div>
         {{/each}}
     </div>

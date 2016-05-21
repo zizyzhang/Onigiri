@@ -157,6 +157,21 @@ var Server = function () {
         }
     );
 
+    app.post('/groupStatus', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var grpId = Number(req.body.grpId);
+            var grpStatus = req.body.grpStatus;
+
+
+            self.updateGroupStatusPromise(grpId,grpStatus).then(result=> {
+                res.json(result);
+            }).catch(e=> {
+                res.json(e);
+            });
+
+        }
+    );
+
 
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
             var usrId = Number(req.params.id);
@@ -171,14 +186,6 @@ var Server = function () {
             var usrId = Number(req.params.id);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
-        }
-    );
-
-    app.get('/StatusPassedByGroupId/:id', function (req, res) {
-            var groupId = Number(req.params.id);
-            self.getStatus(groupId, result => {
-                res.json(result);
-            });
         }
     );
 
@@ -335,6 +342,10 @@ var Server = function () {
                 grpId: grpId
             });
 
+            //最小外送金額
+            let metId = db.GROUP.find(g=>g.grpId === grpId).metId;
+            let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
+
             resolve({success: 1});
         });
     };
@@ -489,21 +500,19 @@ var Server = function () {
         });
     };
 
-    this.groupStatusChanged = function (grpId, grpStatus,callback) {
+    this.updateGroupStatusPromise = function (grpId, grpStatus) {
+        return new Promise((resolve,reject)=>{
+            let group = db.GROUP.find(s=>grpId === s.grpId);
 
-        let status = db.GROUP.find(s=>grpId === s.grpId).grpStatus;
-
-        if (status !== -1 && grpStatus - status === 1) {
-            db.GROUP.find(s=>grpId === s.grpId).grpStatus = grpStatus;
-            callback({success:1});
-        }
-        else{
-            callback({success:0});
-        }
+            if (group.grpStatus !== -1 ) {
+                group.grpStatus = grpStatus;
+                resolve({success: 1});
+            }
+            else {
+                reject({success: 0});
+            }
+        });
     };
-
-
-
 };
 
 
