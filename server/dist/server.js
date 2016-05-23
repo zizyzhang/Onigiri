@@ -526,20 +526,16 @@ var Server = function Server() {
                     }
                 }
 
-                console.log("amount", amount);
+                if (amount >= metMinPrice) {
+                    g.grpStatus = 1;
+                    db.setValueToJsonDb("GROUP", function (row) {
+                        return row.grpId === grpId;
+                    }, "grpStatus", 1);
+                }
+                resolve({ success: 1 });
             }).catch(function (e) {
                 return console.log(e);
             });
-
-            if (amount >= metMinPrice) {
-                //console.log("達到外送金額",g.grpStatus);
-                g.grpStatus = 1;
-            }
-            //else {
-            //    console.log("未到外送金額",g.grpStatus);
-            //}
-
-            resolve({ success: 1 });
         });
     };
 
@@ -835,6 +831,12 @@ var Server = function Server() {
             resolve(status);
         });
     };
+
+    app.post('/addMerchant', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+    });
+
+    ///////////////////后台
 };
 
 module.exports = new Server();

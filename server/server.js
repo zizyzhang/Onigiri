@@ -24,12 +24,12 @@ db.pushToJsonDb = function (table, value) {
     //    db[table].push(value);
 };
 
-db.setValueToJsonDb = function (table, condition ,setKey,newValue) {
+db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     let index = db[table].findIndex(condition);
     let oldObj = db[table].find(condition);
-    oldObj[setKey]=newValue;
+    oldObj[setKey] = newValue;
 
-    jsonDb.push('/db/' + table + `[${index}]`,oldObj);
+    jsonDb.push('/db/' + table + `[${index}]`, oldObj);
     //    db[table].push(value);
 };
 
@@ -172,7 +172,7 @@ var Server = function () {
             var grpStatus = Number(req.body.grpStatus);
 
 
-            self.updateGroupStatusPromise(grpId,grpStatus).then(result=> {
+            self.updateGroupStatusPromise(grpId, grpStatus).then(result=> {
                 res.json(result);
             }).catch(e=> {
                 res.json(e);
@@ -273,7 +273,7 @@ var Server = function () {
     this.allAvailableGroup = function (callback) {
         let result = [];
 
-        for (let _group of db.GROUP.filter(g=>g.grpStatus===0||g.grpStatus===1)) {
+        for (let _group of db.GROUP.filter(g=>g.grpStatus === 0 || g.grpStatus === 1)) {
             let group = this.createClassGroupByGroupId(_group.grpId);
             result.push(group);
 
@@ -380,20 +380,15 @@ var Server = function () {
                     let total = price * num;
                     amount += total;
                 }
-                console.log("amount", amount);
 
+                if (amount >= metMinPrice) {
+                    g.grpStatus = 1;
+                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                }
+                resolve({success: 1});
             }).catch(e=>console.log(e));
 
-            if (amount >= metMinPrice) {
-                //console.log("達到外送金額",g.grpStatus);
-                g.grpStatus = 1;
-            }
-            //else {
-            //    console.log("未到外送金額",g.grpStatus);
-            //}
 
-
-            resolve({success: 1});
         });
     };
 
@@ -542,11 +537,11 @@ var Server = function () {
     };
 
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
-        return new Promise((resolve,reject)=>{
+        return new Promise((resolve, reject)=> {
             let group = db.GROUP.find(s=>grpId === s.grpId);
 
-            if (group.grpStatus >=0 && group.grpStatus <=2 ) {
-                db.setValueToJsonDb('GROUP', row=>row.grpId===group.grpId ,'grpStatus', grpStatus);
+            if (group.grpStatus >= 0 && group.grpStatus <= 2) {
+                db.setValueToJsonDb('GROUP', row=>row.grpId === group.grpId, 'grpStatus', grpStatus);
                 //group.grpStatus = grpStatus;
 
                 resolve({success: 1});
@@ -561,7 +556,7 @@ var Server = function () {
     this.cleanGroup = function () {
         let today = new Date();
 
-        this.allGroup(function (result){
+        this.allGroup(function (result) {
             //let timing = result[0].grpTime.replace(/月/,"/");
             console.log(result[0].grpTime);
             console.log(JSON.stringify(result));
@@ -577,6 +572,17 @@ var Server = function () {
             resolve(status);
         });
     };
+
+
+    app.post('/addMerchant', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+
+
+    });
+
+
+    ///////////////////后台
+
 
 };
 

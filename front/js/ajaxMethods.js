@@ -141,6 +141,7 @@ var AjaxMethods = function () {
                     resolve(jsonData);
                     for (let a = 0; jsonData.groupedOrderSums.length; a++) {
                         let group =jsonData.groupedOrderSums[a].group;
+
                         switch (group .grpStatus) {
                             case 0:
                                 group.grpStatusCh = "未達外送金額";

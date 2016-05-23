@@ -46,7 +46,8 @@
                         "dihType": "飲料",
                         "dihPrice": "5"
                     }
-                ]
+                ],
+                "metMinPrice": 30
             },
             {
                 "metId": 2,
@@ -60,7 +61,8 @@
                         "dihType": "飲料",
                         "dihPrice": "4"
                     }
-                ]
+                ],
+                "metMinPrice": 30
             }
         ],
         "DISH": [

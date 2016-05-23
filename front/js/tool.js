@@ -3,6 +3,7 @@
  * Created by Zizy on 4/5/16.
  */
 let $$ = Dom7;
+let _ = require('lodash');
 
 
 class Tool {
@@ -17,10 +18,10 @@ class Tool {
 
             let html = '';
             let compiledTemplate = Template7.compile(template);
-            if (Array.isArray(data)) {
-                html = compiledTemplate({data});
+             if (Array.isArray(data)) {
+                html = _.replace(compiledTemplate({data}),/(<img .*)(srcUrl)/gi,'$1src');
             } else {
-                html = compiledTemplate(data);
+                html = _.replace(compiledTemplate(data),/(<img .*)(srcUrl)/gi,'$1src');
             }
 
 
