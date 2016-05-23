@@ -1,0 +1,156 @@
+{
+    "db": {
+        "USER": [
+            {
+                "usrId": 1,
+                "usrName": "firstUser",
+                "usrPwd": "123",
+                "usrCreateTime": "16/03/24/00:33:20",
+                "usrMobi": "09123456"
+            },
+            {
+                "usrId": 2,
+                "usrName": "secondUser",
+                "usrPwd": "",
+                "usrCreateTime": "16/03/24/00:33:22",
+                "usrMobi": "09123456"
+            },
+            {
+                "usrId": 3,
+                "usrName": "thirdUser",
+                "usrPwd": "",
+                "usrCreateTime": "16/03/25/00:33:22",
+                "usrMobi": "094573321"
+            }
+        ],
+        "ORDER": [
+            {
+                "ordId": 1,
+                "grpId": 1,
+                "usrId": 1,
+                "dihId": 1,
+                "ordNum": 8
+            },
+            {
+                "ordId": 2,
+                "grpId": 2,
+                "usrId": 1,
+                "dihId": 1,
+                "ordNum": 7
+            }
+        ],
+        "MERCHANT": [
+            {
+                "metId": 1,
+                "metName": "韩国纸上烤肉",
+                "metPhone": "867",
+
+                "metMinPrice": 30,
+                "metPicUrl":"http://i.imgur.com/fcZJoz3.jpg"
+
+            },
+            {
+                "metId": 2,
+                "metName": "麦当劳",
+                "metPhone": "234234234",
+
+                "metMinPrice": 30,
+                "metPicUrl":"http://i.imgur.com/fcZJoz3.jpg"
+            }
+        ],
+        "DISH": [
+            {
+                "dihId": 1,
+                "dihName": "炸鸡腿",
+                "metId": 1,
+                "dihType": "主食",
+                "dihPrice": "10"
+            },
+            {
+                "dihId": 2,
+                "dihName": "红茶",
+                "metId": 1,
+                "dihType": "飲料",
+                "dihPrice": "5"
+            },
+            {
+                "dihId": 3,
+                "dihName": "小XX",
+                "metId": 2,
+                "dihType": "飲料",
+                "dihPrice": "4"
+            }
+        ],
+        "GROUP": [
+            {
+                "grpId": 1,
+                "grpHostId": 1,
+                "metId": 1,
+                "grpAddr": "",
+                "grpTime": "5月 21日, 21:40",
+                "grpStatus": 3
+            },
+            {
+                "grpId": 2,
+                "grpHostId": 1,
+                "metId": 1,
+                "grpAddr": "",
+                "grpTime": "5月 21日, 21:43",
+                "grpStatus": 3
+            },
+            {
+                "grpId": 3,
+                "grpHostId": 1,
+                "metId": 1,
+                "grpAddr": "",
+                "grpTime": "5月 21日, 21:51",
+                "grpStatus": 0
+            }
+        ],
+        "GROUP_MEMBER": [
+            {
+                "gmrId": 1,
+                "usrId": 1,
+                "grpId": 1
+            },
+            {
+                "gmrId": 2,
+                "usrId": 1,
+                "grpId": 2
+            }
+        ],
+        "GROUP_ORDER": [],
+        "GROUP_DISHES": [
+            {
+                "gdeId": 1,
+                "dihId": 1,
+                "grpId": 1
+            },
+            {
+                "gdeId": 2,
+                "dihId": 2,
+                "grpId": 1
+            },
+            {
+                "gdeId": 3,
+                "dihId": 1,
+                "grpId": 2
+            },
+            {
+                "gdeId": 4,
+                "dihId": 2,
+                "grpId": 2
+            },
+            {
+                "gdeId": 5,
+                "dihId": 1,
+                "grpId": 3
+            },
+            {
+                "gdeId": 6,
+                "dihId": 2,
+                "grpId": 3
+            }
+        ]
+    }
+}

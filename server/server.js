@@ -574,14 +574,28 @@ var Server = function () {
     };
 
 
-    app.post('/addMerchant', function (req, res) {
+    ///////////////////后台
+
+    //给资料表新增一个row
+    app.post('/:adminPwd/table/:tableName', function (req, res) {
+        if (req.params.adminPwd !== 'fHfKJp3iSAfhvd9fjn23Z5KMA6Sd') {
+            res.json({success: false});
+        }
+
+        try {
             req.body = JSON.parse(req.body.data);
+            let rows = req.body.rows;
+            for (let row of rows) {
+                db.pushToJsonDb(req.params.tableName, row);
+            }
+            res.json({success: true});
+        } catch (e) {
+
+            res.json({success: false});
+        }
 
 
     });
-
-
-    ///////////////////后台
 
 
 };

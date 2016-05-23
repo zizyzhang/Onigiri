@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ADMIN</title>
+
+    <script>
+        var serverAddress = 'http://localhost:8080/'
+        $(document).ready(function () {
+            var pwd = $('pwd').val()
+            var tableName = $('tableName').val();
+            var rows = JSON.parse($('rows').val());
+            $('#insertToTable').click(function () {
+                $.post('serverAddress'+pwd+'/'+tableName,{data:rows},function(result){
+                    alert(result);
+                })
+            });
+        });
+
+    </script>
+</head>
+<body>
+    password:
+    <input type="text" id="pwd">
+    <br>
+    tableName:
+    <input type="text" id="tableName">
+    <br>
+
+    JSON格式的ROW<input type="text">
+    <button id="rows">新增</button>
+</body>
+</html>

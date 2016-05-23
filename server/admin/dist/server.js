@@ -832,11 +832,46 @@ var Server = function Server() {
         });
     };
 
-    app.post('/addMerchant', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-    });
-
     ///////////////////后台
+
+    //给资料表新增一个row
+    app.post('/:adminPwd/table/:tableName', function (req, res) {
+        if (req.params.adminPwd !== 'fHfKJp3iSAfhvd9fjn23Z5KMA6Sd') {
+            res.json({ success: false });
+        }
+
+        try {
+            req.body = JSON.parse(req.body.data);
+            var rows = req.body.rows;
+            var _iteratorNormalCompletion11 = true;
+            var _didIteratorError11 = false;
+            var _iteratorError11 = undefined;
+
+            try {
+                for (var _iterator11 = rows[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+                    var row = _step11.value;
+
+                    db.pushToJsonDb(req.params.tableName, row);
+                }
+            } catch (err) {
+                _didIteratorError11 = true;
+                _iteratorError11 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion11 && _iterator11.return) {
+                        _iterator11.return();
+                    }
+                } finally {
+                    if (_didIteratorError11) {
+                        throw _iteratorError11;
+                    }
+                }
+            }
+        } catch (e) {
+
+            res.json({ success: true });
+        }
+    });
 };
 
 module.exports = new Server();
