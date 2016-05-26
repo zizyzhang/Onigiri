@@ -40,12 +40,8 @@ class IndexPage {
 
 
             $$('#btn-sign-up').click(function () {
-                if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-                    ajaxMethod.addUser();
-                }
-                else {
-                    console.log("error subSignUp");
-                }
+                myApp.closeModal();
+                mainView.router.loadPage({url: 'sign-up.html'});
             });
 
             $$('#btn-login').click(function () {

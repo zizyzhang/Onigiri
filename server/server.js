@@ -33,6 +33,22 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     //    db[table].push(value);
 };
 
+//CLEAN GROUP 删掉超时的
+(()=> {
+    setInterval(()=> {
+        //得到所有没过期的团
+        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus=== 0);
+
+        for (let g of availableGroups) {
+            let deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
+             if (deadLine.getTime() - new Date().getTime() < 0) {
+                db.setValueToJsonDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
+            }
+        }
+    }, 5000);
+
+ })();
+
 var Server = function () {
 
     this.testMode = function () {
@@ -78,13 +94,14 @@ var Server = function () {
 
     app.post('/addUser', function (req, res) {
 
+            req.body = JSON.parse(req.body.data);
 
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
             var usrMobi = req.body.usrMobi;
             //console.log(JSON.stringify(req.body));
-            addUser(usrName, usrPwd, usrMobi, function (result) {
-
+            self.addUser(usrName, usrPwd, usrMobi, function (result) {
+                res.json(result);
             });
         }
     );
@@ -216,7 +233,7 @@ var Server = function () {
         }
 
 
-        var usrCreateTime = new Date();
+        var usrCreateTime = new Date().toString();
         var newUser = {
             usrId: usrId,
             usrName: usrName,
@@ -226,12 +243,11 @@ var Server = function () {
         };
 
 
-        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+        if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
             db.pushToJsonDb('USER', newUser);
-            callback({success: 1});
-            return;
+            callback({success: true});
         } else {
-            callback({success: 0});
+            callback({success: false});
         }
     };
 
@@ -289,7 +305,8 @@ var Server = function () {
 
     this.allMerchant = function (callback) {
         var result = [];
-        for (let merchant of db.MERCHANT) {
+        for (let _merchant of db.MERCHANT) {
+            let merchant = _.cloneDeep(_merchant);
             merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
             result.push(
                 merchant
@@ -491,8 +508,42 @@ var Server = function () {
                     orderSums.push({group, dish, ordNum});
                 }
             }
+
+            switch (group.grpStatus) {
+                case 0:
+                    group.grpStatusCh = "未達外送金額";
+                    group.btnChangeStatusName = "未開團";
+                    group.grpNextStatus = 1;
+
+                    group.btnChangeStatusDisable = true;
+                    break;
+                case 1:
+                    group.grpStatusCh = "已開團";
+                    group.btnChangeStatusName = "確認已送達";
+                    group.grpNextStatus = 2;
+
+                    break;
+                case 2:
+                    group.grpStatusCh = "已送達";
+                    group.btnChangeStatusName = "確認訂單已完成";
+                    group.grpNextStatus = 3;
+                    break;
+                case 3:
+                    group.grpStatusCh = "已完成";
+                    group.btnChangeStatusName = "";
+                    group.grpNextStatus = 4;
+                    break;
+                case -1:
+                    group.grpStatusCh = "開團失敗";
+                    group.btnChangeStatusName = "";
+                    group.btnChangeStatusDisable = true;
+                    group.grpNextStatus = -2;
+                    break;
+            }
+
             groupedOrderSums.push({group, orderSums});
         }
+
 
         callback(groupedOrderSums);
     };
@@ -505,6 +556,26 @@ var Server = function () {
             return null;
         }
 
+        let menu = [];
+        let grpDishes = _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                let grpDish = {};
+                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || [];
+        grpDishes.map(grpDish=> {
+
+            //检查是否已经存在DISH的分类.
+            let dihGroup = menu.find(dgp => dgp.dihType === grpDish.dish.dihType);
+            if (dihGroup) {
+                //已经有了就加入一笔
+                dihGroup.dishes.push(grpDish.dish);
+            } else {
+                //如果没有加入新的分类,和一笔DISH
+                menu.push({dihType: grpDish.dish.dihType, dishes: [grpDish.dish]});
+            }
+        });
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
@@ -512,14 +583,11 @@ var Server = function () {
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId) || [],
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                let grpDish = {};
-                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
-                _.assign(grpDish, grh);
-                return grpDish;
-            }) || [],
+            grpDishes: grpDishes,
             grpHost: that.createUserByUserId(group.grpHostId),
-            grpStatus: group.grpStatus
+
+            grpStatus: group.grpStatus,
+            menu: menu
         };
 
         return group;

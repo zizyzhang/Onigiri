@@ -5,15 +5,20 @@ var SERVER_ADS = "http://localhost:8080";
 
 var AjaxMethods = function () {
     'use strict';
-    this.addUser = function () {
-        var subname = $$('#subAccount').val();
-        var subpwd = $$('#subPwd').val();
-        var submobile = $$('#subMobile').val();
-        $$.post(SERVER_ADS + "/addUser", {usrName: subname, usrPwd: subpwd, usrMobi: submobile}, function (result) {
-            if (result) {
 
-            }
+
+    this.addUserPromise = function (usrName, usrPwd,usrMobi) {
+        return new Promise((resolve, reject)=> {
+            let data = JSON.stringify({usrName, usrPwd,usrMobi});
+             $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
+                if (JSON.parse(result).success) {
+                    resolve(!!result);
+                } else {
+                    reject(!!result);
+                }
+            });
         });
+
     };
 
     this.userAuth = function () {
@@ -139,48 +144,14 @@ var AjaxMethods = function () {
             $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/" + hostId,
                 function (jsonData) {
                     resolve(jsonData);
-                    for (let a = 0; jsonData.groupedOrderSums.length; a++) {
-                        let group =jsonData.groupedOrderSums[a].group;
 
-                        switch (group .grpStatus) {
-                            case 0:
-                                group.grpStatusCh = "未達外送金額";
-                                group.btnChangeStatusName = "未開團";
-                                group.grpNextStatus= 1;
-
-                                group.btnChangeStatusDisable = true;
-                                break;
-                            case 1:
-                                group.grpStatusCh = "已開團";
-                                group.btnChangeStatusName = "確認已送達";
-                                group.grpNextStatus= 2;
-
-                                break;
-                            case 2:
-                                group.grpStatusCh = "已送達";
-                                group.btnChangeStatusName = "確認訂單已完成";
-                                group.grpNextStatus= 3;
-                                break;
-                            case 3:
-                                group.grpStatusCh = "已完成";
-                                group.btnChangeStatusName = "";
-                                group.grpNextStatus= 4;
-                                break;
-                            case -1:
-                                group.grpStatusCh = "開團失敗";
-                                group.btnChangeStatusName = "";
-                                group.btnChangeStatusDisable = true;
-                                group.grpNextStatus= -2;
-                                break;
-                        }
-                    }
                 });
         });
     };
 
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
         return new Promise((resolve, reject)=> {
-             $$.post(SERVER_ADS + "/groupStatus?date="+new Date(), {data: JSON.stringify({grpId, grpStatus})},
+            $$.post(SERVER_ADS + "/groupStatus?date=" + new Date(), {data: JSON.stringify({grpId, grpStatus})},
                 function (result) {
                     resolve(result);
                 });

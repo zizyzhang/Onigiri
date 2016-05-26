@@ -1,5 +1,5 @@
 'use strict';
-let isDebug = true;
+let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -13,7 +13,8 @@ let ajaxMethod = require('./ajaxMethods.js'),
     Home = require('./pages/home.js'),
     MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js'),
-    OrderDetailPage = require('./pages/order-detail.js');
+    OrderDetailPage = require('./pages/order-detail.js'),
+    SignUpPage = require('./pages/sign-up.js');
 
 
 // Initialize app
@@ -62,6 +63,7 @@ let pageEventBind = function () {
     let home = new Home(myApp, mainView);
     let myGoups = new MyGroups(myApp, mainView);
     let orderDetailPage= new OrderDetailPage(myApp, mainView);
+    let signUpPage = new SignUpPage(myApp, mainView);
 
     groupDetailPage.bind();
     orderPage.bind();
@@ -72,6 +74,8 @@ let pageEventBind = function () {
     indexPage.bind();
     myGoups.bind();
     orderDetailPage.bind();
+    signUpPage.bind();
+
 
 }();
 

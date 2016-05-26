@@ -14,42 +14,56 @@
     <div class="tabs-swipeable-wrap swiper-container swiper-container-horizontal swiper-container-android">
         <div class="tabs swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
             <div id="tabGroups" class="page-content tab swiper-slide swiper-slide-active active" style="width: 420px;">
-                     {{#each groups}}
-                    <div class="card demo-card-header-pic">
-                        <div style="background-image:url('{{merchant.metPicUrl}}' );" valign="bottom"  data-grp-id="{{grpId}}" class="card-img ">
-                            <img
-                                 style="visibility: hidden; width: 100%; max-height: 40%;display: block;"
-                             srcUrl="{{merchant.metPicUrl}}"/>
+                {{#each groups}}
+                <div class="card demo-card-header-pic">
+                    <div style="background-image:url('{{merchant.metPicUrl}}' );" valign="bottom"
+                         data-grp-id="{{grpId}}" class="card-img ">
+                        <img
+                                style="visibility: hidden; width: 100%; max-height: 40%;display: block;"
+                                srcUrl="{{merchant.metPicUrl}}"/>
 
 
-                            <div class="card-img-text" style="color: white;">{{merchant.metName}}</div>
-                        </div>
-
-                        <div class="card-content">
-                            <div class="card-content-inner">
-                                <p class="color-gray">發起人: {{grpHostName}}</p>
-                                <p>
-                                    截止時間: {{grpTime}}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">加入團購</a>
-                            <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">查看詳情</a>
-                        </div>
+                        <div class="card-img-text" style="color: white;">{{merchant.metName}}</div>
                     </div>
 
-                    {{/each}}
-              </div>
+                    <div class="card-content">
+                        <div class="card-content-inner">
+                            <p class="color-gray">取餐地点: {{grpAddr}}</p>
+                            <p>
+                                截止時間: {{grpTime}}
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">加入團購</a>
+                        <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">查看詳情</a>
+                    </div>
+                </div>
+
+                {{/each}}
+            </div>
             <div id="tabMyOrders" class="page-content tab swiper-slide " style="width: 420px;">
                 {{#each groupedOrders}}
+                <div class="content-block-title">截止时间: {{group.grpTime}}</div>
+
                 <div class="card demo-card-header-pic">
+
                     <div class="list-block media-list" style="margin-top: 0px;!important;">
-                        <div class="card-header item-title-row">
+
+                        <div class="card-header item-title">
                             <div>{{group.merchant.metName}}</div>
                             <div style="color:green">已開團</div>
+
                         </div>
                         <ul>
+
+                            <li>
+                                <!--<lable class="item-content">-->
+                                    <!--&lt;!&ndash;<div>截止时间:</div>&ndash;&gt;-->
+                                <!--</lable>-->
+                            </li>
+
                             {{#each orders}}
 
                             <li>
@@ -59,7 +73,7 @@
                                     <div class="item-inner">
                                         <div class="item-title-row" style="line-height: 36px;">
                                             <div class="item-title">{{dish.dihName}}</div>
-                                                <div class="center">{{ordNum}}份</div>
+                                            <div class="center">{{ordNum}}份</div>
                                             <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
                                         </div>
 
@@ -75,11 +89,11 @@
                     </div>
                     <div class="card-footer">
                         <a href="#" class="link js-btn-contact-host"
-                           data-grp-host-mobi = "{{group.grpHost.usrMobi}}"
-                            style="color:red">聯繫團長</a>
+                           data-grp-host-mobi="{{group.grpHost.usrMobi}}"
+                           style="color:red">聯繫團長</a>
                         <a href="order-detail.html" class="link orderDetail"
                            data-grp-id="{{group.grpId}}"
-                            style="color:red">訂單詳情</a>
+                           style="color:red">訂單詳情</a>
 
                     </div>
                 </div>

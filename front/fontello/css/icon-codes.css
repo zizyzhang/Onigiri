@@ -56,4 +56,8 @@
 .icon-ok-2:before { content: '\57'; } /* 'W' */
 .icon-check-2:before { content: '\58'; } /* 'X' */
 .icon-ok-6:before { content: '\59'; } /* 'Y' */
+.icon-hourglass:before { content: '\5a'; } /* 'Z' */
+.icon-hourglass-1:before { content: '\5b'; } /* '[' */
+.icon-stopwatch:before { content: '\5c'; } /* '\' */
+.icon-stopwatch-1:before { content: '\5d'; } /* ']' */
 .icon-link-ext:before { content: '\72'; } /* 'r' */
