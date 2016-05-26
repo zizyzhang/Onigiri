@@ -28,6 +28,7 @@
 }
 
 .login-input.item-input-field:after,
+.login-input.item-input,
 .login-input.input-field:after {
     content: '';
     position: absolute;
@@ -42,6 +43,11 @@
     z-index: 15;
     -webkit-transform-origin: 50% 100%;
     transform-origin: 50% 100%;
+}
+
+.not-empty-state .item-input-field:after{
+    background:#fff;
+
 }
 
 .demo-card-header-pic .card-header {

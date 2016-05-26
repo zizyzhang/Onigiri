@@ -23,9 +23,20 @@ class IndexPage {
     bind() {
         $$(document).on('DOMContentLoaded', function () {
 
+            if (!!cookies.getJSON('user') && cookies.get('usrPwd')) {
+
+
+                $$('#floatLabelName').addClass('not-empty-state')   ;
+                $$('#floatLabelPwd').addClass('not-empty-state');
+                $$('#txtUsrName').addClass('not-empty-state').parent().css('background','#fff !important') ;
+                $$('#txtUsrPwd').addClass('not-empty-state').parent().css('background','#fff !important') ;
+
+                $$('#txtUsrName').val(cookies.getJSON('user').usrName);
+                $$('#txtUsrPwd').val(cookies.get('usrPwd'));
+            }
+
             $$('#btnCreateGroup').click(function () {
                 mainView.router.loadPage({url: 'select-merchant.html'});
-
             });
 
             $$('#btnMyGroups').click(function () {
@@ -49,6 +60,7 @@ class IndexPage {
 
                 ajaxMethod.userAuth().then(function (result) {
                     cookies.set('user', result.user);
+                    cookies.set('usrPwd', $$('#txtUsrPwd').val());
 
                     myApp.closeModal();
                     mainView.router.loadPage({url: 'home.html'});

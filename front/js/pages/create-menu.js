@@ -27,7 +27,12 @@ class CreateMenuPage { //TODO first
             tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getMerchantById(metId), page, ()=> {
 
                 $$('#selectAll').click(function () {
-                    $$('.dih-checkbox').click();
+                    myApp.showIndicator();
+                    setTimeout(()=> {
+                        $$('.dih-checkbox').click();
+                        myApp.hideIndicator();
+                    }, 200);
+
                 });
 
                 $$('#btnGoToGroupSetting').click(function () {

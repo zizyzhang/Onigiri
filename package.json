@@ -44,6 +44,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "jquery": "^2.2.2",
+    "js-cookie": "^2.1.1",
     "jshint": "^2.9.1",
     "lodash": "^4.8.2",
     "mocha": "^2.4.5",
