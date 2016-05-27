@@ -46,7 +46,7 @@ class CreateMenuPage { //TODO first
                     }
 
 
-                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds}});
+                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds,date:new Date()}});
                 });
 
 

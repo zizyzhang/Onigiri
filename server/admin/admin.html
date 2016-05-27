@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>ADMIN</title>
-
+    <style>
+        td {
+            border-style: solid;
+            border-width: 1pt;
+            border-color: black;
+            width: 5em;
+        }
+    </style>
     <script>
         var serverAddress = 'http://localhost:8080/'
         $(document).ready(function () {
             var pwd = $('pwd').val()
             var tableName = $('tableName').val();
-            var rows = JSON.parse($('rows').val());
+            var rows = JSON.stringify(JSON.parse($('rows').val()));
             $('#insertToTable').click(function () {
-                $.post('serverAddress'+pwd+'/'+tableName,{data:rows},function(result){
+                $.post('serverAddress' + pwd + '/' + tableName, {data: rows}, function (result) {
                     alert(result);
                 })
             });
@@ -20,14 +27,121 @@
     </script>
 </head>
 <body>
-    password:
-    <input type="text" id="pwd">
-    <br>
-    tableName:
-    <input type="text" id="tableName">
-    <br>
+password:
+<input type="text" id="pwd">
+<br>
+tableName:
+<input type="text" id="tableName">
 
-    JSON格式的ROW<input type="text">
-    <button id="rows">新增</button>
+<br>
+JSON格式的ROW<input type="text">
+<button id="rows">新增</button>
+
+<hr>
+<br>
+<h2>管理商家</h2>
+商家名称<input type="text">
+商家电话<input type="text">
+最小外送金额<input type="text">
+图片地址<input type="text">
+<button>新增</button>
+
+<table>
+    <tr>
+<td></td>
+<td></td>
+        <td>代号</td>
+        <td>商家名称</td>
+        <td>商家电话</td>
+        <td>外送金额</td>
+        <td style="width: 60%">图片地址</td>
+    </tr>
+    <tr>
+        <td><a href="#">删除</a></td>
+        <td><a href="#">修改</a></td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+    </tr><tr>
+    <td><a href="#">删除</a></td>
+    <td><a href="#">修改</a></td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+    </tr><tr>
+    <td><a href="#">删除</a></td>
+    <td><a href="#">修改</a></td>
+        <td>3</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+    </tr>
+</table>
+
+<hr>
+
+<br>
+<h2>管理食物</h2>
+商家代号
+<select type="text">
+    <option value="">1</option>
+</select>
+<br>
+<br>
+
+食物名称<input type="text">
+食物价格<input type="text">
+食物类别<input type="text">
+<button>新增</button>
+<table>
+    <tr style=";">
+        <td>    </td>
+        <td>    </td>
+        <td>id</td>
+        <td>食物名称</td>
+        <td>食物价格</td>
+        <td>食物类别</td>
+    </tr>
+    <tr>
+        <td><a href="#">删除</a></td>
+        <td><a href="#">修改</a></td>
+
+        <td>1</td>
+        <td>2</td>
+        <td>2</td>
+        <td>2</td>
+
+
+    </tr>
+    <tr>
+        <td><a href="#">删除</a></td>
+        <td><a href="#">修改</a></td>
+
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+
+    </tr>
+    <tr>
+        <td><a href="#">删除</a></td>
+        <td><a href="#">修改</a></td>
+
+        <td>3</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+
+    </tr>
+
+</table>
+
+<hr>
+
 </body>
 </html>
