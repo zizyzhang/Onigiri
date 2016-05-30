@@ -1,4 +1,6 @@
 'use strict';
+require('babel-polyfill');
+
 let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),

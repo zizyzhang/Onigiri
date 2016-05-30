@@ -8,6 +8,7 @@ let myApp = null, mainView = null;
 let tool = require('../tool.js');
 let home = require('./home.js');
 
+
 const Public = require('../public.js');
 const cookies = require('js-cookie');
 
