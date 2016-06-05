@@ -47,7 +47,7 @@ let mainView = myApp.addView('.view-main', {
         myApp.closeModal();
 
 
-        mainView.router.loadPage('home.html');
+        mainView.router.loadPage('group-setting.html');
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
     }

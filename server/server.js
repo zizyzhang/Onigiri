@@ -37,17 +37,17 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
 (()=> {
     setInterval(()=> {
         //得到所有没过期的团
-        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus=== 0);
+        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0);
 
         for (let g of availableGroups) {
             let deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
-             if (deadLine.getTime() - new Date().getTime() < 0) {
+            if (deadLine.getTime() - new Date().getTime() < 0) {
                 db.setValueToJsonDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
             }
         }
     }, 5000);
 
- })();
+})();
 
 var Server = function () {
 
@@ -106,6 +106,39 @@ var Server = function () {
         }
     );
 
+    app.post('/merchant', function (req, res) {
+
+            req.body = JSON.parse(req.body.data);
+
+            let metName = req.body.metName;
+            let metPhone = req.body.metPhone;
+            let metMinPrice = req.body.metMinPrice;
+            let metPicUrl = req.body.metPicUrl || '';
+
+            self.addMerchantPromise({metName, metPhone, metMinPrice, metPicUrl}).then((merchant)=> {
+                res.json({success: true,merchant});
+            }).catch(()=>res.json({success: false}));
+
+        }
+    );
+
+    app.post('/dishes', function (req, res) {
+
+            req.body = JSON.parse(req.body.data);
+
+            console.log(JSON.stringify(req.body));
+
+        req.body = req.body.map(row=> {
+            row.dihType = row.dihType || '主食';
+            return row;
+        });
+
+            self.addDishPromise(req.body).then((result)=> {
+                res.json({success: true,dishes:result});
+            }).catch(()=>res.json({success: false}));
+
+        }
+    );
 
     app.post('/userAuth', function (req, res) {
             var usrName = req.body.usrName;
@@ -221,6 +254,17 @@ var Server = function () {
             'app listening on port 8080!');
     });
 
+    this.addDishPromise = function (dishes) {
+
+        return new Promise((resolve, reject)=> {
+            for(let dish of dishes){
+                dish.dihId=_.maxBy(db.DISH, "dihId").dihId + 1;
+                db.pushToJsonDb('DISH', dish);
+            }
+            resolve(dishes);
+        });
+    };
+
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
@@ -251,6 +295,23 @@ var Server = function () {
         }
     };
 
+    /*
+     * 参数
+     {metName,
+     metPhone,
+     metMinPrice,
+     metPicUrl}
+     */
+    this.addMerchantPromise = function (merchant) {
+        return new Promise((resolve, reject)=> {
+            merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
+
+            db.pushToJsonDb('MERCHANT', merchant);
+
+            resolve(merchant);
+
+        });
+    };
 
     this.userAuth = function (usrName, usrPwd, callback) {
         var isSuccess = false;

@@ -76,7 +76,23 @@ var AjaxMethods = function () {
                 resolve(data);
             });
         });
+     };
 
+    this.postMerchantPromise = function(merchant){
+      return new Promise((resolve,reject)=>{
+          $$.post(SERVER_ADS + "/merchant",{data:JSON.stringify(merchant)}, function (data) {
+              resolve(JSON.parse(data));
+          });
+      });
+    };
+
+    this.postDishPromise = function(dishes){
+
+        return new Promise((resolve,reject)=>{
+            $$.post(SERVER_ADS + "/dishes",{data:JSON.stringify(dishes)}, function (data) {
+                resolve(JSON.parse(data));
+            });
+        });
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {

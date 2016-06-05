@@ -37,7 +37,7 @@ class IndexPage {
             }
 
             $$('#btnCreateGroup').click(function () {
-                mainView.router.loadPage({url: 'select-merchant.html'});
+                mainView.router.loadPage({url: 'group-setting.html'});
             });
 
             $$('#btnMyGroups').click(function () {

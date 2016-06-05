@@ -20,22 +20,59 @@
 
             <ul>
                 <li>
-                    <!--<a href="#" class="item-link item-content">-->
-                        <!--<div class="item-media"><i class="icon icon-f7"></i></div>-->
-                        <!--<div class="item-inner">-->
-                            <!--<div class="item-title"></div>-->
-                            <!--<div class="item-after" id="txtGrpTime"></div>-->
-                        <!--</div>-->
-                    <!--</a>-->
-                    <!--<div class="item-content">-->
-                        <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
-                        <!--<div class="item-inner">-->
-                            <!--<div class="item-title label">取餐日期</div>-->
-                            <!--<div class="item-input">-->
-                                <!--<input type="text" placeholder="取餐日期">-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
+                    <div class="item-divider">团购基本资讯</div>
+                </li>
+
+
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">商家名称</div>
+
+
+                            <div class="item-input">
+                                <input type="text" placeholder="商家名称" id="merchantName">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">商家联系电话</div>
+
+
+                            <div class="item-input">
+                                <input type="text" placeholder="商家电话" id="merchantMob">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">最低外送金额</div>
+
+
+                            <div class="item-input">
+                                <input type="text" placeholder="最低外送金额" id="minPrice">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+                <li>
+
                     <div class="item-content">
                         <div class="item-media"><i class="icon icon-form-name"></i></div>
 
@@ -67,6 +104,66 @@
                     <!--</a>-->
                 </li>
 
+                <li>
+                    <div class="item-divider">团购商品列表</div>
+                </li>
+
+
+                <li id="products">
+                         <div class="card ">
+                            <div class="card-header">商品1</div>
+                            <div class="card-content">
+                                <div class="card-content-inner">
+                                    <div class="list-block">
+                                        <ul class="group-setting-dishes">
+                                            <li>
+                                                <div class="item-content">
+                                                    <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+
+                                                    <div class="item-inner">
+
+                                                        <div class="item-title label">商品名称</div>
+
+
+                                                        <div class="item-input">
+                                                            <input type="text" placeholder="商品名称"   data-id="0" class="js-dishName">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </li>
+                                            <li>
+                                                <div class="item-content">
+
+                                                    <div class="item-inner">
+
+                                                        <div class="item-title label">商品价格</div>
+
+
+                                                        <div class="item-input">
+                                                            <input type="text" placeholder="商品价格"   data-id="0" class="js-dishPrice">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                </li>
+
+                <li>
+                    <div class="button-row"style="margin:0 1em">
+                        <a style="margin: 0 auto;" class="button  button-fill color-green" id="addProduct">新增商品</a>
+
+                    </div>
+                </li>
             </ul>
         </div>
     </div>

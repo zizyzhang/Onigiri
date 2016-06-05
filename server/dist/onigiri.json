@@ -1,1511 +1,1587 @@
 {
-  "db": {
-    "USER": [
-      {
-        "usrId": 1,
-        "usrName": "firstUser",
-        "usrPwd": "123",
-        "usrCreateTime": "16/03/24/00:33:20",
-        "usrMobi": "09123456"
-      },
-      {
-        "usrId": 2,
-        "usrName": "secondUser",
-        "usrPwd": "",
-        "usrCreateTime": "16/03/24/00:33:22",
-        "usrMobi": "09123456"
-      },
-      {
-        "usrId": 3,
-        "usrName": "thirdUser",
-        "usrPwd": "",
-        "usrCreateTime": "16/03/25/00:33:22",
-        "usrMobi": "094573321"
-      }
-    ],
-    "ORDER": [
-    ],
-    "MERCHANT": [
-      {
-        "metId": 2,
-        "metName": "麦当劳",
-        "metPhone": "234234234",
-        "metPicUrl": "http://i.imgur.com/fcZJoz3.jpg",
-        "metMinPrice": 100
-      },
-      {
-        "metId": 3,
-        "metName": "巧口快餐店",
-        "metPhone": "033292081",
-        "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
-        "metMinPrice": 140
-      },
-      {
-        "metId": 4,
-        "metName": "京采日本料理",
-        "metPhone": "033205954",
-        "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
-        "metMinPrice": 500
-      },
-      {
-        "metId": 5,
-        "metName": "夜貓雞排",
-        "metPhone": "0955340928",
-        "metPicUrl": "http://i.imgur.com/6NooWP6.jpg",
-        "metMinPrice": 100
-      }
-    ],
-    "DISH": [
-      {
-        "dihId": 1,
-        "dihName": "炸鸡腿",
-        "metId": 1,
-        "dihType": "主食",
-        "dihPrice": "10"
-      },
-      {
-        "dihId": 2,
-        "dihName": "红茶",
-        "metId": 1,
-        "dihType": "飲料",
-        "dihPrice": "5"
-      },
-      {
-        "dihId": 3,
-        "dihName": "滿足中薯餐-奶油脆雞餐",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "188"
-      },
-      {
-        "dihId": 4,
-        "dihName": "滿足中薯餐-羅勒烤雞餐",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "188"
-      },
-      {
-        "dihId": 5,
-        "dihName": "滿足中薯餐-起司豬排餐",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "164"
-      },
-      {
-        "dihId": 6,
-        "dihName": "滿足中薯餐-培根牛",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "188"
-      },
-      {
-        "dihId": 7,
-        "dihName": "滿足中薯餐-雙層四盎司",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "204"
-      },
-      {
-        "dihId": 8,
-        "dihName": "滿足中薯餐-四盎司",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "174"
-      },
-      {
-        "dihId": 9,
-        "dihName": "滿足中薯餐-大麥克",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "168"
-      },
-      {
-        "dihId": 10,
-        "dihName": "滿足中薯餐-雙層牛",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "164"
-      },
-      {
-        "dihId": 11,
-        "dihName": "滿足中薯餐-勁辣雞腿",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "168"
-      },
-      {
-        "dihId": 12,
-        "dihName": "滿足中薯餐-板烤雞腿",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "168"
-      },
-      {
-        "dihId": 13,
-        "dihName": "滿足中薯餐-原味麥脆雞",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "181"
-      },
-      {
-        "dihId": 14,
-        "dihName": "滿足中薯餐-混合麥脆雞",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "181"
-      },
-      {
-        "dihId": 15,
-        "dihName": "滿足中薯餐-辣味麥脆雞",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "181"
-      },
-      {
-        "dihId": 16,
-        "dihName": "滿足中薯餐- 九塊麥克雞塊",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "178"
-      },
-      {
-        "dihId": 17,
-        "dihName": "滿足中薯餐- 六塊麥克雞塊",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "158"
-      },
-      {
-        "dihId": 18,
-        "dihName": "滿足中薯餐-麥香魚",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "154"
-      },
-      {
-        "dihId": 19,
-        "dihName": "滿足中薯餐-麥香雞",
-        "metId": 2,
-        "dihType": "大滿足獨享餐",
-        "dihPrice": "144"
-      },
-      {
-        "dihId": 20,
-        "dihName": "奶油白醬脆雞堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "99"
-      },
-      {
-        "dihId": 21,
-        "dihName": "羅勒青醬烤雞堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "99"
-      },
-      {
-        "dihId": 22,
-        "dihName": "起司豬排堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "79"
-      },
-      {
-        "dihId": 23,
-        "dihName": "培根牛肉堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "105"
-      },
-      {
-        "dihId": 24,
-        "dihName": "雙層四盎司牛肉堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "115"
-      },
-      {
-        "dihId": 25,
-        "dihName": "四盎司牛肉堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 26,
-        "dihName": "大麥克",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "79"
-      },
-      {
-        "dihId": 27,
-        "dihName": "雙層牛肉吉事堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 28,
-        "dihName": "勁辣雞腿堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "82"
-      },
-      {
-        "dihId": 29,
-        "dihName": "板烤雞腿堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 30,
-        "dihName": "原味麥脆雞",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 31,
-        "dihName": "辣味麥脆雞",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 32,
-        "dihName": "九塊麥克雞塊",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 33,
-        "dihName": "六塊麥克雞塊",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "69"
-      },
-      {
-        "dihId": 34,
-        "dihName": "麥香魚",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "69"
-      },
-      {
-        "dihId": 35,
-        "dihName": "麥香雞",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "49"
-      },
-      {
-        "dihId": 36,
-        "dihName": "麥克雙牛堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "49"
-      },
-      {
-        "dihId": 37,
-        "dihName": "法式芥末香雞堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "39"
-      },
-      {
-        "dihId": 38,
-        "dihName": "美式辣雞堡",
-        "metId": 2,
-        "dihType": "單點和超值全餐",
-        "dihPrice": "39"
-      },
-      {
-        "dihId": 39,
-        "dihName": "冰炫風-抹茶紅豆",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 40,
-        "dihName": "冰炫風（芝麻）",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 41,
-        "dihName": "OREO冰炫風",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 42,
-        "dihName": "花聖代-抹茶紅豆",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "49"
-      },
-      {
-        "dihId": 43,
-        "dihName": "聖代（芝麻）",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 44,
-        "dihName": "巧克力聖代",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 45,
-        "dihName": "香草奶昔",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "40"
-      },
-      {
-        "dihId": 46,
-        "dihName": "草莓奶昔",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "40"
-      },
-      {
-        "dihId": 47,
-        "dihName": "小四季沙拉",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 48,
-        "dihName": "勁辣香雞翅",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "39"
-      },
-      {
-        "dihId": 49,
-        "dihName": "蘋果派",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 50,
-        "dihName": "小包薯條",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 51,
-        "dihName": "蘋果-四季水果袋",
-        "metId": 2,
-        "dihType": "甜品和冰品",
-        "dihPrice": "39"
-      },
-      {
-        "dihId": 52,
-        "dihName": "芒果萊姆冰沙",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 53,
-        "dihName": "野莓萊姆冰沙",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 54,
-        "dihName": "葡萄柚萊姆冰沙",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 55,
-        "dihName": "冰那堤-（中）-L2",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "65"
-      },
-      {
-        "dihId": 56,
-        "dihName": "冰那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 57,
-        "dihName": "小杯可口可樂",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 58,
-        "dihName": "小杯檸檬茶",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 59,
-        "dihName": "小杯雪碧",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 60,
-        "dihName": "小杯無糖冰綠茶",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 61,
-        "dihName": "小杯零卡可樂",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 62,
-        "dihName": "小杯柳橙汁",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "40"
-      },
-      {
-        "dihId": 63,
-        "dihName": "小杯美式咖啡",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "33"
-      },
-      {
-        "dihId": 64,
-        "dihName": "小杯無糖熱奶茶",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "33"
-      },
-      {
-        "dihId": 65,
-        "dihName": "熱紅茶",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "33"
-      },
-      {
-        "dihId": 66,
-        "dihName": "經典冰咖啡",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "45"
-      },
-      {
-        "dihId": 67,
-        "dihName": "焦糖冰奶茶",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "45"
-      },
-      {
-        "dihId": 68,
-        "dihName": "熱巧克力",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "33"
-      },
-      {
-        "dihId": 69,
-        "dihName": "柳橙酷蘇打",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "48"
-      },
-      {
-        "dihId": 70,
-        "dihName": "小杯玉米湯",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "33"
-      },
-      {
-        "dihId": 71,
-        "dihName": "高鈣鮮乳",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "28"
-      },
-      {
-        "dihId": 72,
-        "dihName": "熱那堤（中）-L2",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "65"
-      },
-      {
-        "dihId": 73,
-        "dihName": "熱亞美利加諾（中）-L2",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 74,
-        "dihName": "熱那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 75,
-        "dihName": "熱亞美利加諾",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "65"
-      },
-      {
-        "dihId": 76,
-        "dihName": "熱焦糖瑪琦朵（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 77,
-        "dihName": "冰亞美利加諾",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "65"
-      },
-      {
-        "dihId": 78,
-        "dihName": "冰焦糖瑪琦朵（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 79,
-        "dihName": "熱香草那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 80,
-        "dihName": "熱榛果那堤",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 81,
-        "dihName": "熱抹茶那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 82,
-        "dihName": "冰香草那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 83,
-        "dihName": "冰榛果那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 84,
-        "dihName": "熱阿薩姆那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 85,
-        "dihName": "熱巧克力（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 86,
-        "dihName": "熱特濃白咖啡（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 87,
-        "dihName": "冰阿薩姆那堤（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "85"
-      },
-      {
-        "dihId": 88,
-        "dihName": "冰巧克力（中）",
-        "metId": 2,
-        "dihType": "飲料和咖啡",
-        "dihPrice": "75"
-      },
-      {
-        "dihId": 89,
-        "dihName": "蘋果快樂兒童餐-陽光鱈魚堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 90,
-        "dihName": "玉米快樂兒童餐-陽光鱈魚堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 91,
-        "dihName": "小沙拉快樂兒童餐-陽光鱈魚堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 92,
-        "dihName": "大沙拉快樂兒童餐-陽光鱈魚堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "104"
-      },
-      {
-        "dihId": 93,
-        "dihName": "蘋果快樂兒童餐-青蔬烤雞堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 94,
-        "dihName": "玉米快樂兒童餐-青蔬烤雞堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 95,
-        "dihName": "小沙拉快樂兒童餐-青蔬烤雞堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "89"
-      },
-      {
-        "dihId": 96,
-        "dihName": "大沙拉快樂兒童餐-青蔬烤雞堡",
-        "metId": 2,
-        "dihType": "快樂兒童餐",
-        "dihPrice": "104"
-      },
-      {
-        "dihId": 97,
-        "dihName": "快樂組合雙人餐",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "299"
-      },
-      {
-        "dihId": 98,
-        "dihName": "九塊原味麥脆雞",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "398"
-      },
-      {
-        "dihId": 99,
-        "dihName": "六塊原味麥脆雞",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "268"
-      },
-      {
-        "dihId": 100,
-        "dihName": "四人原味分享餐",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "409"
-      },
-      {
-        "dihId": 101,
-        "dihName": "三人原味分享餐",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "309"
-      },
-      {
-        "dihId": 102,
-        "dihName": "二人原味分享餐",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "199"
-      },
-      {
-        "dihId": 103,
-        "dihName": "歡樂大三拼",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "179"
-      },
-      {
-        "dihId": 104,
-        "dihName": "二十塊麥克雞塊",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "179"
-      },
-      {
-        "dihId": 105,
-        "dihName": "十塊勁辣香雞翅",
-        "metId": 2,
-        "dihType": "快樂分享餐",
-        "dihPrice": "179"
-      },
-      {
-        "dihId": 106,
-        "dihName": "招牌飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 107,
-        "dihName": "焢肉飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 108,
-        "dihName": "雞丁飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 109,
-        "dihName": "三杯雞飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 110,
-        "dihName": "滷炸排骨飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 111,
-        "dihName": "蜜汁小排飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 112,
-        "dihName": "鱈魚排飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 113,
-        "dihName": "滷炸雞腿飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 114,
-        "dihName": "雞排飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 115,
-        "dihName": "豬腳飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 116,
-        "dihName": "牛腩飯",
-        "metId": 3,
-        "dihType": "主食",
-        "dihPrice": "70"
-      },
-      {
-        "dihId": 117,
-        "dihName": "日式豬排飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 118,
-        "dihName": "日式雞肉飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "90"
-      },
-      {
-        "dihId": 119,
-        "dihName": "日式牛肉飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 120,
-        "dihName": "牛肉蛋炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 121,
-        "dihName": "鮭魚蛋炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 122,
-        "dihName": "肉絲蛋炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "80"
-      },
-      {
-        "dihId": 123,
-        "dihName": "咖哩豬排飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "130"
-      },
-      {
-        "dihId": 124,
-        "dihName": "蛋包飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 125,
-        "dihName": "豬排炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "130"
-      },
-      {
-        "dihId": 126,
-        "dihName": "咖哩炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "95"
-      },
-      {
-        "dihId": 127,
-        "dihName": "雞肉炒飯",
-        "metId": 4,
-        "dihType": "主食",
-        "dihPrice": "90"
-      },
-      {
-        "dihId": 128,
-        "dihName": "無骨鹹酥雞(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 129,
-        "dihName": "無骨鹹酥雞(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 130,
-        "dihName": "蜜汁香酥雞(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 131,
-        "dihName": "蜜汁香酥雞(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 132,
-        "dihName": "麻辣香酥雞(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 133,
-        "dihName": "麻辣香酥雞(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 134,
-        "dihName": "香酥菇(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 135,
-        "dihName": "香酥菇(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 136,
-        "dihName": "泰式魷魚(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 137,
-        "dihName": "泰式魷魚(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 138,
-        "dihName": "甘梅薯條(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 139,
-        "dihName": "甘梅薯條(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 140,
-        "dihName": "雞胗(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 141,
-        "dihName": "雞胗(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 142,
-        "dihName": "脆薯(大)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 143,
-        "dihName": "脆薯(小)",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 144,
-        "dihName": "檸檬雞點兒",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 145,
-        "dihName": "墨西哥軟骨",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 146,
-        "dihName": "三角骨",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 147,
-        "dihName": "卡拉雞腿/雞塊",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "35"
-      },
-      {
-        "dihId": 148,
-        "dihName": "雞蛋豆腐",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "35"
-      },
-      {
-        "dihId": 149,
-        "dihName": "起司花枝條",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 150,
-        "dihName": "脆皮蝦捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "30"
-      },
-      {
-        "dihId": 151,
-        "dihName": "檸檬雞柳條",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "35"
-      },
-      {
-        "dihId": 152,
-        "dihName": "九層花枝",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 153,
-        "dihName": "香酥胸骨",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 154,
-        "dihName": "百頁豆腐",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 155,
-        "dihName": "卡啦雞翅",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 156,
-        "dihName": "烤雞翅",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 157,
-        "dihName": "七里香",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 158,
-        "dihName": "脆皮花枝丸",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 159,
-        "dihName": "起士熱狗捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 160,
-        "dihName": "鮮炸湯圓",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 161,
-        "dihName": "麥克雞塊",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 162,
-        "dihName": "馬鈴薯條",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 163,
-        "dihName": "玉米奶油餅",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 164,
-        "dihName": "脆皮貢丸",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 165,
-        "dihName": "煉乳麻花捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 166,
-        "dihName": "大熱狗",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 167,
-        "dihName": "洋蔥捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 168,
-        "dihName": "蘿蔔糕",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 169,
-        "dihName": "地瓜球",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 170,
-        "dihName": "甜不辣",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 171,
-        "dihName": "心心腸",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 172,
-        "dihName": "炸春捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 173,
-        "dihName": "四季豆",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 174,
-        "dihName": "薯餅",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 175,
-        "dihName": "青椒",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 176,
-        "dihName": "芋丸",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 177,
-        "dihName": "蘿蔔絲捲",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 178,
-        "dihName": "脆皮米腸",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "15"
-      },
-      {
-        "dihId": 179,
-        "dihName": "芋粿/芋粿巧",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "15"
-      },
-      {
-        "dihId": 180,
-        "dihName": "米血",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "15"
-      },
-      {
-        "dihId": 181,
-        "dihName": "雞皮",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "15"
-      },
-      {
-        "dihId": 182,
-        "dihName": "魚板",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "15"
-      },
-      {
-        "dihId": 183,
-        "dihName": "銀絲卷",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "10"
-      },
-      {
-        "dihId": 184,
-        "dihName": "豆干",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "10"
-      },
-      {
-        "dihId": 185,
-        "dihName": "芋仔餅",
-        "metId": 5,
-        "dihType": "小品",
-        "dihPrice": "5"
-      },
-      {
-        "dihId": 186,
-        "dihName": "芬達",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 187,
-        "dihName": "雪碧",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 188,
-        "dihName": "可樂",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 189,
-        "dihName": "雪梨茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 190,
-        "dihName": "檸檬紅茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "25"
-      },
-      {
-        "dihId": 191,
-        "dihName": "紅茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 192,
-        "dihName": "奶茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 193,
-        "dihName": "冬瓜茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 194,
-        "dihName": "烏龍茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 195,
-        "dihName": "綠茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 196,
-        "dihName": "油切綠茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 197,
-        "dihName": "仙草甘茶",
-        "metId": 5,
-        "dihType": "飲料",
-        "dihPrice": "20"
-      },
-      {
-        "dihId": 198,
-        "dihName": "特大雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "45"
-      },
-      {
-        "dihId": 199,
-        "dihName": "脆皮雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 200,
-        "dihName": "桔醬炭烤雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 201,
-        "dihName": "羅勒大雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "55"
-      },
-      {
-        "dihId": 202,
-        "dihName": "檸檬大雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 203,
-        "dihName": "神州麻辣雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 204,
-        "dihName": "蜜汁叉燒雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 205,
-        "dihName": "脆皮檸檬雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      },
-      {
-        "dihId": 206,
-        "dihName": "泰式雞排",
-        "metId": 5,
-        "dihType": "主餐",
-        "dihPrice": "50"
-      }
-    ],
-    "GROUP": [
-    ],
-    "GROUP_MEMBER": [
-    ],
-    "GROUP_ORDER": [
-    ],
-    "GROUP_DISHES": [
-    ]
-  }
+    "db": {
+        "USER": [
+            {
+                "usrId": 1,
+                "usrName": "firstUser",
+                "usrPwd": "123",
+                "usrCreateTime": "16/03/24/00:33:20",
+                "usrMobi": "09123456"
+            },
+            {
+                "usrId": 2,
+                "usrName": "secondUser",
+                "usrPwd": "",
+                "usrCreateTime": "16/03/24/00:33:22",
+                "usrMobi": "09123456"
+            },
+            {
+                "usrId": 3,
+                "usrName": "thirdUser",
+                "usrPwd": "",
+                "usrCreateTime": "16/03/25/00:33:22",
+                "usrMobi": "094573321"
+            }
+        ],
+        "ORDER": [
+            {
+                "ordId": 1,
+                "grpId": 1,
+                "usrId": 1,
+                "dihId": 207,
+                "ordNum": 1
+            },
+            {
+                "ordId": 2,
+                "grpId": 1,
+                "usrId": 1,
+                "dihId": 208,
+                "ordNum": 1
+            },
+            {
+                "ordId": 3,
+                "grpId": 1,
+                "usrId": 1,
+                "dihId": 209,
+                "ordNum": 1
+            }
+        ],
+        "MERCHANT": [
+            {
+                "metId": 2,
+                "metName": "麦当劳",
+                "metPhone": "234234234",
+                "metPicUrl": "http://i.imgur.com/fcZJoz3.jpg",
+                "metMinPrice": 100
+            },
+            {
+                "metId": 3,
+                "metName": "巧口快餐店",
+                "metPhone": "033292081",
+                "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
+                "metMinPrice": 140
+            },
+            {
+                "metId": 4,
+                "metName": "京采日本料理",
+                "metPhone": "033205954",
+                "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
+                "metMinPrice": 500
+            },
+            {
+                "metId": 5,
+                "metName": "夜貓雞排",
+                "metPhone": "0955340928",
+                "metPicUrl": "http://i.imgur.com/6NooWP6.jpg",
+                "metMinPrice": 100
+            },
+            {
+                "metName": "测试",
+                "metPhone": "1231231231",
+                "metMinPrice": "123",
+                "metPicUrl": "",
+                "metId": 6
+            }
+        ],
+        "DISH": [
+            {
+                "dihId": 1,
+                "dihName": "炸鸡腿",
+                "metId": 1,
+                "dihType": "主食",
+                "dihPrice": "10"
+            },
+            {
+                "dihId": 2,
+                "dihName": "红茶",
+                "metId": 1,
+                "dihType": "飲料",
+                "dihPrice": "5"
+            },
+            {
+                "dihId": 3,
+                "dihName": "滿足中薯餐-奶油脆雞餐",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "188"
+            },
+            {
+                "dihId": 4,
+                "dihName": "滿足中薯餐-羅勒烤雞餐",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "188"
+            },
+            {
+                "dihId": 5,
+                "dihName": "滿足中薯餐-起司豬排餐",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "164"
+            },
+            {
+                "dihId": 6,
+                "dihName": "滿足中薯餐-培根牛",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "188"
+            },
+            {
+                "dihId": 7,
+                "dihName": "滿足中薯餐-雙層四盎司",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "204"
+            },
+            {
+                "dihId": 8,
+                "dihName": "滿足中薯餐-四盎司",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "174"
+            },
+            {
+                "dihId": 9,
+                "dihName": "滿足中薯餐-大麥克",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "168"
+            },
+            {
+                "dihId": 10,
+                "dihName": "滿足中薯餐-雙層牛",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "164"
+            },
+            {
+                "dihId": 11,
+                "dihName": "滿足中薯餐-勁辣雞腿",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "168"
+            },
+            {
+                "dihId": 12,
+                "dihName": "滿足中薯餐-板烤雞腿",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "168"
+            },
+            {
+                "dihId": 13,
+                "dihName": "滿足中薯餐-原味麥脆雞",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "181"
+            },
+            {
+                "dihId": 14,
+                "dihName": "滿足中薯餐-混合麥脆雞",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "181"
+            },
+            {
+                "dihId": 15,
+                "dihName": "滿足中薯餐-辣味麥脆雞",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "181"
+            },
+            {
+                "dihId": 16,
+                "dihName": "滿足中薯餐- 九塊麥克雞塊",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "178"
+            },
+            {
+                "dihId": 17,
+                "dihName": "滿足中薯餐- 六塊麥克雞塊",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "158"
+            },
+            {
+                "dihId": 18,
+                "dihName": "滿足中薯餐-麥香魚",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "154"
+            },
+            {
+                "dihId": 19,
+                "dihName": "滿足中薯餐-麥香雞",
+                "metId": 2,
+                "dihType": "大滿足獨享餐",
+                "dihPrice": "144"
+            },
+            {
+                "dihId": 20,
+                "dihName": "奶油白醬脆雞堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "99"
+            },
+            {
+                "dihId": 21,
+                "dihName": "羅勒青醬烤雞堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "99"
+            },
+            {
+                "dihId": 22,
+                "dihName": "起司豬排堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "79"
+            },
+            {
+                "dihId": 23,
+                "dihName": "培根牛肉堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "105"
+            },
+            {
+                "dihId": 24,
+                "dihName": "雙層四盎司牛肉堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "115"
+            },
+            {
+                "dihId": 25,
+                "dihName": "四盎司牛肉堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 26,
+                "dihName": "大麥克",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "79"
+            },
+            {
+                "dihId": 27,
+                "dihName": "雙層牛肉吉事堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 28,
+                "dihName": "勁辣雞腿堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "82"
+            },
+            {
+                "dihId": 29,
+                "dihName": "板烤雞腿堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 30,
+                "dihName": "原味麥脆雞",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 31,
+                "dihName": "辣味麥脆雞",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 32,
+                "dihName": "九塊麥克雞塊",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 33,
+                "dihName": "六塊麥克雞塊",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "69"
+            },
+            {
+                "dihId": 34,
+                "dihName": "麥香魚",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "69"
+            },
+            {
+                "dihId": 35,
+                "dihName": "麥香雞",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "49"
+            },
+            {
+                "dihId": 36,
+                "dihName": "麥克雙牛堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "49"
+            },
+            {
+                "dihId": 37,
+                "dihName": "法式芥末香雞堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "39"
+            },
+            {
+                "dihId": 38,
+                "dihName": "美式辣雞堡",
+                "metId": 2,
+                "dihType": "單點和超值全餐",
+                "dihPrice": "39"
+            },
+            {
+                "dihId": 39,
+                "dihName": "冰炫風-抹茶紅豆",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 40,
+                "dihName": "冰炫風（芝麻）",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 41,
+                "dihName": "OREO冰炫風",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 42,
+                "dihName": "花聖代-抹茶紅豆",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "49"
+            },
+            {
+                "dihId": 43,
+                "dihName": "聖代（芝麻）",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 44,
+                "dihName": "巧克力聖代",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 45,
+                "dihName": "香草奶昔",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "40"
+            },
+            {
+                "dihId": 46,
+                "dihName": "草莓奶昔",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "40"
+            },
+            {
+                "dihId": 47,
+                "dihName": "小四季沙拉",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 48,
+                "dihName": "勁辣香雞翅",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "39"
+            },
+            {
+                "dihId": 49,
+                "dihName": "蘋果派",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 50,
+                "dihName": "小包薯條",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 51,
+                "dihName": "蘋果-四季水果袋",
+                "metId": 2,
+                "dihType": "甜品和冰品",
+                "dihPrice": "39"
+            },
+            {
+                "dihId": 52,
+                "dihName": "芒果萊姆冰沙",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 53,
+                "dihName": "野莓萊姆冰沙",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 54,
+                "dihName": "葡萄柚萊姆冰沙",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 55,
+                "dihName": "冰那堤-（中）-L2",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "65"
+            },
+            {
+                "dihId": 56,
+                "dihName": "冰那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 57,
+                "dihName": "小杯可口可樂",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 58,
+                "dihName": "小杯檸檬茶",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 59,
+                "dihName": "小杯雪碧",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 60,
+                "dihName": "小杯無糖冰綠茶",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 61,
+                "dihName": "小杯零卡可樂",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 62,
+                "dihName": "小杯柳橙汁",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "40"
+            },
+            {
+                "dihId": 63,
+                "dihName": "小杯美式咖啡",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "33"
+            },
+            {
+                "dihId": 64,
+                "dihName": "小杯無糖熱奶茶",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "33"
+            },
+            {
+                "dihId": 65,
+                "dihName": "熱紅茶",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "33"
+            },
+            {
+                "dihId": 66,
+                "dihName": "經典冰咖啡",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "45"
+            },
+            {
+                "dihId": 67,
+                "dihName": "焦糖冰奶茶",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "45"
+            },
+            {
+                "dihId": 68,
+                "dihName": "熱巧克力",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "33"
+            },
+            {
+                "dihId": 69,
+                "dihName": "柳橙酷蘇打",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "48"
+            },
+            {
+                "dihId": 70,
+                "dihName": "小杯玉米湯",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "33"
+            },
+            {
+                "dihId": 71,
+                "dihName": "高鈣鮮乳",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "28"
+            },
+            {
+                "dihId": 72,
+                "dihName": "熱那堤（中）-L2",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "65"
+            },
+            {
+                "dihId": 73,
+                "dihName": "熱亞美利加諾（中）-L2",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 74,
+                "dihName": "熱那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 75,
+                "dihName": "熱亞美利加諾",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "65"
+            },
+            {
+                "dihId": 76,
+                "dihName": "熱焦糖瑪琦朵（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 77,
+                "dihName": "冰亞美利加諾",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "65"
+            },
+            {
+                "dihId": 78,
+                "dihName": "冰焦糖瑪琦朵（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 79,
+                "dihName": "熱香草那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 80,
+                "dihName": "熱榛果那堤",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 81,
+                "dihName": "熱抹茶那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 82,
+                "dihName": "冰香草那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 83,
+                "dihName": "冰榛果那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 84,
+                "dihName": "熱阿薩姆那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 85,
+                "dihName": "熱巧克力（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 86,
+                "dihName": "熱特濃白咖啡（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 87,
+                "dihName": "冰阿薩姆那堤（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "85"
+            },
+            {
+                "dihId": 88,
+                "dihName": "冰巧克力（中）",
+                "metId": 2,
+                "dihType": "飲料和咖啡",
+                "dihPrice": "75"
+            },
+            {
+                "dihId": 89,
+                "dihName": "蘋果快樂兒童餐-陽光鱈魚堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 90,
+                "dihName": "玉米快樂兒童餐-陽光鱈魚堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 91,
+                "dihName": "小沙拉快樂兒童餐-陽光鱈魚堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 92,
+                "dihName": "大沙拉快樂兒童餐-陽光鱈魚堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "104"
+            },
+            {
+                "dihId": 93,
+                "dihName": "蘋果快樂兒童餐-青蔬烤雞堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 94,
+                "dihName": "玉米快樂兒童餐-青蔬烤雞堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 95,
+                "dihName": "小沙拉快樂兒童餐-青蔬烤雞堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "89"
+            },
+            {
+                "dihId": 96,
+                "dihName": "大沙拉快樂兒童餐-青蔬烤雞堡",
+                "metId": 2,
+                "dihType": "快樂兒童餐",
+                "dihPrice": "104"
+            },
+            {
+                "dihId": 97,
+                "dihName": "快樂組合雙人餐",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "299"
+            },
+            {
+                "dihId": 98,
+                "dihName": "九塊原味麥脆雞",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "398"
+            },
+            {
+                "dihId": 99,
+                "dihName": "六塊原味麥脆雞",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "268"
+            },
+            {
+                "dihId": 100,
+                "dihName": "四人原味分享餐",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "409"
+            },
+            {
+                "dihId": 101,
+                "dihName": "三人原味分享餐",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "309"
+            },
+            {
+                "dihId": 102,
+                "dihName": "二人原味分享餐",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "199"
+            },
+            {
+                "dihId": 103,
+                "dihName": "歡樂大三拼",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "179"
+            },
+            {
+                "dihId": 104,
+                "dihName": "二十塊麥克雞塊",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "179"
+            },
+            {
+                "dihId": 105,
+                "dihName": "十塊勁辣香雞翅",
+                "metId": 2,
+                "dihType": "快樂分享餐",
+                "dihPrice": "179"
+            },
+            {
+                "dihId": 106,
+                "dihName": "招牌飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 107,
+                "dihName": "焢肉飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 108,
+                "dihName": "雞丁飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 109,
+                "dihName": "三杯雞飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 110,
+                "dihName": "滷炸排骨飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 111,
+                "dihName": "蜜汁小排飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 112,
+                "dihName": "鱈魚排飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 113,
+                "dihName": "滷炸雞腿飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 114,
+                "dihName": "雞排飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 115,
+                "dihName": "豬腳飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 116,
+                "dihName": "牛腩飯",
+                "metId": 3,
+                "dihType": "主食",
+                "dihPrice": "70"
+            },
+            {
+                "dihId": 117,
+                "dihName": "日式豬排飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 118,
+                "dihName": "日式雞肉飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "90"
+            },
+            {
+                "dihId": 119,
+                "dihName": "日式牛肉飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 120,
+                "dihName": "牛肉蛋炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 121,
+                "dihName": "鮭魚蛋炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 122,
+                "dihName": "肉絲蛋炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "80"
+            },
+            {
+                "dihId": 123,
+                "dihName": "咖哩豬排飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "130"
+            },
+            {
+                "dihId": 124,
+                "dihName": "蛋包飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 125,
+                "dihName": "豬排炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "130"
+            },
+            {
+                "dihId": 126,
+                "dihName": "咖哩炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "95"
+            },
+            {
+                "dihId": 127,
+                "dihName": "雞肉炒飯",
+                "metId": 4,
+                "dihType": "主食",
+                "dihPrice": "90"
+            },
+            {
+                "dihId": 128,
+                "dihName": "無骨鹹酥雞(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 129,
+                "dihName": "無骨鹹酥雞(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 130,
+                "dihName": "蜜汁香酥雞(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 131,
+                "dihName": "蜜汁香酥雞(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 132,
+                "dihName": "麻辣香酥雞(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 133,
+                "dihName": "麻辣香酥雞(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 134,
+                "dihName": "香酥菇(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 135,
+                "dihName": "香酥菇(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 136,
+                "dihName": "泰式魷魚(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 137,
+                "dihName": "泰式魷魚(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 138,
+                "dihName": "甘梅薯條(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 139,
+                "dihName": "甘梅薯條(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 140,
+                "dihName": "雞胗(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 141,
+                "dihName": "雞胗(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 142,
+                "dihName": "脆薯(大)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 143,
+                "dihName": "脆薯(小)",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 144,
+                "dihName": "檸檬雞點兒",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 145,
+                "dihName": "墨西哥軟骨",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 146,
+                "dihName": "三角骨",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 147,
+                "dihName": "卡拉雞腿/雞塊",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "35"
+            },
+            {
+                "dihId": 148,
+                "dihName": "雞蛋豆腐",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "35"
+            },
+            {
+                "dihId": 149,
+                "dihName": "起司花枝條",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 150,
+                "dihName": "脆皮蝦捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "30"
+            },
+            {
+                "dihId": 151,
+                "dihName": "檸檬雞柳條",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "35"
+            },
+            {
+                "dihId": 152,
+                "dihName": "九層花枝",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 153,
+                "dihName": "香酥胸骨",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 154,
+                "dihName": "百頁豆腐",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 155,
+                "dihName": "卡啦雞翅",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 156,
+                "dihName": "烤雞翅",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 157,
+                "dihName": "七里香",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 158,
+                "dihName": "脆皮花枝丸",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 159,
+                "dihName": "起士熱狗捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 160,
+                "dihName": "鮮炸湯圓",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 161,
+                "dihName": "麥克雞塊",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 162,
+                "dihName": "馬鈴薯條",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 163,
+                "dihName": "玉米奶油餅",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 164,
+                "dihName": "脆皮貢丸",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 165,
+                "dihName": "煉乳麻花捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 166,
+                "dihName": "大熱狗",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 167,
+                "dihName": "洋蔥捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 168,
+                "dihName": "蘿蔔糕",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 169,
+                "dihName": "地瓜球",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 170,
+                "dihName": "甜不辣",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 171,
+                "dihName": "心心腸",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 172,
+                "dihName": "炸春捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 173,
+                "dihName": "四季豆",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 174,
+                "dihName": "薯餅",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 175,
+                "dihName": "青椒",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 176,
+                "dihName": "芋丸",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 177,
+                "dihName": "蘿蔔絲捲",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 178,
+                "dihName": "脆皮米腸",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "15"
+            },
+            {
+                "dihId": 179,
+                "dihName": "芋粿/芋粿巧",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "15"
+            },
+            {
+                "dihId": 180,
+                "dihName": "米血",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "15"
+            },
+            {
+                "dihId": 181,
+                "dihName": "雞皮",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "15"
+            },
+            {
+                "dihId": 182,
+                "dihName": "魚板",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "15"
+            },
+            {
+                "dihId": 183,
+                "dihName": "銀絲卷",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "10"
+            },
+            {
+                "dihId": 184,
+                "dihName": "豆干",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "10"
+            },
+            {
+                "dihId": 185,
+                "dihName": "芋仔餅",
+                "metId": 5,
+                "dihType": "小品",
+                "dihPrice": "5"
+            },
+            {
+                "dihId": 186,
+                "dihName": "芬達",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 187,
+                "dihName": "雪碧",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 188,
+                "dihName": "可樂",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 189,
+                "dihName": "雪梨茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 190,
+                "dihName": "檸檬紅茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "25"
+            },
+            {
+                "dihId": 191,
+                "dihName": "紅茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 192,
+                "dihName": "奶茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 193,
+                "dihName": "冬瓜茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 194,
+                "dihName": "烏龍茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 195,
+                "dihName": "綠茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 196,
+                "dihName": "油切綠茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 197,
+                "dihName": "仙草甘茶",
+                "metId": 5,
+                "dihType": "飲料",
+                "dihPrice": "20"
+            },
+            {
+                "dihId": 198,
+                "dihName": "特大雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "45"
+            },
+            {
+                "dihId": 199,
+                "dihName": "脆皮雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 200,
+                "dihName": "桔醬炭烤雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 201,
+                "dihName": "羅勒大雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "55"
+            },
+            {
+                "dihId": 202,
+                "dihName": "檸檬大雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 203,
+                "dihName": "神州麻辣雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 204,
+                "dihName": "蜜汁叉燒雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 205,
+                "dihName": "脆皮檸檬雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihId": 206,
+                "dihName": "泰式雞排",
+                "metId": 5,
+                "dihType": "主餐",
+                "dihPrice": "50"
+            },
+            {
+                "dihName": "a",
+                "dihPrice": "123",
+                "metId": 6,
+                "dihType": "主食",
+                "dihId": 207
+            },
+            {
+                "dihName": "b",
+                "dihPrice": "321",
+                "metId": 6,
+                "dihType": "主食",
+                "dihId": 208
+            },
+            {
+                "dihName": "c",
+                "dihPrice": "213",
+                "metId": 6,
+                "dihType": "主食",
+                "dihId": 209
+            }
+        ],
+        "GROUP": [
+            {
+                "grpId": 1,
+                "grpHostId": 1,
+                "metId": 6,
+                "grpAddr": "家里",
+                "grpTime": "6月 5日, 22:24",
+                "grpStatus": 1
+            }
+        ],
+        "GROUP_MEMBER": [
+            {
+                "gmrId": 1,
+                "usrId": 1,
+                "grpId": 1
+            }
+        ],
+        "GROUP_ORDER": [],
+        "GROUP_DISHES": [
+            {
+                "gdeId": 1,
+                "dihId": 207,
+                "grpId": 1
+            },
+            {
+                "gdeId": 2,
+                "dihId": 208,
+                "grpId": 1
+            },
+            {
+                "gdeId": 3,
+                "dihId": 209,
+                "grpId": 1
+            }
+        ]
+    }
 }

@@ -6,6 +6,8 @@
 
 .icon-big {
     text-align: center;
+    margin:0px !important;
+
 }
 
 .icon-usr-pwd {
@@ -275,4 +277,8 @@ margin-top: 50%;
 }
 .font-gray{
     color:gray;
+}
+
+.group-setting-dishes{
+    padding:0px !important;
 }
