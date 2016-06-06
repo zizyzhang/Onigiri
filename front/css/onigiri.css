@@ -2,11 +2,12 @@
     background-image: url("../assets/img/login-bg.jpg");
     background-repeat: no-repeat;
     background-position: center;
+
 }
 
-.icon-big {
+.icon-big,.login-screen-title {
     text-align: center;
-    margin:0px !important;
+    margin:0px auto!important;
 
 }
 
