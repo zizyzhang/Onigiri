@@ -21,6 +21,24 @@ var AjaxMethods = function () {
 
     };
 
+    this.mobiAuth = function (usrMobi) {
+        return new Promise((resolve, reject)=> {
+
+            let data = usrMobi;
+
+            $$.post(SERVER_ADS + "/mobiAuth", {data}, function (data) {
+                //if (JSON.parse(result).success) {
+                //    resolve(!!result);
+                //
+                //} else {
+                //    reject(!!result);
+                //}
+                resolve(data);
+            });
+        });
+
+    };
+
     this.userAuth = function () {
         return new Promise(function (resolve, reject) {
             var usrName = $$('#txtUsrName').val();
@@ -39,8 +57,6 @@ var AjaxMethods = function () {
                 }
             });
         });
-
-
     };
 
     this.getAllGroup = function () {

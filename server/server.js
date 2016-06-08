@@ -3,6 +3,7 @@
 /**
  * Created by User on 2016/3/24.
  */
+
 require('source-map-support').install();
 
 const isDebug = true;
@@ -17,6 +18,12 @@ let JsonDB = require('node-json-db');
 let jsonDb = new JsonDB("./onigiri", true, true);
 let db = jsonDb.getData('/db');
 //console.log(__dirname);
+
+//let twilio = require('twilio');
+//const twilio = require("./twilio/lib");
+//let client = new twilio.RestClient(accountSid, authToken);
+
+let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c1f28236cb262e6b32ba8ab");
 
 
 db.pushToJsonDb = function (table, value) {
@@ -198,6 +205,19 @@ var Server = function () {
         }
     );
 
+    app.post('/mobiAuth', function (req, res) {
+            var usrMobi = req.body.data;
+
+
+            self.getTwilioCode(usrMobi).then(result=> {
+                res.json(result);
+            }).catch(e=> {
+                res.json(e);
+            });
+
+        }
+    );
+
 
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
             var usrId = Number(req.params.id);
@@ -221,6 +241,27 @@ var Server = function () {
             'app listening on port 8080!');
     });
 
+    this.getTwilioCode = function (userMobi) {
+
+        var min = 100;
+        var max = 999;
+        var ramdomAuth =Math.floor(Math.random()*(max-min+1)+min);
+        //console.log(userMobi);
+        //console.log(max);
+
+        client.messages.create({
+            body: '您的飯糰驗證碼是'+ramdomAuth,
+            to: '+886'+userMobi,  // Text this number
+            from: '+13342030485' // From a valid Twilio number
+        }, function(err, message) {
+            console.log(err);
+            console.log(message&&message.sid);
+        });
+
+    return new Promise(function (resolve) {
+        resolve(ramdomAuth);
+    });
+};
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;

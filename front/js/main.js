@@ -16,8 +16,8 @@ let ajaxMethod = require('./ajaxMethods.js'),
     MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
-    SignUpPage = require('./pages/sign-up.js');
-
+    SignUpPage = require('./pages/sign-up.js'),
+    mobileConsole = require('js-mobile-console');
 
 // Initialize app
 let myApp = new Framework7({
@@ -51,6 +51,7 @@ let mainView = myApp.addView('.view-main', {
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
     }
+    mobileConsole.show();
 })();
 
 
@@ -64,8 +65,9 @@ let pageEventBind = function () {
     let createMenuPage = new CreateMenuPage(myApp, mainView);
     let home = new Home(myApp, mainView);
     let myGoups = new MyGroups(myApp, mainView);
-    let orderDetailPage= new OrderDetailPage(myApp, mainView);
+    let orderDetailPage = new OrderDetailPage(myApp, mainView);
     let signUpPage = new SignUpPage(myApp, mainView);
+
 
     groupDetailPage.bind();
     orderPage.bind();
