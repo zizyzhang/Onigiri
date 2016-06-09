@@ -6,7 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
-
+let randomMobiAuth;
 
 class SignUpPage { //TODO first
     constructor(_myApp, _mainView) {
@@ -25,6 +25,10 @@ class SignUpPage { //TODO first
                     myApp.alert('手機號碼輸入錯誤');
                     return;
                 }
+                if($$('#signTwilio').val()!==randomMobiAuth){
+                    myApp.alert('驗證碼輸入錯誤');
+                    return;
+                }
 
                 ajaxMethod.addUserPromise($$('#signUsrName').val(), $$('#signUsrPwd').val(), $$('#signUsrMobi').val()).then(result=> {
                     myApp.alert('註冊成功', function () {
@@ -38,6 +42,22 @@ class SignUpPage { //TODO first
             $$('#returnSignIn').click(function () {
                 myApp.loginScreen();
             });
+
+            $$('#btnTwilio').click(function () {
+                console.log($$('#signUsrMobi').val());
+                ajaxMethod.mobiAuth($$('#signUsrMobi').val()).then(result=> {
+                    //myApp.alert('註冊成功', function () {
+                    //    myApp.loginScreen();
+                    //});
+
+                    randomMobiAuth = result;
+
+                }).catch(e=> {
+
+                    //myApp.alert('註冊失敗');
+                });
+            });
+
         });
     }
 
