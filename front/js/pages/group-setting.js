@@ -9,7 +9,7 @@ let Public = require('../public.js');
 const cookies = require('js-cookie');
 const _ = require('lodash');
 
-let products;//产品们 productId: Integer productName : String , productPrice : Integer
+let products;//產品們 productId: Integer productName : String , productPrice : Integer
 
 
 class GroupSettingPage {
@@ -63,11 +63,11 @@ class GroupSettingPage {
 
                                                     <div class="item-inner">
 
-                                                        <div class="item-title label">商品名称</div>
+                                                        <div class="item-title label">商品名稱</div>
 
 
                                                         <div class="item-input item-input-field">
-                                                            <input type="text" placeholder="商品名称"   data-id="${products.length}" class="js-dishName">
+                                                            <input type="text" placeholder="商品名稱"   data-id="${products.length}" class="js-dishName">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -78,9 +78,9 @@ class GroupSettingPage {
 
                                                     <div class="item-inner">
 
-                                                        <div class="item-title label">商品价格</div>
+                                                        <div class="item-title label">商品價格</div>
                                                          <div class="item-input item-input-field">
-                                                            <input type="text" placeholder="商品价格"   data-id="${products.length}" class="js-dishPrice">
+                                                            <input type="text" placeholder="商品價格"   data-id="${products.length}" class="js-dishPrice">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -128,15 +128,15 @@ class GroupSettingPage {
 
                     return ajaxMethod.postDishPromise(dishes);
                 }).then(result=> {
-                    //新增团
+                    //新增團
                     let dishes = result.dishes.map(row=>row.dihId);
 
                     ajaxMethod.postGroup(grpHostId, dishes, metId, addr, gorTime).then(()=> {
-                        myApp.alert('开团完成!', function () {
+                        myApp.alert('開團完成!', function () {
                             mainView.router.loadPage('home.html');
                         });
                     });
-                }).catch(e=>myApp.alert('开团失败' +e.toString()));
+                }).catch(e=>myApp.alert('開團失敗' +e.toString()));
 
 
             });

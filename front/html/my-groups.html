@@ -3,13 +3,13 @@
         <div class="navbar-inner">
             <div class="left"><a href="home.html" class=" link icon-only"><i class="icon icon-back"></i></a>
             </div>
-            <div class="center">我发起的团购</div>
-         </div>
+            <div class="center">我發起的團購</div>
+        </div>
     </div>
 
     <div class="page-content">
         {{#each groupedOrderSums}}
-        <div class="content-block-title">截止时间: {{group.grpTime}}</div>
+        <div class="content-block-title">截止時間: {{group.grpTime}}</div>
         <div class="card demo-card-header-pic">
             <div class="list-block media-list" style="margin-top: 0px;!important;">
                 <div class="card-header item-title-row">
@@ -42,10 +42,10 @@
                     {{#js_compare "this.orderSums.length===0"}}
                     <li>
                         <label class="item-content">
-                             <div class="item-inner">
+                            <div class="item-inner">
                                 <div class="item-title-row" style="line-height: 36px;">
-                                     <div class="center">还没有人加入此团购,快去邀请朋友加入吧~</div>
-                                 </div>
+                                    <div class="center">還沒有人加入此團購,快去邀請朋友加入吧~</div>
+                                </div>
 
                             </div>
 
@@ -60,11 +60,11 @@
             <div class="card-footer">
                 <a href="#"  class="btn-contact-merchant link btn-join btn-join-in-group-page"
                    data-met-phone="{{group.merchant.metPhone}}"
-                    style="color:red">聯繫商家</a>
+                   style="color:red">聯繫商家</a>
                 <a href="#" class="link btn-group-detail" data-grp-id="{{group.grpId}}"
                    data-grp-next-status="{{group.grpNextStatus}}"
-                style="{{#if this.group.btnChangeStatusDisable}} color:gray;{{else}} color:red; {{/if}}"  >{{group.btnChangeStatusName}}</a>
-              </div>
+                   style="{{#if this.group.btnChangeStatusDisable}} color:gray;{{else}} color:red; {{/if}}"  >{{group.btnChangeStatusName}}</a>
+            </div>
         </div>
         {{/each}}
     </div>

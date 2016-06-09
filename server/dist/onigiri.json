@@ -21,6 +21,13 @@
                 "usrPwd": "",
                 "usrCreateTime": "16/03/25/00:33:22",
                 "usrMobi": "094573321"
+            },
+            {
+                "usrId": 4,
+                "usrName": "a",
+                "usrPwd": "123",
+                "usrCreateTime": "Wed Jun 08 2016 16:11:30 GMT+0800 (CST)",
+                "usrMobi": "1231231231"
             }
         ],
         "ORDER": [
@@ -43,6 +50,27 @@
                 "grpId": 1,
                 "usrId": 1,
                 "dihId": 209,
+                "ordNum": 1
+            },
+            {
+                "ordId": 4,
+                "grpId": 2,
+                "usrId": 1,
+                "dihId": 210,
+                "ordNum": 1
+            },
+            {
+                "ordId": 5,
+                "grpId": 2,
+                "usrId": 1,
+                "dihId": 211,
+                "ordNum": 1
+            },
+            {
+                "ordId": 6,
+                "grpId": 2,
+                "usrId": 4,
+                "dihId": 211,
                 "ordNum": 1
             }
         ],
@@ -81,6 +109,13 @@
                 "metMinPrice": "123",
                 "metPicUrl": "",
                 "metId": 6
+            },
+            {
+                "metName": "A",
+                "metPhone": "1231231231",
+                "metMinPrice": "100",
+                "metPicUrl": "",
+                "metId": 7
             }
         ],
         "DISH": [
@@ -1546,6 +1581,20 @@
                 "metId": 6,
                 "dihType": "主食",
                 "dihId": 209
+            },
+            {
+                "dihName": "雞肉便當",
+                "dihPrice": "100",
+                "metId": 7,
+                "dihType": "主食",
+                "dihId": 210
+            },
+            {
+                "dihName": "牛肉便當",
+                "dihPrice": "150",
+                "metId": 7,
+                "dihType": "主食",
+                "dihId": 211
             }
         ],
         "GROUP": [
@@ -1556,6 +1605,14 @@
                 "grpAddr": "家里",
                 "grpTime": "6月 5日, 22:24",
                 "grpStatus": 1
+            },
+            {
+                "grpId": 2,
+                "grpHostId": 1,
+                "metId": 7,
+                "grpAddr": "S棟301",
+                "grpTime": "6月 8日, 17:05",
+                "grpStatus": 3
             }
         ],
         "GROUP_MEMBER": [
@@ -1563,6 +1620,16 @@
                 "gmrId": 1,
                 "usrId": 1,
                 "grpId": 1
+            },
+            {
+                "gmrId": 2,
+                "usrId": 1,
+                "grpId": 2
+            },
+            {
+                "gmrId": 3,
+                "usrId": 4,
+                "grpId": 2
             }
         ],
         "GROUP_ORDER": [],
@@ -1581,6 +1648,16 @@
                 "gdeId": 3,
                 "dihId": 209,
                 "grpId": 1
+            },
+            {
+                "gdeId": 4,
+                "dihId": 210,
+                "grpId": 2
+            },
+            {
+                "gdeId": 5,
+                "dihId": 211,
+                "grpId": 2
             }
         ]
     }
