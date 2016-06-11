@@ -128,6 +128,9 @@ var Server = function () {
                 }
                 res.json({success: false, msg: '驗證碼輸入錯誤'});
                 return;
+            }else if(db.USER.find(o=>o.usrId===usrName)){
+                res.json({success: false, msg: '賬號名稱重複'});
+                return;
             }
 
 
@@ -464,7 +467,7 @@ var Server = function () {
         }
 
         if (!isSuccess) {
-            callback({success: 0});
+            callback({success: false,err:'賬號密碼不匹配'});
         }
     };
 

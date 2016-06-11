@@ -155,6 +155,11 @@ var Server = function Server() {
             }
             res.json({ success: false, msg: '驗證碼輸入錯誤' });
             return;
+        } else if (db.USER.find(function (o) {
+            return o.usrId === usrName;
+        })) {
+            res.json({ success: false, msg: '賬號名稱重複' });
+            return;
         }
 
         //console.log(JSON.stringify(req.body));
@@ -536,7 +541,7 @@ var Server = function Server() {
         }
 
         if (!isSuccess) {
-            callback({ success: 0 });
+            callback({ success: false, err: '賬號密碼不匹配' });
         }
     };
 

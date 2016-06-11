@@ -78,7 +78,7 @@ class IndexPage {
                     myApp.closeModal();
                     mainView.router.loadPage({url: 'home.html'});
                 }).catch(function (e) {
-                    myApp.alert('登录失败' + e);
+                    myApp.alert('登录失败:' + e);
                 });
 
             });

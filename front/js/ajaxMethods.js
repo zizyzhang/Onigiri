@@ -48,7 +48,7 @@ var AjaxMethods = function () {
 
                     resolve(JSON.parse(result));
                 } else {
-                    reject();
+                    reject(JSON.parse(result).err);
                 }
             });
         });

@@ -115,7 +115,7 @@ class GroupSettingPage {
                 let metName = $$('#merchantName').val();
                 let metPhone = $$('#merchantMob').val();
                 let metMinPrice = $$('#minPrice').val();
-                let metPicUrl = 'http://i.imgur.com/pgAiAYy.gif';
+                let metPicUrl = 'http://i.imgur.com/SoiypRh.jpg';
                 let metId = -1;
 
                 if (!(addr && gorTime && metName && metPhone && metMinPrice)) {
