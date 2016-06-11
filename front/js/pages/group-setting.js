@@ -18,7 +18,8 @@ class GroupSettingPage {
         mainView = _mainView;
 
     }
-    bindDishes(){
+
+    bindDishes() {
         $$('.js-dishPrice').on('keyup', function () {
             let product = _.find(products, row=>row.productId === Number($$(this).dataset().id));
 
@@ -34,17 +35,19 @@ class GroupSettingPage {
             let product = _.find(products, row=>row.productId === Number($$(this).dataset().id));
 
             if (product) {
-                product.productName= $$(this).val();
+                product.productName = $$(this).val();
             }
             console.log(products);
 
         });
     }
+
     bind() {
 
         let that = this;
         myApp.onPageBeforeInit('group-setting', function (page) {
             console.log('group-setting init');
+
 
             products = [{productId: 0, productName: "", productPrice: 0}];
             $$('#addProduct').on('click', function () {
@@ -52,7 +55,7 @@ class GroupSettingPage {
 
                 $$('#products').append(`
                     <div class="card ">
-                            <div class="card-header">商品${products.length+1}</div>
+                            <div class="card-header">商品${products.length + 1}</div>
                             <div class="card-content">
                                 <div class="card-content-inner">
                                     <div class="list-block">
@@ -103,6 +106,8 @@ class GroupSettingPage {
             $$('#btnFinish').on('click', function () {
 
                 //let dishes = this.arrayOfSelectedDishIds = page.query.arrayOfSelectedDishIds || this.arrayOfSelectedDishIds;
+
+
                 let grpHostId = cookies.getJSON('user').usrId;
                 let addr = $$('#grpAdr').val();
                 let gorTime = $$('#grpTime').val();
@@ -110,8 +115,23 @@ class GroupSettingPage {
                 let metName = $$('#merchantName').val();
                 let metPhone = $$('#merchantMob').val();
                 let metMinPrice = $$('#minPrice').val();
-                let metPicUrl = '';
+                let metPicUrl = 'http://i.imgur.com/pgAiAYy.gif';
                 let metId = -1;
+
+                if (!(addr && gorTime && metName && metPhone && metMinPrice)) {
+                    myApp.alert('資料填寫不完整');
+                    return;
+                }
+
+
+
+                for (let i = 0; i < products.length; i++) {
+                    if (!(products[i].productName && products[i].productName)) {
+                        myApp.alert('商品資訊填寫不完整');
+                        return;
+                    }
+                }
+
 
                 //新增商家
                 ajaxMethod.postMerchantPromise({metName, metPhone, metMinPrice, metPicUrl}).then((result)=> {
@@ -136,7 +156,7 @@ class GroupSettingPage {
                             mainView.router.loadPage('home.html');
                         });
                     });
-                }).catch(e=>myApp.alert('開團失敗' +e.toString()));
+                }).catch(e=>myApp.alert('開團失敗' + e.toString()));
 
 
             });
@@ -220,7 +240,45 @@ class GroupSettingPage {
                     }
                 ]
             });
+            $$('#grpTime').val('');
 
+            //If group passed =>
+            if (page.query.group) {
+                let group = page.query.group;
+                let merchant = group.merchant;
+                let menu = group.menu;
+
+                let grpHostId = cookies.getJSON('user').usrId;
+                $$('#grpAdr').val(group.grpAddr);
+                //$$('#grpTime').val('');
+
+                $$('#merchantName').val(merchant.metName);
+                $$('#merchantMob').val(merchant.metPhone);
+                $$('#minPrice').val(merchant.metMinPrice);
+
+                let dishIndex = 0;
+
+                let dishes = [];
+                menu.map(obj=> {
+                    obj.dishes.map(obj2=>dishes.push(obj2));
+                });
+
+                for (let dish of dishes) {
+                    $$(`.js-dishName[data-id="${dishIndex}"]`).val(dish.dihName);
+                    $$(`.js-dishPrice[data-id="${dishIndex}"]`).val(dish.dihPrice);
+                    products[dishIndex].productName=dish.dihName;
+                    products[dishIndex].productPrice=dish.dihPrice;
+
+
+                    dishIndex++;
+
+                    if (dishIndex < dishes.length) {
+                        $$('#addProduct').trigger('click');
+                    }
+
+
+                }
+            }
         });
 
 

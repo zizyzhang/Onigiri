@@ -7,6 +7,7 @@
 require('source-map-support').install();
 
 const isDebug = true;
+const fakeAuthCode = true;
 
 const _ = require('lodash');
 //let db = require('./mock-db');
@@ -24,6 +25,8 @@ let db = jsonDb.getData('/db');
 //let client = new twilio.RestClient(accountSid, authToken);
 
 let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c1f28236cb262e6b32ba8ab");
+
+let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
 
 db.pushToJsonDb = function (table, value) {
@@ -44,7 +47,7 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
 (()=> {
     setInterval(()=> {
         //得到所有没过期的团
-        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0);
+        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
 
         for (let g of availableGroups) {
             let deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
@@ -103,9 +106,31 @@ var Server = function () {
 
             req.body = JSON.parse(req.body.data);
 
-            var usrName = req.body.usrName;
-            var usrPwd = req.body.usrPwd;
-            var usrMobi = req.body.usrMobi;
+            let usrName = req.body.usrName;
+            let usrPwd = req.body.usrPwd;
+            let usrMobi = req.body.usrMobi;
+            let authCode = req.body.authCode;
+
+
+            if (!usrName || !usrPwd || !usrMobi || !authCode) {
+                res.json({success: false, msg: '資料填寫不完整!'});
+                return;
+            }
+
+            let result = authCodes.find(obj=>obj.phone === usrMobi);
+            if (!result) {
+                res.json({success: false, msg: '請驗證手機號碼'});
+                return;
+            } else if (result.authCode !== authCode) {
+                result.triedTimes++;
+                if (result.triedTimes === 3) {
+                    authCodes.splice(authCodes.findIndex(obj=>obj.phone === usrMobi), 1);
+                }
+                res.json({success: false, msg: '驗證碼輸入錯誤'});
+                return;
+            }
+
+
             //console.log(JSON.stringify(req.body));
             self.addUser(usrName, usrPwd, usrMobi, function (result) {
                 res.json(result);
@@ -122,8 +147,13 @@ var Server = function () {
             let metMinPrice = req.body.metMinPrice;
             let metPicUrl = req.body.metPicUrl || '';
 
+            if (!(metName && metPhone && metMinPrice && metPhone.length === 10)) {
+                res.json({success: false, msg: '資料輸入错误'});
+                return;
+            }
+
             self.addMerchantPromise({metName, metPhone, metMinPrice, metPicUrl}).then((merchant)=> {
-                res.json({success: true,merchant});
+                res.json({success: true, merchant});
             }).catch(()=>res.json({success: false}));
 
         }
@@ -135,13 +165,21 @@ var Server = function () {
 
             console.log(JSON.stringify(req.body));
 
-        req.body = req.body.map(row=> {
-            row.dihType = row.dihType || '主食';
-            return row;
-        });
+            for (let dish of req.body) {
+                if (!(dish.dihName && dish.dihPrice && dish.metId)) {
+                    res.json({success: false, msg: '資料不完整'});
+                    return;
+                }
+            }
+
+            req.body = req.body.map(row=> {
+                row.dihType = row.dihType || '主食';
+                return row;
+            });
+
 
             self.addDishPromise(req.body).then((result)=> {
-                res.json({success: true,dishes:result});
+                res.json({success: true, dishes: result});
             }).catch(()=>res.json({success: false}));
 
         }
@@ -150,6 +188,11 @@ var Server = function () {
     app.post('/userAuth', function (req, res) {
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
+
+            if (!(usrName && usrPwd)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
             //console.log(JSON.stringify(req.body));
 
@@ -180,6 +223,7 @@ var Server = function () {
 
     app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
+
         self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
@@ -190,12 +234,17 @@ var Server = function () {
             //console.log(req.body);
 
             req.body = JSON.parse(req.body.data);
-            var grpHostId = req.body.grpHostId;
-            var dishes = req.body.dishes;
-            var metId = req.body.metId;
-            var addr = req.body.addr;
-            var gorTime = req.body.gorTime;
-            var minAmount = req.body.minAmount;
+            let grpHostId = req.body.grpHostId;
+            let dishes = req.body.dishes;
+            let metId = req.body.metId;
+            let addr = req.body.addr;
+            let gorTime = req.body.gorTime;
+
+            if (!( grpHostId && dishes && metId && addr && gorTime)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+
+            }
 
 
             self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
@@ -207,12 +256,15 @@ var Server = function () {
 
     app.post('/joinGroup', function (req, res) {
             req.body = JSON.parse(req.body.data);
-            var usrId = Number(req.body.usrId);
-            var dishes = req.body.dishes;
-            var grpId = req.body.grpId;
+            let usrId = Number(req.body.usrId);
+            let dishes = req.body.dishes;
+            let grpId = req.body.grpId;
 
+            if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
-            //console.log(JSON.stringify(req.body));
 
             self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
                 res.json(result);
@@ -225,9 +277,12 @@ var Server = function () {
 
     app.post('/groupStatus', function (req, res) {
             req.body = JSON.parse(req.body.data);
-            var grpId = Number(req.body.grpId);
-            var grpStatus = Number(req.body.grpStatus);
-
+            let grpId = Number(req.body.grpId);
+            let grpStatus = Number(req.body.grpStatus);
+            if (!(grpId && grpStatus)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
             self.updateGroupStatusPromise(grpId, grpStatus).then(result=> {
                 res.json(result);
@@ -239,11 +294,15 @@ var Server = function () {
     );
 
     app.post('/mobiAuth', function (req, res) {
-            var usrMobi = req.body.data;
+            let usrMobi = req.body.data;
+            if (!usrMobi) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
 
             self.getTwilioCode(usrMobi).then(result=> {
-                res.json(result);
+                res.json({success: true});
             }).catch(e=> {
                 res.json(e);
             });
@@ -277,8 +336,8 @@ var Server = function () {
     this.addDishPromise = function (dishes) {
 
         return new Promise((resolve, reject)=> {
-            for(let dish of dishes){
-                dish.dihId=_.maxBy(db.DISH, "dihId").dihId + 1;
+            for (let dish of dishes) {
+                dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
                 db.pushToJsonDb('DISH', dish);
             }
             resolve(dishes);
@@ -286,26 +345,59 @@ var Server = function () {
     };
 
     this.getTwilioCode = function (userMobi) {
+        return new Promise(function (resolve, reject) {
+            var min = 100;
+            var max = 999;
+            var randomAuth = Math.floor(Math.random() * (max - min + 1) + min) + '';
+            if (fakeAuthCode) {
+                randomAuth = '123';
+                resolve('123');
+                authCodes.push({
+                    phone: userMobi,
+                    authCode: randomAuth,
+                    endTime: new Date().getTime() + 1000 * 60 * 5,
+                    triedTimes: 0
+                });
 
-        var min = 100;
-        var max = 999;
-        var ramdomAuth =Math.floor(Math.random()*(max-min+1)+min);
-        //console.log(userMobi);
-        //console.log(max);
+                setTimeout(()=> {
+                    let indexOfAuthCode = authCodes.findIndex(obj=>obj.authCode === authCodes);
+                    if (indexOfAuthCode) {
+                        authCodes.splice(indexOfAuthCode, 1);
+                    }
+                }, 1000 * 60 * 5);
+                return;
+            }
 
-        client.messages.create({
-            body: '您的飯糰驗證碼是'+ramdomAuth,
-            to: '+886'+userMobi,  // Text this number
-            from: '+13342030485' // From a valid Twilio number
-        }, function(err, message) {
-            console.log(err);
-            console.log(message&&message.sid);
+            client.messages.create({
+                body: '您的飯糰驗證碼是' + randomAuth,
+                to: '+886' + userMobi,  // Text this number
+                from: '+13342030485' // From a valid Twilio number
+            }, function (err, message) {
+                if (err) {
+                    console.log(err);
+                    reject(randomAuth);
+                } else {
+                    console.log(message && message.sid);
+                    resolve(randomAuth);
+                    authCodes.push({
+                        phone: userMobi,
+                        authCode: randomAuth,
+                        endTime: new Date().getTime() + 1000 * 60 * 5,
+                        triedTimes: 0
+                    });
+
+                    setTimeout(()=> {
+                        let indexOfAuthCode = authCodes.findIndex(obj=>obj.authCode === authCodes);
+                        if (indexOfAuthCode) {
+                            authCodes.splice(indexOfAuthCode, 1);
+                        }
+                    }, 1000 * 60 * 5);
+                }
+            });
+
+
         });
-
-    return new Promise(function (resolve) {
-        resolve(ramdomAuth);
-    });
-};
+    };
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
@@ -524,7 +616,7 @@ var Server = function () {
                 groupedOrders.push({group: group, orders: [order]});
             }
         }
-        return groupedOrders;
+         return _.sortBy(groupedOrders,row=>-new Date(row.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime());
     };
 
 
@@ -590,7 +682,7 @@ var Server = function () {
                 });
             }
 
-            resolve({groupedOrders, groupedOrderSums});
+            resolve({groupedOrders, groupedOrderSums:_.sortBy(groupedOrderSums,obj=>-new Date(obj.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime())});
         });
     };
 
@@ -632,7 +724,7 @@ var Server = function () {
                     break;
                 case 3:
                     group.grpStatusCh = "已完成";
-                    group.btnChangeStatusName = "";
+                    group.btnChangeStatusName = "重新開團";
                     group.grpNextStatus = 4;
                     break;
                 case -1:

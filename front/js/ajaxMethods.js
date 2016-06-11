@@ -7,14 +7,14 @@ var AjaxMethods = function () {
     'use strict';
 
 
-    this.addUserPromise = function (usrName, usrPwd,usrMobi) {
+    this.addUserPromise = function (usrName, usrPwd,usrMobi,authCode) {
         return new Promise((resolve, reject)=> {
-            let data = JSON.stringify({usrName, usrPwd,usrMobi});
+            let data = JSON.stringify({usrName, usrPwd,usrMobi,authCode});
              $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
                 if (JSON.parse(result).success) {
                     resolve(!!result);
                 } else {
-                    reject(!!result);
+                    reject(JSON.parse(result).msg);
                 }
             });
         });
@@ -26,14 +26,12 @@ var AjaxMethods = function () {
 
             let data = usrMobi;
 
-            $$.post(SERVER_ADS + "/mobiAuth", {data}, function (data) {
-                //if (JSON.parse(result).success) {
-                //    resolve(!!result);
-                //
-                //} else {
-                //    reject(!!result);
-                //}
-                resolve(data);
+            $$.post(SERVER_ADS + "/mobiAuth", {data}, function (result) {
+                if (JSON.parse(result).success) {
+                    resolve();
+                } else {
+                    reject();
+                }
             });
         });
 
@@ -97,7 +95,11 @@ var AjaxMethods = function () {
     this.postMerchantPromise = function(merchant){
       return new Promise((resolve,reject)=>{
           $$.post(SERVER_ADS + "/merchant",{data:JSON.stringify(merchant)}, function (data) {
-              resolve(JSON.parse(data));
+              if(JSON.parse(data).msg){
+                  reject(JSON.parse(data).msg);
+              }else{
+                  resolve(JSON.parse(data));
+              }
           });
       });
     };
@@ -106,7 +108,11 @@ var AjaxMethods = function () {
 
         return new Promise((resolve,reject)=>{
             $$.post(SERVER_ADS + "/dishes",{data:JSON.stringify(dishes)}, function (data) {
-                resolve(JSON.parse(data));
+                if(JSON.parse(data).msg){
+                    reject(JSON.parse(data).msg);
+                }else{
+                    resolve(JSON.parse(data));
+                }
             });
         });
     };

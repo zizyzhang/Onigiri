@@ -50,12 +50,20 @@ class OrderPage {
 
                 $$('#btnJoinGroup').click(()=> {
                     let dishes = [];
+
                     for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
                         if(odrDishNum===0) {
                             continue;
                         }
                         dishes.push({dihId: odrDishId, num: odrDishNum});
                     }
+
+                    if(dishes.length===0){
+                        myApp.alert('未選擇餐點');
+                        return;
+                    }
+
+
                     let grpId = Number(cookies.get('selectedGroupId'));
                     let usrId = cookies.getJSON('user').usrId;
                     console.log(JSON.stringify({usrId, dishes, grpId}));
@@ -64,7 +72,7 @@ class OrderPage {
                         myApp.alert('加入成功', function () {
                             mainView.router.loadPage('home.html');
                         });
-                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失败'));
+                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失敗!'));
 
 
                 });

@@ -16,12 +16,11 @@ let ajaxMethod = require('./ajaxMethods.js'),
     MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
-    SignUpPage = require('./pages/sign-up.js'),
-    mobileConsole = require('js-mobile-console');
+    SignUpPage = require('./pages/sign-up.js');
 
 // Initialize app
 let myApp = new Framework7({
-    modalTitle: 'Onigiri',
+    modalTitle: '販團',
     //template7Pages: true,
     // Enable Material theme
     material: true,
@@ -51,7 +50,6 @@ let mainView = myApp.addView('.view-main', {
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
     }
-    mobileConsole.show();
 })();
 
 

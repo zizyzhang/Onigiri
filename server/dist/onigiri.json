@@ -24,97 +24,54 @@
             },
             {
                 "usrId": 4,
-<<<<<<< HEAD
                 "usrName": "a",
                 "usrPwd": "123",
-                "usrCreateTime": "Wed Jun 08 2016 16:11:30 GMT+0800 (CST)",
-                "usrMobi": "1231231231"
-=======
-                "usrName": "aaa",
-                "usrPwd": "bbbb",
-                "usrCreateTime": "Thu Jun 02 2016 20:28:18 GMT+0800 (台北標準時間)",
-                "usrMobi": "0912345678"
+                "usrCreateTime": "Thu Jun 09 2016 16:00:19 GMT+0800 (CST)",
+                "usrMobi": "0909231428"
             },
             {
                 "usrId": 5,
-                "usrName": "a",
+                "usrName": "test-02",
                 "usrPwd": "123",
-                "usrCreateTime": "Wed Jun 08 2016 21:40:08 GMT+0800 (台北標準時間)",
-                "usrMobi": "0936633655"
+                "usrCreateTime": "Thu Jun 09 2016 16:14:35 GMT+0800 (CST)",
+                "usrMobi": "0909231428"
             },
             {
                 "usrId": 6,
-                "usrName": "a",
-                "usrPwd": "12345",
-                "usrCreateTime": "Wed Jun 08 2016 22:08:07 GMT+0800 (台北標準時間)",
-                "usrMobi": "0937457376"
->>>>>>> origin/testEveryBrowser
+                "usrName": "123",
+                "usrPwd": "123",
+                "usrCreateTime": "Fri Jun 10 2016 12:29:26 GMT+0800 (CST)",
+                "usrMobi": "1231231231"
+            },
+            {
+                "usrId": 7,
+                "usrName": "123",
+                "usrPwd": "123",
+                "usrCreateTime": "Fri Jun 10 2016 12:41:56 GMT+0800 (CST)",
+                "usrMobi": "1232132231"
             }
         ],
         "ORDER": [
             {
                 "ordId": 1,
-                "grpId": 1,
-<<<<<<< HEAD
+                "grpId": 4,
                 "usrId": 1,
-                "dihId": 207,
-=======
-                "usrId": 4,
-                "dihId": 107,
->>>>>>> origin/testEveryBrowser
-                "ordNum": 1
+                "dihId": 212,
+                "ordNum": 5
             },
             {
                 "ordId": 2,
-                "grpId": 1,
-<<<<<<< HEAD
+                "grpId": 6,
                 "usrId": 1,
-                "dihId": 208,
-=======
-                "usrId": 4,
-                "dihId": 108,
->>>>>>> origin/testEveryBrowser
+                "dihId": 214,
                 "ordNum": 1
             },
             {
                 "ordId": 3,
-                "grpId": 1,
-<<<<<<< HEAD
+                "grpId": 6,
                 "usrId": 1,
-                "dihId": 209,
-=======
-                "usrId": 4,
-                "dihId": 109,
->>>>>>> origin/testEveryBrowser
+                "dihId": 215,
                 "ordNum": 1
-            },
-            {
-                "ordId": 4,
-<<<<<<< HEAD
-                "grpId": 2,
-                "usrId": 1,
-                "dihId": 210,
-                "ordNum": 1
-            },
-            {
-                "ordId": 5,
-                "grpId": 2,
-                "usrId": 1,
-                "dihId": 211,
-                "ordNum": 1
-            },
-            {
-                "ordId": 6,
-                "grpId": 2,
-                "usrId": 4,
-                "dihId": 211,
-                "ordNum": 1
-=======
-                "grpId": 1,
-                "usrId": 4,
-                "dihId": 110,
-                "ordNum": 4
->>>>>>> origin/testEveryBrowser
             }
         ],
         "MERCHANT": [
@@ -130,90 +87,7 @@
                 "metName": "巧口快餐店",
                 "metPhone": "033292081",
                 "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
-<<<<<<< HEAD
                 "metMinPrice": 140
-=======
-                "metMinPrice": 140,
-                "menu": [
-                    {
-                        "dihId": 106,
-                        "dihName": "招牌飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 107,
-                        "dihName": "焢肉飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 108,
-                        "dihName": "雞丁飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 109,
-                        "dihName": "三杯雞飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 110,
-                        "dihName": "滷炸排骨飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 111,
-                        "dihName": "蜜汁小排飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 112,
-                        "dihName": "鱈魚排飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 113,
-                        "dihName": "滷炸雞腿飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 114,
-                        "dihName": "雞排飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 115,
-                        "dihName": "豬腳飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    },
-                    {
-                        "dihId": 116,
-                        "dihName": "牛腩飯",
-                        "metId": 3,
-                        "dihType": "主食",
-                        "dihPrice": "70"
-                    }
-                ]
->>>>>>> origin/testEveryBrowser
             },
             {
                 "metId": 4,
@@ -228,23 +102,55 @@
                 "metPhone": "0955340928",
                 "metPicUrl": "http://i.imgur.com/6NooWP6.jpg",
                 "metMinPrice": 100
-<<<<<<< HEAD
             },
             {
-                "metName": "测试",
-                "metPhone": "1231231231",
+                "metName": "123",
+                "metPhone": "12312",
                 "metMinPrice": "123",
                 "metPicUrl": "",
                 "metId": 6
             },
             {
-                "metName": "A",
+                "metName": "123",
                 "metPhone": "1231231231",
-                "metMinPrice": "100",
+                "metMinPrice": "123",
                 "metPicUrl": "",
                 "metId": 7
-=======
->>>>>>> origin/testEveryBrowser
+            },
+            {
+                "metName": "213",
+                "metPhone": "1231231231",
+                "metMinPrice": "123",
+                "metPicUrl": "http://i.imgur.com/pgAiAYy.gif",
+                "metId": 8
+            },
+            {
+                "metName": "a",
+                "metPhone": "1231231231",
+                "metMinPrice": "123",
+                "metPicUrl": "http://i.imgur.com/pgAiAYy.gif",
+                "metId": 9
+            },
+            {
+                "metName": "abc",
+                "metPhone": "3211231231",
+                "metMinPrice": "123",
+                "metPicUrl": "http://i.imgur.com/pgAiAYy.gif",
+                "metId": 10
+            },
+            {
+                "metName": "abc",
+                "metPhone": "1231231231",
+                "metMinPrice": "123",
+                "metPicUrl": "http://i.imgur.com/pgAiAYy.gif",
+                "metId": 11
+            },
+            {
+                "metName": "abc",
+                "metPhone": "1231231231",
+                "metMinPrice": "123",
+                "metPicUrl": "http://i.imgur.com/pgAiAYy.gif",
+                "metId": 12
             }
         ],
         "DISH": [
@@ -1689,142 +1595,226 @@
                 "metId": 5,
                 "dihType": "主餐",
                 "dihPrice": "50"
-<<<<<<< HEAD
             },
             {
-                "dihName": "a",
+                "dihName": "123",
                 "dihPrice": "123",
                 "metId": 6,
                 "dihType": "主食",
                 "dihId": 207
             },
             {
-                "dihName": "b",
-                "dihPrice": "321",
-                "metId": 6,
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 7,
                 "dihType": "主食",
                 "dihId": 208
             },
             {
-                "dihName": "c",
-                "dihPrice": "213",
-                "metId": 6,
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 7,
                 "dihType": "主食",
                 "dihId": 209
             },
             {
-                "dihName": "雞肉便當",
-                "dihPrice": "100",
+                "dihName": "123",
+                "dihPrice": "123",
                 "metId": 7,
                 "dihType": "主食",
                 "dihId": 210
             },
             {
-                "dihName": "牛肉便當",
-                "dihPrice": "150",
-                "metId": 7,
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 8,
                 "dihType": "主食",
                 "dihId": 211
-=======
->>>>>>> origin/testEveryBrowser
+            },
+            {
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 9,
+                "dihType": "主食",
+                "dihId": 212
+            },
+            {
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 10,
+                "dihType": "主食",
+                "dihId": 213
+            },
+            {
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 11,
+                "dihType": "主食",
+                "dihId": 214
+            },
+            {
+                "dihName": "234",
+                "dihPrice": "234",
+                "metId": 11,
+                "dihType": "主食",
+                "dihId": 215
+            },
+            {
+                "dihName": "123",
+                "dihPrice": "123",
+                "metId": 12,
+                "dihType": "主食",
+                "dihId": 216
+            },
+            {
+                "dihName": "234",
+                "dihPrice": "234",
+                "metId": 12,
+                "dihType": "主食",
+                "dihId": 217
             }
         ],
         "GROUP": [
             {
                 "grpId": 1,
-<<<<<<< HEAD
                 "grpHostId": 1,
                 "metId": 6,
-                "grpAddr": "家里",
-                "grpTime": "6月 5日, 22:24",
-                "grpStatus": 1
+                "grpAddr": "123",
+                "grpTime": "6月 10日, 14:11",
+                "grpStatus": -1
             },
             {
                 "grpId": 2,
                 "grpHostId": 1,
                 "metId": 7,
-                "grpAddr": "S棟301",
-                "grpTime": "6月 8日, 17:05",
+                "grpAddr": "123",
+                "grpTime": "6月 10日, 14:55",
+                "grpStatus": -1
+            },
+            {
+                "grpId": 3,
+                "grpHostId": 1,
+                "metId": 8,
+                "grpAddr": "123",
+                "grpTime": "6月 10日, 16:25",
+                "grpStatus": -1
+            },
+            {
+                "grpId": 4,
+                "grpHostId": 1,
+                "metId": 9,
+                "grpAddr": "123",
+                "grpTime": "6月 11日, 20:18",
                 "grpStatus": 3
-=======
-                "grpHostId": 4,
-                "metId": 3,
-                "grpAddr": "銘傳大學S棟",
-                "grpTime": "6月 9日, 20:28",
-                "grpStatus": 1
->>>>>>> origin/testEveryBrowser
+            },
+            {
+                "grpId": 5,
+                "grpHostId": 1,
+                "metId": 10,
+                "grpAddr": "123",
+                "grpTime": "6月 11日, 20:18",
+                "grpStatus": -1
+            },
+            {
+                "grpId": 6,
+                "grpHostId": 1,
+                "metId": 11,
+                "grpAddr": "123",
+                "grpTime": "6月 11日, 22:09",
+                "grpStatus": 3
+            },
+            {
+                "grpId": 7,
+                "grpHostId": 1,
+                "metId": 12,
+                "grpAddr": "123",
+                "grpTime": "6月 11日, 23:10",
+                "grpStatus": 0
             }
         ],
         "GROUP_MEMBER": [
             {
                 "gmrId": 1,
-<<<<<<< HEAD
                 "usrId": 1,
                 "grpId": 1
             },
             {
                 "gmrId": 2,
                 "usrId": 1,
-                "grpId": 2
+                "grpId": 1
             },
             {
                 "gmrId": 3,
-                "usrId": 4,
-                "grpId": 2
-=======
-                "usrId": 4,
+                "usrId": 1,
                 "grpId": 1
->>>>>>> origin/testEveryBrowser
+            },
+            {
+                "gmrId": 4,
+                "usrId": 1,
+                "grpId": 4
+            },
+            {
+                "gmrId": 5,
+                "usrId": 1,
+                "grpId": 6
             }
         ],
         "GROUP_ORDER": [],
         "GROUP_DISHES": [
             {
                 "gdeId": 1,
-<<<<<<< HEAD
                 "dihId": 207,
-=======
-                "dihId": 106,
->>>>>>> origin/testEveryBrowser
                 "grpId": 1
             },
             {
                 "gdeId": 2,
-<<<<<<< HEAD
                 "dihId": 208,
-=======
-                "dihId": 107,
->>>>>>> origin/testEveryBrowser
-                "grpId": 1
+                "grpId": 2
             },
             {
                 "gdeId": 3,
-<<<<<<< HEAD
                 "dihId": 209,
-=======
-                "dihId": 108,
->>>>>>> origin/testEveryBrowser
-                "grpId": 1
+                "grpId": 2
             },
             {
                 "gdeId": 4,
-<<<<<<< HEAD
                 "dihId": 210,
                 "grpId": 2
             },
             {
                 "gdeId": 5,
                 "dihId": 211,
-                "grpId": 2
-=======
-                "dihId": 109,
-                "grpId": 1
+                "grpId": 3
             },
             {
-                "gdeId": 5,
-                "dihId": 110,
-                "grpId": 1
->>>>>>> origin/testEveryBrowser
+                "gdeId": 6,
+                "dihId": 212,
+                "grpId": 4
+            },
+            {
+                "gdeId": 7,
+                "dihId": 213,
+                "grpId": 5
+            },
+            {
+                "gdeId": 8,
+                "dihId": 214,
+                "grpId": 6
+            },
+            {
+                "gdeId": 9,
+                "dihId": 215,
+                "grpId": 6
+            },
+            {
+                "gdeId": 10,
+                "dihId": 216,
+                "grpId": 7
+            },
+            {
+                "gdeId": 11,
+                "dihId": 217,
+                "grpId": 7
             }
         ]
     }
