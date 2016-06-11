@@ -7,7 +7,7 @@ let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
 let home = require('./home.js');
-
+var SHA256 = require("crypto-js/sha256");
 
 const Public = require('../public.js');
 const cookies = require('js-cookie');
@@ -24,16 +24,16 @@ class IndexPage {
     bind() {
         $$(document).on('DOMContentLoaded', function () {
 
-            if (!!cookies.getJSON('user') && cookies.get('usrPwd')) {
+            if (!!cookies.getJSON('user') && cookies.get('usrPwdSha')) {
 
 
-                $$('#floatLabelName').addClass('not-empty-state')   ;
+                $$('#floatLabelName').addClass('not-empty-state');
                 $$('#floatLabelPwd').addClass('not-empty-state');
-                $$('#txtUsrName').addClass('not-empty-state').parent().css('background','#fff !important') ;
-                $$('#txtUsrPwd').addClass('not-empty-state').parent().css('background','#fff !important') ;
+                $$('#txtUsrName').addClass('not-empty-state').parent().css('background', '#fff !important');
+                $$('#txtUsrPwd').addClass('not-empty-state').parent().css('background', '#fff !important');
 
                 $$('#txtUsrName').val(cookies.getJSON('user').usrName);
-                $$('#txtUsrPwd').val(cookies.get('usrPwd'));
+                $$('#txtUsrPwd').val(cookies.get('usrPwdSha'));
             }
 
             $$('#btnCreateGroup').click(function () {
@@ -56,17 +56,29 @@ class IndexPage {
                 mainView.router.loadPage({url: 'sign-up.html'});
             });
 
+            $$('#txtUsrPwd').on('keyup',function(){
+                cookies.remove('usrPwdSha');
+            });
+
             $$('#btn-login').click(function () {
 
+                let usrName = $$('#txtUsrName').val();
 
-                ajaxMethod.userAuth().then(function (result) {
+
+                //let usrPwd = $$('#txtUsrPwd').val();
+                let usrPwdSha = cookies.get('usrPwdSha');
+
+                ajaxMethod.userAuth(usrName, usrPwdSha ? usrPwdSha : SHA256($$('#txtUsrPwd').val()).toString()).then(function (result) {
+
                     cookies.set('user', result.user);
-                    cookies.set('usrPwd', $$('#txtUsrPwd').val());
+                    if (!usrPwdSha) {
+                        cookies.set('usrPwdSha', SHA256($$('#txtUsrPwd').val()).toString());
+                    }
 
                     myApp.closeModal();
                     mainView.router.loadPage({url: 'home.html'});
-                }).catch(function () {
-                    myApp.alert('登录失败');
+                }).catch(function (e) {
+                    myApp.alert('登录失败' + e);
                 });
 
             });

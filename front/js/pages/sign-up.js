@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+var SHA256 = require("crypto-js/sha256");
 let randomMobiAuth;
 
 class SignUpPage { //TODO first
@@ -17,6 +18,7 @@ class SignUpPage { //TODO first
 
     bind() {
         myApp.onPageBeforeInit('sign-up', function (page) {//TODO second
+
             $$('#btnSignUp').click(function () {
 
                 if(!( $$('#signUsrName').val()&& $$('#signUsrPwd').val()&& $$('#signUsrMobi').val()&&$$('#signTwilio').val())){
@@ -33,7 +35,7 @@ class SignUpPage { //TODO first
                 }
 
 
-                ajaxMethod.addUserPromise($$('#signUsrName').val(), $$('#signUsrPwd').val(), $$('#signUsrMobi').val(),$$('#signTwilio').val()).then(result=> {
+                ajaxMethod.addUserPromise($$('#signUsrName').val(), SHA256($$('#signUsrPwd').val()).toString(), $$('#signUsrMobi').val(),$$('#signTwilio').val()).then(result=> {
                     myApp.alert('註冊成功', function () {
                         myApp.loginScreen();
                     });
@@ -75,7 +77,7 @@ class SignUpPage { //TODO first
                         }
                     });
 
-                    setTimeout(()=>myApp.closeNotification(notificationSent),1500);
+                    setTimeout(()=>myApp.closeNotification(notificationSent),3000);
                 }).catch(e=> {
                     myApp.alert('請正確填寫手機號碼!'+e);
 

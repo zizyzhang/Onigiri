@@ -37,15 +37,12 @@ var AjaxMethods = function () {
 
     };
 
-    this.userAuth = function () {
+    this.userAuth = function (usrName,usrPwdSha) {
         return new Promise(function (resolve, reject) {
-            var usrName = $$('#txtUsrName').val();
 
 
-            var usrPwd = $$('#txtUsrPwd').val();
 
-
-            $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
+            $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwdSha}, function (result) {
                 if (JSON.parse(result).success === 1) {
                     console.log('login success');
 
