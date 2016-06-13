@@ -48,8 +48,13 @@ class IndexPage {
 
             $$('#txtUsrName').on('focus', function () {
                 $$('.usrName').css('color', 'white !important');
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),200);
             });
 
+
+            $$('#txtUsrPwd').on('click', function () {
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),200);
+            });
 
             $$('#btn-sign-up').click(function () {
                 myApp.closeModal();
