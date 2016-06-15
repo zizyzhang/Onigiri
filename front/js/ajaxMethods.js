@@ -117,7 +117,7 @@ var AjaxMethods = function () {
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {
         console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
 
-        return new Promise(resolve=> {
+        return new Promise((resolve,reject)=> {
 
             $$.post(SERVER_ADS + "/group", {
                 data: JSON.stringify({
@@ -130,8 +130,10 @@ var AjaxMethods = function () {
             }, function (data) {
                 data = JSON.parse(data);
                 console.log(data);
-                if (data.success === 1) {
-                    resolve();
+                if (data.msg) {
+                    reject(data.msg);
+                }else{
+                    resolve(data);
                 }
             });
         });

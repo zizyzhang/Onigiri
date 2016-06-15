@@ -48,12 +48,12 @@ class IndexPage {
 
             $$('#txtUsrName').on('focus', function () {
                 $$('.usrName').css('color', 'white !important');
-                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),200);
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);
             });
 
 
             $$('#txtUsrPwd').on('click', function () {
-                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),200);
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);
             });
 
             $$('#btn-sign-up').click(function () {

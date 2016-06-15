@@ -59,7 +59,7 @@ class OrderPage {
                     }
 
                     if(dishes.length===0){
-                        myApp.alert('未選擇餐點');
+                        myApp.alert('未選擇商品');
                         return;
                     }
 

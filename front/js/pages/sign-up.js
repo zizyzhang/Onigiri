@@ -71,7 +71,7 @@ class SignUpPage { //TODO first
 
                 ajaxMethod.mobiAuth($$('#signUsrMobi').val()).then(result=> {
                     let notificationSent = myApp.addNotification({
-                        message: '已發送(测试阶段,验证码请填写123)',
+                        message: '已發送(測試階段,驗證碼请填写123)',
                         button: {
                             text: '關閉',
                         }

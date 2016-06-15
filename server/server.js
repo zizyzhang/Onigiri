@@ -43,10 +43,10 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     //    db[table].push(value);
 };
 
-//CLEAN GROUP 删掉超时的
+//CLEAN GROUP 刪掉超時的
 (()=> {
     setInterval(()=> {
-        //得到所有没过期的团
+        //得到所有沒過期的團
         let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
 
         for (let g of availableGroups) {
@@ -128,8 +128,8 @@ var Server = function () {
                 }
                 res.json({success: false, msg: '驗證碼輸入錯誤'});
                 return;
-            }else if(db.USER.find(o=>o.usrId===usrName)){
-                res.json({success: false, msg: '賬號名稱重複'});
+            } else if (db.USER.find(o=>o.usrId === usrName)) {
+                res.json({success: false, msg: '帳號名稱重複'});
                 return;
             }
 
@@ -147,11 +147,11 @@ var Server = function () {
 
             let metName = req.body.metName;
             let metPhone = req.body.metPhone;
-            let metMinPrice = req.body.metMinPrice;
+            let metMinPrice =Number( req.body.metMinPrice);
             let metPicUrl = req.body.metPicUrl || '';
 
-            if (!(metName && metPhone && metMinPrice && metPhone.length === 10)) {
-                res.json({success: false, msg: '資料輸入错误'});
+            if (!(metName && metPhone && metMinPrice && metPhone.length === 10 &&   metMinPrice >=0)) {
+                res.json({success: false, msg: '資料輸入錯誤'});
                 return;
             }
 
@@ -169,8 +169,15 @@ var Server = function () {
             console.log(JSON.stringify(req.body));
 
             for (let dish of req.body) {
+                dish.dihPrice = Number(dish.dihPrice);
+
                 if (!(dish.dihName && dish.dihPrice && dish.metId)) {
                     res.json({success: false, msg: '資料不完整'});
+                    return;
+                }
+
+                if ( dish.dihPrice < 0 ){
+                    res.json({success: false, msg: '商品價格不正確'});
                     return;
                 }
             }
@@ -242,6 +249,14 @@ var Server = function () {
             let metId = req.body.metId;
             let addr = req.body.addr;
             let gorTime = req.body.gorTime;
+
+            //TODO Check Time
+            let deadLine = new Date(gorTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
+            if (deadLine.getTime() < new Date().getTime()) {
+                res.json({success: false, msg: '截止時間不能早於當前時間'});
+                return;
+            }
+
 
             if (!( grpHostId && dishes && metId && addr && gorTime)) {
                 res.json({success: false, msg: '資料不完整'});
@@ -432,7 +447,7 @@ var Server = function () {
     };
 
     /*
-     * 参数
+     * 參數
      {metName,
      metPhone,
      metMinPrice,
@@ -467,7 +482,7 @@ var Server = function () {
         }
 
         if (!isSuccess) {
-            callback({success: false,err:'賬號密碼不匹配'});
+            callback({success: false, err: '帳號密碼不匹配'});
         }
     };
 
@@ -548,9 +563,9 @@ var Server = function () {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise((resolve, reject)=> {
-            //拒绝用户对同一个group连续点两次餐点
+            //拒絕用戶對同壹個group連續點兩次餐點
             if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
-                reject("重复加团!");
+                reject("重復加團!");
                 return;
             }
 
@@ -619,7 +634,7 @@ var Server = function () {
                 groupedOrders.push({group: group, orders: [order]});
             }
         }
-         return _.sortBy(groupedOrders,row=>-new Date(row.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime());
+        return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime());
     };
 
 
@@ -675,7 +690,7 @@ var Server = function () {
                 groupedOrderSums = result;
             });
 
-            //处理空白团
+            //處理空白團
             let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
             if (emptyGroups) {
                 emptyGroups.map(eptGroup=> {
@@ -685,7 +700,10 @@ var Server = function () {
                 });
             }
 
-            resolve({groupedOrders, groupedOrderSums:_.sortBy(groupedOrderSums,obj=>-new Date(obj.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime())});
+            resolve({
+                groupedOrders,
+                groupedOrderSums: _.sortBy(groupedOrderSums, obj=>-new Date(obj.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime())
+            });
         });
     };
 
@@ -762,13 +780,13 @@ var Server = function () {
             }) || [];
         grpDishes.map(grpDish=> {
 
-            //检查是否已经存在DISH的分类.
+            //檢查是否已經存在DISH的分類.
             let dihGroup = menu.find(dgp => dgp.dihType === grpDish.dish.dihType);
             if (dihGroup) {
-                //已经有了就加入一笔
+                //已經有了就加入壹筆
                 dihGroup.dishes.push(grpDish.dish);
             } else {
-                //如果没有加入新的分类,和一笔DISH
+                //如果沒有加入新的分類,和壹筆DISH
                 menu.push({dihType: grpDish.dish.dihType, dishes: [grpDish.dish]});
             }
         });
@@ -839,9 +857,9 @@ var Server = function () {
     };
 
 
-    ///////////////////后台
+    ///////////////////後臺
 
-    //给资料表新增一个row
+    //給資料表新增壹個row
     app.post('/:adminPwd/table/:tableName', function (req, res) {
         if (req.params.adminPwd !== 'fHfKJp3iSAfhvd9fjn23Z5KMA6Sd') {
             res.json({success: false});
@@ -867,4 +885,3 @@ var Server = function () {
 
 
 module.exports = new Server();
-

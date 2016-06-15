@@ -124,12 +124,30 @@ class GroupSettingPage {
                 }
 
 
-
                 for (let i = 0; i < products.length; i++) {
-                    if (!(products[i].productName && products[i].productName)) {
+                    if (!(products[i].productPrice && products[i].productName )) {
                         myApp.alert('商品資訊填寫不完整');
                         return;
                     }
+                    if(!tool.isNumeric(products[i].productPrice)){
+                        myApp.alert('商品資訊錯誤');
+                        return;
+                    }
+                }
+
+                if(!tool.isNumeric(metMinPrice)){
+                    myApp.alert('資料錯誤');
+                    return;
+                }
+
+
+
+
+                //  Check Time
+                let deadLine = new Date(gorTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
+                if (deadLine.getTime() < new Date().getTime()) {
+                    myApp.alert('時間輸入錯誤');
+                    return;
                 }
 
 
@@ -146,17 +164,19 @@ class GroupSettingPage {
                         };
                     });
 
+
                     return ajaxMethod.postDishPromise(dishes);
                 }).then(result=> {
                     //新增團
                     let dishes = result.dishes.map(row=>row.dihId);
 
-                    ajaxMethod.postGroup(grpHostId, dishes, metId, addr, gorTime).then(()=> {
-                        myApp.alert('開團完成!', function () {
-                            mainView.router.loadPage('home.html');
-                        });
+                    return ajaxMethod.postGroup(grpHostId, dishes, metId, addr, gorTime);
+                }).then(()=> {
+                    //完成新增
+                    myApp.alert('開團完成!', function () {
+                        mainView.router.loadPage('home.html');
                     });
-                }).catch(e=>myApp.alert('開團失敗' + e.toString()));
+                }).catch(e=>myApp.alert('開團失敗: ' + e.toString()));
 
 
             });
@@ -266,8 +286,8 @@ class GroupSettingPage {
                 for (let dish of dishes) {
                     $$(`.js-dishName[data-id="${dishIndex}"]`).val(dish.dihName);
                     $$(`.js-dishPrice[data-id="${dishIndex}"]`).val(dish.dihPrice);
-                    products[dishIndex].productName=dish.dihName;
-                    products[dishIndex].productPrice=dish.dihPrice;
+                    products[dishIndex].productName = dish.dihName;
+                    products[dishIndex].productPrice = dish.dihPrice;
 
 
                     dishIndex++;
