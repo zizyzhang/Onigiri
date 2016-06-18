@@ -18,6 +18,8 @@ var JsonDB = require('node-json-db');
 //debugger;
 var jsonDb = new JsonDB("./onigiri", true, true);
 var db = jsonDb.getData('/db');
+require('./time.js');
+
 //console.log(__dirname);
 
 //let twilio = require('twilio');
@@ -687,7 +689,9 @@ var Server = function Server() {
             metId: metId,
             grpAddr: addr,
             grpTime: gorTime,
-            grpStatus: 0
+            grpStatus: 0,
+            grpCreateTime: new Date().getTime(),
+            grpAmount: 0
 
             //minAmount: minAmount
         });
@@ -758,7 +762,8 @@ var Server = function Server() {
                         grpId: grpId,
                         usrId: usrId,
                         dihId: dihId,
-                        ordNum: num
+                        ordNum: num,
+                        ordCreateTime: new Date().getTime()
                     });
                 }
             } catch (err) {
@@ -831,6 +836,10 @@ var Server = function Server() {
                     }
                 }
 
+                db.setValueToJsonDb("GROUP", function (row) {
+                    return row.grpId === grpId;
+                }, "grpAmount", amount);
+
                 if (amount >= metMinPrice) {
                     g.grpStatus = 1;
                     db.setValueToJsonDb("GROUP", function (row) {
@@ -892,8 +901,10 @@ var Server = function Server() {
     };
 
     this.getGroupedOrdersByUserId = function (usrId, callback) {
-        var orders = db.ORDER.filter(function (ord) {
+        var orders = _.sortBy(db.ORDER.filter(function (ord) {
             return ord.usrId === usrId;
+        }), function (obj) {
+            return -obj.ordCreateTime;
         }).map(function (ord) {
             var newOrd = {
                 ordId: ord.ordId,
@@ -902,7 +913,8 @@ var Server = function Server() {
                 dish: db.DISH.find(function (d) {
                     return d.dihId === ord.dihId;
                 }),
-                ordNum: ord.ordNum
+                ordNum: ord.ordNum,
+                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss')
             };
             return newOrd;
         });
@@ -937,7 +949,8 @@ var Server = function Server() {
                     dish: db.DISH.find(function (d) {
                         return d.dihId === ord.dihId;
                     }),
-                    ordNum: ord.ordNum
+                    ordNum: ord.ordNum,
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss')
                 };
                 return newOrd;
             });
@@ -967,7 +980,7 @@ var Server = function Server() {
             resolve({
                 groupedOrders: groupedOrders,
                 groupedOrderSums: _.sortBy(groupedOrderSums, function (obj) {
-                    return -new Date(obj.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime();
+                    return -obj.group.grpCreateTime;
                 })
             });
         });
@@ -1119,6 +1132,10 @@ var Server = function Server() {
             }
         });
 
+        var merchant = db.MERCHANT.find(function (merchant) {
+            return merchant.metId === group.metId;
+        });
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
@@ -1126,17 +1143,18 @@ var Server = function Server() {
             grpHostName: db.USER.find(function (user) {
                 return user.usrId === group.grpHostId;
             }).usrName,
-            merchant: db.MERCHANT.find(function (merchant) {
-                return merchant.metId === group.metId;
-            }),
+            merchant: merchant,
             grpOrder: _.filter(db.GROUP_ORDER, function (grr) {
                 return grr.grpId === group.grpId;
             }) || [],
             grpDishes: grpDishes,
             grpHost: that.createUserByUserId(group.grpHostId),
-
             grpStatus: group.grpStatus,
-            menu: menu
+            menu: menu,
+            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy-MM-dd hh:mm:ss'),
+            grpAmount: group.grpAmount || 0,
+            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
+
         };
 
         return group;

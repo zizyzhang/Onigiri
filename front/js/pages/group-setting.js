@@ -228,6 +228,8 @@ class GroupSettingPage {
                         divider: true,
                         content: '日'
                     },
+
+
                     // Space divider
                     {
                         divider: true,
