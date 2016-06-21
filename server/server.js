@@ -20,17 +20,42 @@ let db = jsonDb.getData('/db');
 
 
 db.pushToJsonDb = function (table, value) {
-         jsonDb.push('/db/' + table + '[]', value);
+    jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
 };
 
+db.setValueToJsonDb = function (table, condition, setKey, newValue) {
+    let index = db[table].findIndex(condition);
+    let oldObj = db[table].find(condition);
+    oldObj[setKey] = newValue;
+
+    jsonDb.push('/db/' + table + `[${index}]`, oldObj);
+    //    db[table].push(value);
+};
+
+//CLEAN GROUP 删掉超时的
+(()=> {
+    setInterval(()=> {
+        //得到所有没过期的团
+        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus=== 0);
+
+        for (let g of availableGroups) {
+            let deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
+             if (deadLine.getTime() - new Date().getTime() < 0) {
+                db.setValueToJsonDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
+            }
+        }
+    }, 5000);
+
+ })();
+
 var Server = function () {
 
-    this.testMode = function(){
-        if(isDebug) {
+    this.testMode = function () {
+        if (isDebug) {
             db.pushToJsonDb = function (table, value) {
                 db[table].push(value);
-             };
+            };
         }
     };
 
@@ -44,8 +69,6 @@ var Server = function () {
     var self = this;
 
     this.db = isDebug ? db : undefined;
-
-
 
 
     var allowCrossDomain = function (req, res, next) {
@@ -71,13 +94,14 @@ var Server = function () {
 
     app.post('/addUser', function (req, res) {
 
+            req.body = JSON.parse(req.body.data);
 
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
             var usrMobi = req.body.usrMobi;
             //console.log(JSON.stringify(req.body));
-            addUser(usrName, usrPwd, usrMobi, function (result) {
-
+            self.addUser(usrName, usrPwd, usrMobi, function (result) {
+                res.json(result);
             });
         }
     );
@@ -98,7 +122,7 @@ var Server = function () {
 
     app.get('/allGroup', function (req, res) {
         // Pass to next layer of middleware
-        self.allGroup(function (result) {
+        self.allAvailableGroup(function (result) {
             res.json(result);
         });
     });
@@ -159,6 +183,22 @@ var Server = function () {
         }
     );
 
+    app.post('/groupStatus', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            var grpId = Number(req.body.grpId);
+            var grpStatus = Number(req.body.grpStatus);
+
+
+            self.updateGroupStatusPromise(grpId, grpStatus).then(result=> {
+                res.json(result);
+            }).catch(e=> {
+                res.json(e);
+            });
+
+        }
+    );
+
+
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
             var usrId = Number(req.params.id);
             self.getGroupedOrdersByUserId(usrId, result=> {
@@ -174,6 +214,7 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
+
 
     app.listen(8080, function () {
         console.log('' +
@@ -192,16 +233,21 @@ var Server = function () {
         }
 
 
-        var usrCreateTime = new Date();
-        var newUser = {usrId: usrId, usrName: usrName, usrPwd: usrPwd, usrCreateTime: usrCreateTime, usrMobi: usrMobi};
+        var usrCreateTime = new Date().toString();
+        var newUser = {
+            usrId: usrId,
+            usrName: usrName,
+            usrPwd: usrPwd,
+            usrCreateTime: usrCreateTime,
+            usrMobi: usrMobi
+        };
 
 
-        if (newUser.usrName.length !== 0 || newUser.usrPwd.length != 0 || newUser.usrMobi.length != 0) {
+        if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
             db.pushToJsonDb('USER', newUser);
-            callback({success: 1});
-            return;
+            callback({success: true});
         } else {
-            callback({success: 0});
+            callback({success: false});
         }
     };
 
@@ -240,6 +286,17 @@ var Server = function () {
         callback(result);
     };
 
+    this.allAvailableGroup = function (callback) {
+        let result = [];
+
+        for (let _group of db.GROUP.filter(g=>g.grpStatus === 0 || g.grpStatus === 1)) {
+            let group = this.createClassGroupByGroupId(_group.grpId);
+            result.push(group);
+
+        }
+        callback(result);
+    };
+
     this.getGroupById = function (id, callback) {
         let group = this.createClassGroupByGroupId(id);
         callback(group);
@@ -248,7 +305,8 @@ var Server = function () {
 
     this.allMerchant = function (callback) {
         var result = [];
-        for (let merchant of db.MERCHANT) {
+        for (let _merchant of db.MERCHANT) {
+            let merchant = _.cloneDeep(_merchant);
             merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
             result.push(
                 merchant
@@ -272,7 +330,9 @@ var Server = function () {
             grpHostId: grpHostId,
             metId: metId,
             grpAddr: addr,
-            grpTime: gorTime
+            grpTime: gorTime,
+            grpStatus: 0
+
             //minAmount: minAmount
         });
         for (let dihId of dishes) {
@@ -319,7 +379,33 @@ var Server = function () {
                 grpId: grpId
             });
 
-            resolve({success: 1});
+            //最小外送金額
+            let g = db.GROUP.find(g=>g.grpId === grpId);
+            let metId = g.metId;
+            let hostId = g.grpHostId;
+            let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
+            let amount = 0;
+
+            this.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
+                //console.log(result.groupedOrderSums);
+                let groupOrderSum = result.groupedOrderSums.find(orderSum=>orderSum.group.grpId === grpId);
+                console.log("groupOrderSum", groupOrderSum);
+
+                for (let orderSum of groupOrderSum.orderSums) {
+                    let price = orderSum.dish.dihPrice;
+                    let num = orderSum.ordNum;
+                    let total = price * num;
+                    amount += total;
+                }
+
+                if (amount >= metMinPrice) {
+                    g.grpStatus = 1;
+                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                }
+                resolve({success: 1});
+            }).catch(e=>console.log(e));
+
+
         });
     };
 
@@ -347,7 +433,7 @@ var Server = function () {
                 grpId: ord.grpId,
                 usrId: ord.usrId,
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                ordNum: ord.ordNum,
+                ordNum: ord.ordNum
             };
             return newOrd;
         });
@@ -378,7 +464,7 @@ var Server = function () {
                     grpId: ord.grpId,
                     usrId: ord.usrId,
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                    ordNum: ord.ordNum,
+                    ordNum: ord.ordNum
                 };
                 return newOrd;
             });
@@ -422,8 +508,42 @@ var Server = function () {
                     orderSums.push({group, dish, ordNum});
                 }
             }
+
+            switch (group.grpStatus) {
+                case 0:
+                    group.grpStatusCh = "未達外送金額";
+                    group.btnChangeStatusName = "未開團";
+                    group.grpNextStatus = 1;
+
+                    group.btnChangeStatusDisable = true;
+                    break;
+                case 1:
+                    group.grpStatusCh = "已開團";
+                    group.btnChangeStatusName = "確認已送達";
+                    group.grpNextStatus = 2;
+
+                    break;
+                case 2:
+                    group.grpStatusCh = "已送達";
+                    group.btnChangeStatusName = "確認訂單已完成";
+                    group.grpNextStatus = 3;
+                    break;
+                case 3:
+                    group.grpStatusCh = "已完成";
+                    group.btnChangeStatusName = "";
+                    group.grpNextStatus = 4;
+                    break;
+                case -1:
+                    group.grpStatusCh = "開團失敗";
+                    group.btnChangeStatusName = "";
+                    group.btnChangeStatusDisable = true;
+                    group.grpNextStatus = -2;
+                    break;
+            }
+
             groupedOrderSums.push({group, orderSums});
         }
+
 
         callback(groupedOrderSums);
     };
@@ -432,9 +552,29 @@ var Server = function () {
         let that = this;
         let group = db.GROUP.find(g=>g.grpId === grpId);
 
-        if(!group){
+        if (!group) {
             return null;
         }
+
+        let menu = [];
+        let grpDishes = _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
+                let grpDish = {};
+                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
+                _.assign(grpDish, grh);
+                return grpDish;
+            }) || [];
+        grpDishes.map(grpDish=> {
+
+            //检查是否已经存在DISH的分类.
+            let dihGroup = menu.find(dgp => dgp.dihType === grpDish.dish.dihType);
+            if (dihGroup) {
+                //已经有了就加入一笔
+                dihGroup.dishes.push(grpDish.dish);
+            } else {
+                //如果没有加入新的分类,和一笔DISH
+                menu.push({dihType: grpDish.dish.dihType, dishes: [grpDish.dish]});
+            }
+        });
 
         group = {
             grpId: group.grpId,
@@ -443,31 +583,91 @@ var Server = function () {
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId) || [],
-            grpDishes: _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
-                let grpDish = {};
-                grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
-                _.assign(grpDish, grh);
-                return grpDish;
-            }) || [],
+            grpDishes: grpDishes,
             grpHost: that.createUserByUserId(group.grpHostId),
 
-
+            grpStatus: group.grpStatus,
+            menu: menu
         };
 
         return group;
-    }
+    };
 
     this.createUserByUserId = function (usrId) {
         let _usr = db.USER.find(usr=>usr.usrId === usrId);
         let user = {
             usrId: _usr.usrId,
             usrName: _usr.usrName,
-            usrMobi: _usr.usrMobi,
+            usrMobi: _usr.usrMobi
         };
 
         return user;
+    };
+
+    this.updateGroupStatusPromise = function (grpId, grpStatus) {
+        return new Promise((resolve, reject)=> {
+            let group = db.GROUP.find(s=>grpId === s.grpId);
+
+            if (group.grpStatus >= 0 && group.grpStatus <= 2) {
+                db.setValueToJsonDb('GROUP', row=>row.grpId === group.grpId, 'grpStatus', grpStatus);
+                //group.grpStatus = grpStatus;
+
+                resolve({success: 1});
+            }
+            else {
+                reject({success: 0});
+            }
+        });
+
+    };
+
+    this.cleanGroup = function () {
+        let today = new Date();
+
+        this.allGroup(function (result) {
+            //let timing = result[0].grpTime.replace(/月/,"/");
+            console.log(result[0].grpTime);
+            console.log(JSON.stringify(result));
+        });
+
+
+        //let t = setTimeout('Timer()', 500);
     }
+
+    this.getStatus = function (grpId) {
+        return new Promise(resolve=> {
+            let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
+            resolve(status);
+        });
+    };
+
+
+    ///////////////////后台
+
+    //给资料表新增一个row
+    app.post('/:adminPwd/table/:tableName', function (req, res) {
+        if (req.params.adminPwd !== 'fHfKJp3iSAfhvd9fjn23Z5KMA6Sd') {
+            res.json({success: false});
+        }
+
+        try {
+            req.body = JSON.parse(req.body.data);
+            let rows = req.body.rows;
+            for (let row of rows) {
+                db.pushToJsonDb(req.params.tableName, row);
+            }
+            res.json({success: true});
+        } catch (e) {
+
+            res.json({success: false});
+        }
+
+
+    });
 
 
 };
+
+
 module.exports = new Server();
+

@@ -12,7 +12,7 @@
             <a href="#tab-1" class="button button-fill button color-green toolbar-button">
                 查看菜单
             </a>
-            <a  href="#" id="btnJoin" class="button button-fill color-red toolbar-button">
+            <a href="#" id="btnJoin" class="button button-fill color-red toolbar-button">
                 加入团购
             </a>
 
@@ -21,18 +21,20 @@
 
 
     <div class="page-content hide-navbar-on-scroll">
-        <div class="group-detail-img"></div>
+        <div class="group-detail-img" style="background-image: url('{{merchant.metPicUrl}}');"></div>
         <div class="card demo-card-header-pic">
 
             <div class="card-content">
                 <div class="card-content-inner">
-                    <p class="color-gray">发起人: {{grpHostName}}</p>
-                    <p>
-                        <span class="ficon icon-user-8">&#x4c;</span>取餐时间: {{grpTime}}
+                    <p >
+                        <span class="ficon icon-user-8">&#x4c;</span><a class="color-gray">發起人: {{grpHostName}}</a></p>
 
-                    </p>
                     <p>
-                        <span class="ficon ">M</span>取餐地点: {{grpAddr}}
+                        <span class="ficon">Z</span>截止時間: {{grpTime}}
+                    </p>
+
+                    <p>
+                        <span class="ficon ">M</span>取餐地點: {{grpAddr}}
                     </p>
                 </div>
             </div>
@@ -88,13 +90,9 @@
             </div>
 
             <div class="card-footer">
-                <div ></div>
+                <div></div>
                 <a href="group-detail.html" class="link on-right "><span style="color: green;">更多</span></a>
             </div>
-
-
-
-
 
 
         </div>

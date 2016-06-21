@@ -9,8 +9,7 @@ let tool = require('../tool.js');
 const cookies = require('js-cookie');
 
 
-
-class Home  { //TODO first
+class Home { //TODO first
     constructor(_myApp, _mainView) {
         myApp = _myApp;
         mainView = _mainView;
@@ -18,9 +17,10 @@ class Home  { //TODO first
     }
 
     bind() {
+        let that = this;
         myApp.onPageBeforeInit('home', function (page) {//TODO second
-            console.log('user',cookies.getJSON('user'));
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId),page,result=>{
+            console.log('user', cookies.getJSON('user'));
+            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId), page, result=> {
                 $$('.btn-join-in-group-page').on('click', function () {
 
                     let grpId = $$(this).dataset().grpId;
@@ -31,6 +31,7 @@ class Home  { //TODO first
 
 
                 });
+
 
                 $$('.js-btn-contact-host').click(function () {
                     window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
@@ -43,18 +44,42 @@ class Home  { //TODO first
 
                     cookies.set('selectedGroupId', grpId);
 
+                        mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+
+                });
+                $$('.card-img').on('click', function () {
+
+                    let grpId = $$(this).dataset().grpId;
+                    console.log(`grpId : ${grpId}`);
+
+                    cookies.set('selectedGroupId', grpId);
+
                     mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+                });
+                $$('.orderDetail').on('click', function () {
+
+                    let grpId = $$(this).dataset().grpId;
+                    mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
 
                 });
 
 
             });
-
-
         });
+
     }
 
+    changeTabGroup() {
+        //console.log("asdfasdfas");
+        myApp.showTab("#tabGroups");
+
+    }
+
+    changeTabOrder() {
+        myApp.showTab('#tabMyOrders');
+    }
 }
 
-module.exports = Home  ;////TODO third
+
+module.exports = Home;////TODO third
 //TODO fourth : 加入到Main.js里面注册bind方法

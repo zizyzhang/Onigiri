@@ -9,7 +9,7 @@
     <!-- Color theme for statusbar -->
     <meta name="theme-color" content="#ff5722">
     <!-- Your app title -->
-    <title>My App</title>
+    <title>Onigiri 飯糰 - 校園雲端外賣團購APP</title>
     <!-- Path to Framework7 Library CSS, Material Theme -->
     <link rel="stylesheet" href="../../bower_components/Framework7/dist/css/framework7.material.min.css">
     <!-- Path to Framework7 color related styles, Material Theme -->
@@ -29,29 +29,50 @@
         <div class="panel-my-pic"></div>
     </div>
     <div class="list-block panel-button-list">
+        <div class="content-block-title">團員</div>
         <ul>
             <li>
+
+                <a href="#" id="tabNearGroups" class="close-panel item-link item-content">
+                    <div class="item-inner">
+                        <div class="item-title">附近的團購</div>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="#" id="tabOrders" class="item-link item-content close-panel">
+                    <div class="item-inner">
+                        <div class="item-title">我的訂單</div>
+                    </div>
+                </a>
+            </li>
+            </ul>
+        <div class="content-block-title">團主</div>
+        <ul>
+
+            <li>
+
                 <a href="#" id="btnCreateGroup" class="close-panel item-link item-content">
-                     <div class="item-inner">
+                    <div class="item-inner">
                         <div class="item-title">發起團購</div>
-                     </div>
+                    </div>
                 </a>
             </li>
             <li>
                 <a href="#" id="btnMyGroups" class="item-link item-content close-panel">
-                     <div class="item-inner">
+                    <div class="item-inner">
                         <div class="item-title">我發起的團購</div>
-                     </div>
+                    </div>
                 </a>
             </li>
 
         </ul>
     </div>
 
-    <div class="panel-footer buttons-row">
-        <a href="#" class="button"> 幫助</a>
-        <a href="#" class="button"> 設置</a>
-    </div>
+    <!--<div class="panel-footer buttons-row">-->
+        <!--<a href="#" class="button"> 幫助</a>-->
+        <!--<a href="#" class="button"> 設置</a>-->
+    <!--</div>-->
 </div>
 
 
@@ -82,7 +103,7 @@
                     <div class="list-block inputs-list theme-white ">
                         <ul>
                             <li class="item-content">
-                                <div class="item-inner">
+                                <div id="floatLabelName" class="item-inner">
                                     <div class="item-title floating-label usrName ficon icon-usr-name">R</div>
                                     <div class="item-input">
                                         <input type="text" class="usrName login-input" id="txtUsrName" name="usrName"
@@ -90,7 +111,7 @@
                                     </div>
                                 </div>
                             </li>
-                            <li class="item-content">
+                            <li class="item-content" id="floatLabelPwd">
                                 <div class="item-inner ">
                                     <div class="item-title floating-label usrPwd ficon icon-usr-pwd">S</div>
                                     <div class="item-input">
@@ -107,7 +128,7 @@
                         <a href="#" class="button button-fill color-green" id="btn-login">登录</a>
                     </div>
                     <div class="content-block">
-                        <a href="#" class="button button-fill color-blue" id="btn-sign-up">注册</a>
+                        <a href="si" class="button button-fill color-blue" id="btn-sign-up">注册</a>
                     </div>
                     <div class="content-block">
                         <div class="list-block-label"></div>

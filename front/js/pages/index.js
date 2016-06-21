@@ -6,9 +6,14 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let home = require('./home.js');
+
+
 const Public = require('../public.js');
 const cookies = require('js-cookie');
 
+
+let homejschange = new home();
 class IndexPage {
     constructor(_myApp, _mainView) {
         myApp = _myApp;
@@ -17,10 +22,22 @@ class IndexPage {
     }
 
     bind() {
-        $$(document).on('DOMContentLoaded',function(){
+        $$(document).on('DOMContentLoaded', function () {
+
+            if (!!cookies.getJSON('user') && cookies.get('usrPwd')) {
+
+
+                $$('#floatLabelName').addClass('not-empty-state')   ;
+                $$('#floatLabelPwd').addClass('not-empty-state');
+                $$('#txtUsrName').addClass('not-empty-state').parent().css('background','#fff !important') ;
+                $$('#txtUsrPwd').addClass('not-empty-state').parent().css('background','#fff !important') ;
+
+                $$('#txtUsrName').val(cookies.getJSON('user').usrName);
+                $$('#txtUsrPwd').val(cookies.get('usrPwd'));
+            }
+
             $$('#btnCreateGroup').click(function () {
                 mainView.router.loadPage({url: 'select-merchant.html'});
-
             });
 
             $$('#btnMyGroups').click(function () {
@@ -35,12 +52,8 @@ class IndexPage {
 
 
             $$('#btn-sign-up').click(function () {
-                if ($$('#subPwd').val() === $$('#confirmPwd').val()) {
-                    ajaxMethod.addUser();
-                }
-                else {
-                    console.log("error subSignUp");
-                }
+                myApp.closeModal();
+                mainView.router.loadPage({url: 'sign-up.html'});
             });
 
             $$('#btn-login').click(function () {
@@ -48,6 +61,7 @@ class IndexPage {
 
                 ajaxMethod.userAuth().then(function (result) {
                     cookies.set('user', result.user);
+                    cookies.set('usrPwd', $$('#txtUsrPwd').val());
 
                     myApp.closeModal();
                     mainView.router.loadPage({url: 'home.html'});
@@ -56,6 +70,16 @@ class IndexPage {
                 });
 
             });
+
+            $$('#tabNearGroups').click(function () {
+                homejschange.changeTabGroup();
+            });
+            $$('#tabOrders').click(function () {
+
+                homejschange.changeTabOrder();
+                //changeTabGroup();
+            });
+
         });
 
 

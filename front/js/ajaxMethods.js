@@ -5,15 +5,20 @@ var SERVER_ADS = "http://localhost:8080";
 
 var AjaxMethods = function () {
     'use strict';
-    this.addUser = function () {
-        var subname = $$('#subAccount').val();
-        var subpwd = $$('#subPwd').val();
-        var submobile = $$('#subMobile').val();
-        $$.post(SERVER_ADS + "/addUser", {usrName: subname, usrPwd: subpwd, usrMobi: submobile}, function (result) {
-            if (result) {
 
-            }
+
+    this.addUserPromise = function (usrName, usrPwd,usrMobi) {
+        return new Promise((resolve, reject)=> {
+            let data = JSON.stringify({usrName, usrPwd,usrMobi});
+             $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
+                if (JSON.parse(result).success) {
+                    resolve(!!result);
+                } else {
+                    reject(!!result);
+                }
+            });
         });
+
     };
 
     this.userAuth = function () {
@@ -115,7 +120,7 @@ var AjaxMethods = function () {
 
     this.getGroupedOrdersByUserId = function (usrId) {
         return new Promise((resolve, reject)=> {
-            $$.getJSON(SERVER_ADS + "/groupedOrdersByUserId/"+usrId,
+            $$.getJSON(SERVER_ADS + "/groupedOrdersByUserId/" + usrId,
                 function (jsonData) {
                     resolve(jsonData);
                 });
@@ -124,21 +129,31 @@ var AjaxMethods = function () {
 
     this.getHomePageDataPromise = (usrId) => {
         let groups;
-        return new Promise(resolve=>{
-            this.getAllGroup().then(_groups=>{
+        return new Promise(resolve=> {
+            this.getAllGroup().then(_groups=> {
                 groups = _groups;
                 return this.getGroupedOrdersByUserId(usrId);
-            }).then(groupedOrders=>{
+            }).then(groupedOrders=> {
                 resolve({groups, groupedOrders});
             });
         });
     };
 
-    this.getGroupedOrdersAndSumsByHostIdPromise= function(hostId) {
+    this.getGroupedOrdersAndSumsByHostIdPromise = function (hostId) {
         return new Promise((resolve, reject)=> {
-            $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/"+hostId,
+            $$.getJSON(SERVER_ADS + "/groupedOrdersAndSumsByHostId/" + hostId,
                 function (jsonData) {
                     resolve(jsonData);
+
+                });
+        });
+    };
+
+    this.updateGroupStatusPromise = function (grpId, grpStatus) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/groupStatus?date=" + new Date(), {data: JSON.stringify({grpId, grpStatus})},
+                function (result) {
+                    resolve(result);
                 });
         });
     };

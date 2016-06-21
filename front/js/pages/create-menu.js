@@ -20,15 +20,19 @@ class CreateMenuPage { //TODO first
     bind() {
         myApp.onPageBeforeInit('create-menu', function (page) {//TODO second
 
-            let metId =Number(cookies.get('selectedMerchantId'));
+            let metId = Number(cookies.get('selectedMerchantId'));
             console.log('onPageBeforeInit : create-menu');
 
 
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getMerchantById(metId), page, ()=> {
-                console.log();
+            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getMerchantById(metId), page, ()=> {
 
-                $$('.dih-checkbox').change(function () {
-                    console.log('dihId:', $$(this).dataset().dihId);
+                $$('#selectAll').click(function () {
+                    myApp.showIndicator();
+                    setTimeout(()=> {
+                        $$('.dih-checkbox').click();
+                        myApp.hideIndicator();
+                    }, 200);
+
                 });
 
                 $$('#btnGoToGroupSetting').click(function () {
@@ -41,9 +45,8 @@ class CreateMenuPage { //TODO first
                         arrayOfSelectedDishIds.push($$(checkbox).dataset().dihId);
                     }
 
-                    console.log(arrayOfSelectedDishIds);
 
-                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds}});
+                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds,date:new Date()}});
                 });
 
 

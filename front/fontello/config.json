@@ -353,6 +353,30 @@
       "css": "check-2",
       "code": 88,
       "src": "entypo"
+    },
+    {
+      "uid": "35ce53990ec0892d7dcea2d0159f8dca",
+      "css": "hourglass",
+      "code": 90,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "7f6916533c0842b6cec699fd773693d3",
+      "css": "hourglass-1",
+      "code": 91,
+      "src": "entypo"
+    },
+    {
+      "uid": "53c977df16b09e3f7700a27ec90c43dc",
+      "css": "stopwatch",
+      "code": 92,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "cb8b402e2efdc57d6d37ad7d3da819fe",
+      "css": "stopwatch-1",
+      "code": 93,
+      "src": "typicons"
     }
   ]
 }

@@ -1,5 +1,7 @@
 'use strict';
-let isDebug = true;
+require('babel-polyfill');
+
+let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -12,7 +14,9 @@ let ajaxMethod = require('./ajaxMethods.js'),
     cookies = require('js-cookie'),
     Home = require('./pages/home.js'),
     MyGroups = require('./pages/my-groups.js'),
-    Public = require('./public.js');
+    Public = require('./public.js'),
+    OrderDetailPage = require('./pages/order-detail.js'),
+    SignUpPage = require('./pages/sign-up.js');
 
 
 // Initialize app
@@ -60,6 +64,8 @@ let pageEventBind = function () {
     let createMenuPage = new CreateMenuPage(myApp, mainView);
     let home = new Home(myApp, mainView);
     let myGoups = new MyGroups(myApp, mainView);
+    let orderDetailPage= new OrderDetailPage(myApp, mainView);
+    let signUpPage = new SignUpPage(myApp, mainView);
 
     groupDetailPage.bind();
     orderPage.bind();
@@ -69,6 +75,9 @@ let pageEventBind = function () {
     home.bind();
     indexPage.bind();
     myGoups.bind();
+    orderDetailPage.bind();
+    signUpPage.bind();
+
 
 }();
 
