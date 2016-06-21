@@ -60,7 +60,7 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
             var _loop = function _loop() {
                 var g = _step.value;
 
-                var deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
+                var deadLine = new Date(g.grpTime);
                 if (deadLine.getTime() - new Date().getTime() < 0) {
                     db.setValueToJsonDb('GROUP', function (row) {
                         return row.grpId === g.grpId;
@@ -300,8 +300,10 @@ var Server = function Server() {
         var gorTime = req.body.gorTime;
 
         //TODO Check Time
-        var deadLine = new Date(gorTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
-        if (deadLine.getTime() < new Date().getTime()) {
+        var deadLine = new Date(gorTime.replace(/(\d*)年(\d*)月(\d*)日\,/gi, '$1/$2/$3'));
+        gorTime = deadLine.getTime();
+
+        if (gorTime < new Date().getTime()) {
             res.json({ success: false, msg: '截止時間不能早於當前時間' });
             return;
         }
@@ -896,7 +898,7 @@ var Server = function Server() {
         }
 
         return _.sortBy(groupedOrders, function (row) {
-            return -new Date(row.group.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016')).getTime();
+            return -new Date(row.group.grpTime);
         });
     };
 
@@ -1139,7 +1141,7 @@ var Server = function Server() {
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
-            grpTime: group.grpTime,
+            grpTime: new Date(group.grpTime).pattern('yyyy-MM-dd hh:mm:ss'),
             grpHostName: db.USER.find(function (user) {
                 return user.usrId === group.grpHostId;
             }).usrName,

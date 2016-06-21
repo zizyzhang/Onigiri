@@ -129,18 +129,16 @@ class GroupSettingPage {
                         myApp.alert('商品資訊填寫不完整');
                         return;
                     }
-                    if(!tool.isNumeric(products[i].productPrice)){
+                    if (!tool.isNumeric(products[i].productPrice)) {
                         myApp.alert('商品資訊錯誤');
                         return;
                     }
                 }
 
-                if(!tool.isNumeric(metMinPrice)){
+                if (!tool.isNumeric(metMinPrice)) {
                     myApp.alert('資料錯誤');
                     return;
                 }
-
-
 
 
                 //  Check Time
@@ -184,49 +182,42 @@ class GroupSettingPage {
             var today = new Date();
             today.setTime(new Date().getTime() + (60 * 60 * 1000));
 
+            let futureDays = new Date();
+            let futureDaysArr = [[], []];
+            for (let b = 0; b < 60; b++) {
+                futureDaysArr[0].push( (futureDays.getYear() + 1900)+'年'+(futureDays.getMonth() + 1) + '月' + futureDays.getDate() + '日' );
+                futureDaysArr[1].push(b);
+                futureDays.setTime(futureDays.getTime() + 1000 * 3600 * 24);
+
+            }
+
+
             var pickerInline = myApp.picker({
                 input: '#grpTime',
                 //container: '#picker-date-container',
                 //toolbar: false,
                 rotateEffect: true,
 
-                value: [today.getMonth() + 1, today.getDate(), today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
+                value: [0, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
 
                 onChange: function (picker, values, displayValues) {
-                    var daysInMonth = new Date(picker.value[2], picker.value[0] * 1 + 1, 0).getDate();
-                    if (values[1] > daysInMonth) {
-                        picker.cols[1].setValue(daysInMonth);
-                    }
+                    //var daysInMonth = new Date(picker.value[2], picker.value[0] * 1 + 1, 0).getDate();
+                    //if (values[1] > daysInMonth) {
+                    //    picker.cols[1].setValue(daysInMonth);
+                    //}
                 },
 
                 formatValue: function (p, values, displayValues) {
                     console.log(displayValues);
-                    return `${values[0]}月` + ' ' + values[1] + '日, ' + values[2] + ':' + values[3];
+                    return `${displayValues[0]}, ` + values[1] + ':' + values[2];
                 },
 
                 cols: [
-                    // Months
-                    {
-                        values: ('1 2 3 4 5 6 7 8 9 10 11 12').split(' '),
-                        //displayValues: ('1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月').split(' '),
-                        textAlign: 'center'
-                    },
-                    // Space divider
-                    {
-                        divider: true,
-                        content: '月'
-                    },
                     // Days
                     {
-                        values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
-                        textAlign: 'center',
-
-                    },
-
-                    // Space divider
-                    {
-                        divider: true,
-                        content: '日'
+                        values: futureDaysArr[1],
+                        displayValues: futureDaysArr[0],
+                        textAlign: 'center'
                     },
 
 
