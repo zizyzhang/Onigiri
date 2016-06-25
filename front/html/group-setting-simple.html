@@ -1,0 +1,59 @@
+<div data-page="group-setting-simple" id="group-setting-simple" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div>
+            <div class="center">團購資訊設定</div>
+
+        </div>
+    </div>
+    <div class="toolbar toolbar-bottom ">
+        <div class="toolbar-inner">
+            <a href="#" id="btnSimpleFinish" @click="simpleSettingFinish"  class="button button-fill button color-red toolbar-button">
+                完成
+            </a>
+
+
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="list-block  " style="margin-top: 0px;!important;">
+
+            <ul>
+                <li>
+                    <div class="item-divider">團購基本資訊</div>
+                </li>
+
+                <li>
+
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">截止時間</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="截止時間" readonly id="grpTimeSimple">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+                        <div class="item-inner">
+                            <div class="item-title label">地點</div>
+                            <div class="item-input">
+                                <input id="grpAdrSimple" type="text" placeholder="地點">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+
+            </ul>
+        </div>
+    </div>
+
+</div>

@@ -7,6 +7,8 @@ let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
 const cookies = require('js-cookie');
+let Vue = require('vue');
+let _ = require('lodash');
 
 
 class Home { //TODO first
@@ -19,52 +21,88 @@ class Home { //TODO first
     bind() {
         let that = this;
         myApp.onPageBeforeInit('home', function (page) {//TODO second
-            console.log('user', cookies.getJSON('user'));
-            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId), page, result=> {
-                $$('.btn-join-in-group-page').on('click', function () {
-
-                    let grpId = $$(this).dataset().grpId;
-                    console.log(`grpId   : ${grpId}`);
-
-                    cookies.set('selectedGroupId', grpId);
-                    mainView.router.loadPage(`order.html?grpId=${grpId}`);
 
 
-                });
+            if (page.query.ajaxResult) {
+                window.homeAjaxResult = page.query.ajaxResult;
+             } else {
+                page.query.ajaxResult =window.homeAjaxResult;
+            }
 
+            let vueGroups = new Vue({
+                el: '#tabGroups',
+                data: page.query.ajaxResult
+            });
 
-                $$('.js-btn-contact-host').click(function () {
-                    window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
-                });
+            let vueMyOrders = new Vue({
+                el: '#tabMyOrders',
+                data: page.query.ajaxResult
+            });
 
-                $$('.btn-group-detail').on('click', function () {
+            let vuePopoverOrder = new Vue({
+                el: "#popoverOrder",
+                methods: {
+                    popNewGroup: function () {
+                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>-Number(new Date(row.grpCreateTime).getTime())));
+                        myApp.closeModal(this.el);
+                    },
+                    popCloseDeadline: function () {
+                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpTime).getTime())));
+                        myApp.closeModal(this.el);
+                    },
+                    popFarDeadline: function () {
+                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>-Number(new Date(row.grpTime).getTime())));
+                        myApp.closeModal(this.el);
+                    },
+                    popOldGroup: function () {
+                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
+                        myApp.closeModal(this.el);
+                    }
+                }
+            });
 
-                    let grpId = $$(this).dataset().grpId;
-                    console.log(`grpId : ${grpId}`);
+            $$('.btn-join-in-group-page').on('click', function () {
 
-                    cookies.set('selectedGroupId', grpId);
+                let grpId = $$(this).dataset().grpId;
+                console.log(`grpId   : ${grpId}`);
 
-                        mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
-
-                });
-                $$('.card-img').on('click', function () {
-
-                    let grpId = $$(this).dataset().grpId;
-                    console.log(`grpId : ${grpId}`);
-
-                    cookies.set('selectedGroupId', grpId);
-
-                    mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
-                });
-                $$('.orderDetail').on('click', function () {
-
-                    let grpId = $$(this).dataset().grpId;
-                    mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
-
-                });
+                cookies.set('selectedGroupId', grpId);
+                mainView.router.loadPage(`order.html?grpId=${grpId}`);
 
 
             });
+
+
+            $$('.js-btn-contact-host').click(function () {
+                window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
+            });
+
+            $$('.btn-group-detail').on('click', function () {
+
+                let grpId = $$(this).dataset().grpId;
+                console.log(`grpId : ${grpId}`);
+
+                cookies.set('selectedGroupId', grpId);
+
+                mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+
+            });
+            $$('.card-img').on('click', function () {
+
+                let grpId = $$(this).dataset().grpId;
+                console.log(`grpId : ${grpId}`);
+
+                cookies.set('selectedGroupId', grpId);
+
+                mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+            });
+            $$('.orderDetail').on('click', function () {
+
+                let grpId = $$(this).dataset().grpId;
+                mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
+
+            });
+
         });
 
     }

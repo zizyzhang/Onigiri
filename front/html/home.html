@@ -1,106 +1,126 @@
-<div data-page="home" class='page with-subnavbar  toolbar-fixed page-on-center'>
+<div data-page="home" class='page toolbar-fixed page-on-center'>
     <div class="navbar">
         <div class="navbar-inner">
             <div class="left"><a href="#" data-panel="left" class="link open-panel icon-only"><i
                     class="icon icon-bars"></i></a></div>
-            <div class="center">饭团 Onigiri</div>
+            <div class="center">販團</div>
+            <div class="right"></div>
+            <!-- Sub navbar -->
+
+
         </div>
+
+
     </div>
+
+
+
     <div class="toolbar tabbar move-top-one-px">
         <div class="toolbar-inner"><a href="#tabGroups" class="tab-link active">附近的團購</a><a href="#tabMyOrders"
                                                                                             class="tab-link">我的訂單</a><span
                 class="tab-link-highlight" style="width: 33.3333%; transform: translate3d(0%, 0px, 0px);"></span></div>
     </div>
-    <div class="tabs-swipeable-wrap swiper-container swiper-container-horizontal swiper-container-android">
-        <div class="tabs swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
-            <div id="tabGroups" class="page-content tab swiper-slide swiper-slide-active active" style="width: 420px;">
-                {{#each groups}}
-                <div class="card demo-card-header-pic">
-                    <div style="background-image:url('{{merchant.metPicUrl}}' );" valign="bottom"
-                         data-grp-id="{{grpId}}" class="card-img ">
+
+
+     <div class="tabs-swipeable-wrap">
+        <div class="tabs "  style=";">
+            <div id="tabGroups" class="page-content tab with-subnavbar  " style="padding-top: 150px !important">
+                <div class="subnavbar theme-white" style="top:100px;position:fixed;padding:  0px;">
+                    <!-- Sub navbar content, for example tabs buttons -->
+                    <div class="buttons-row" style="-webkit-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);
+-moz-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);
+box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
+                        <a href="#tab1" class="button active color-black open-popover"  data-popover=".js-popover-order">最新的團購<span class="ficon">5</span></a>
+                        <a href="#tab2" class="button color-black">筛选<span class="ficon">5</span></a>
+                    </div>
+                </div>
+
+                 <div v-for="group in groups" class="card demo-card-header-pic">
+                    <div :style="{'background-image': 'url('+group.merchant.metPicUrl+')'}"   valign="bottom"
+                         data-grp-id="{{group.grpId}}" class="card-img ">
                         <img
                                 style="visibility: hidden; width: 100%; max-height: 40%;display: block;"
-                                srcUrl="{{merchant.metPicUrl}}"/>
+                                :src="group.merchant.metPicUrl"/>
 
 
-                        <div class="card-img-text" style="color: white;">{{merchant.metName}}</div>
+                        <div class="card-img-text" style="color: white;">{{group.merchant.metName}}</div>
                     </div>
 
                     <div class="card-content">
                         <div class="card-content-inner">
-                            <p class="color-gray">取餐地点: {{grpAddr}}</p>
+                            <p class="color-gray">地点: {{group.grpAddr}}</p>
                             <p>
-                                截止時間: {{grpTime}}
+                                截止時間: {{group.grpTime}}
                             </p>
 
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{grpId}}">加入團購</a>
-                        <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{grpId}}">查看詳情</a>
+                        <a href="#" class="link btn-join btn-join-in-group-page" data-grp-id="{{group.grpId}}">加入團購</a>
+                        <a href="group-detail.html" class="link btn-group-detail" data-grp-id="{{group.grpId}}">查看詳情</a>
                     </div>
                 </div>
 
-                {{/each}}
-            </div>
-            <div id="tabMyOrders" class="page-content tab swiper-slide " style="width: 420px;">
-                {{#each groupedOrders}}
-                <div class="content-block-title">截止时间: {{group.grpTime}}</div>
+             </div>
+            <div id="tabMyOrders" class="page-content tab swiper-slide with-subnavbar " style="width: 420px;">
 
-                <div class="card demo-card-header-pic">
+                <div class="card-wrap"  v-for="groupOrder in groupedOrders" >
+                    <div class="content-block-title">截止時間: {{groupOrder.group.grpTime}}</div>
 
-                    <div class="list-block media-list" style="margin-top: 0px;!important;">
+                    <div  class="card demo-card-header-pic">
 
-                        <div class="card-header item-title">
-                            <div>{{group.merchant.metName}}</div>
-                            <div style="color:green">已開團</div>
+                        <div class="list-block media-list" style="margin-top: 0px;!important;">
 
-                        </div>
-                        <ul>
+                            <div class="card-header item-title">
+                                <div>{{groupOrder.group.merchant.metName}}</div>
+                                <div style="color:green">已開團</div>
 
-                            <li>
-                                <!--<lable class="item-content">-->
+                            </div>
+                            <ul>
+
+                                <li>
+                                    <!--<lable class="item-content">-->
                                     <!--&lt;!&ndash;<div>截止时间:</div>&ndash;&gt;-->
-                                <!--</lable>-->
-                            </li>
+                                    <!--</lable>-->
+                                </li>
 
-                            {{#each orders}}
 
-                            <li>
-                                <label class="item-content">
-                                    <div class="item-media"><img style="border-radius: 50%;"
-                                                                 src="./../assets/img/img-dish-01.png" width="36"></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row" style="line-height: 36px;">
-                                            <div class="item-title">{{dish.dihName}}</div>
-                                            <div class="center">{{ordNum}}份</div>
-                                            <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
+                                <li v-for="order in groupOrder.orders">
+                                    <label class="item-content">
+                                        <div class="item-media"><img style="border-radius: 50%;"
+                                                                     src="./../assets/img/img-dish-01.png" width="36"></div>
+                                        <div class="item-inner">
+                                            <div class="item-title-row" style="line-height: 36px;">
+                                                <div class="item-title">{{order.dish.dihName}}</div>
+                                                <div class="center">{{order.ordNum}}份</div>
+                                                <div class="item-after">NT {{order.dish.dihPrice * order.ordNum}}</div>
+                                            </div>
+
                                         </div>
 
-                                    </div>
+                                    </label>
 
-                                </label>
+                                </li>
 
-                            </li>
-                            {{/each}}
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="link js-btn-contact-host"
+                               data-grp-host-mobi="{{groupOrder.group.grpHost.usrMobi}}"
+                               style="color:red">聯繫團長</a>
+                            <a href="order-detail.html" class="link orderDetail"
+                               data-grp-id="{{groupOrder.group.grpId}}"
+                               style="color:red">訂單詳情</a>
 
-
-                        </ul>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="#" class="link js-btn-contact-host"
-                           data-grp-host-mobi="{{group.grpHost.usrMobi}}"
-                           style="color:red">聯繫團長</a>
-                        <a href="order-detail.html" class="link orderDetail"
-                           data-grp-id="{{group.grpId}}"
-                           style="color:red">訂單詳情</a>
 
-                    </div>
                 </div>
-                {{/each}}
 
             </div>
 
         </div>
+
     </div>
+
 </div>

@@ -1,0 +1,25 @@
+<div data-page="how-to-create" id="how-to-create" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="home.html" class=" link icon-only"><i class="icon icon-back"></i></a></div>
+            <div class="center">創建團購</div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="content-block-title">请選擇團購的創建方式</div>
+        <div class="list-block">
+
+            <ul>
+                <li v-for="item in items">
+                    <a :href="item.url" class="item-link item-content">
+                        <div class="item-inner">
+                            <div class="item-title">{{item.content}}</div>
+                         </div>
+                    </a>
+                </li>
+
+            </ul>
+         </div>
+     </div>
+</div>

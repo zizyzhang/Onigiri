@@ -17,9 +17,9 @@
                 <label id="total-price" class="color-deeporange"
                        style="font-size: 18pt;">$0</label>
             </div>
-            <a class="button button-fill button color-green toolbar-button">
-                留言
-            </a>
+            <!--<a class="button button-fill button color-green toolbar-button">-->
+                <!--留言-->
+            <!--</a>-->
             <a id="btnJoinGroup" class="button button-fill color-red toolbar-button">
                 確認跟團
             </a>
@@ -35,48 +35,48 @@
                 <!--<div class="item-divider">主食</div>-->
                 <!--</li>-->
                 {{#each menu}}
-                    <li>
-                        <div class="item-divider">{{dihType}}</div>
-                    </li>
+                <li>
+                    <div class="item-divider">{{dihType}}</div>
+                </li>
 
-                    {{#each dishes}}
-                    <li>
-                        <div class="item-content">
-                            <div class="item-media"><i class="icon icon-f7"></i></div>
-                            <div class="item-inner">
+                {{#each dishes}}
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-f7"></i></div>
+                        <div class="item-inner">
 
-                                <div class="item-title">{{dihName}}</div>
+                            <div class="item-title btn-dish-price" data-dih-id="{{dihId}}">{{dihName}}</div>
 
-                                <div class="item-after">
+                            <div class="item-after">
 
-                                    <div class="dish-price dish-button-group" data-dih-id="{{dihId}}">
-                                        <a href="#" data-dih-id="{{dihId}}"
-                                           class="button color-red btn-outline btn-dish-price" style="">
-                                            ${{dihPrice}}</a>
+                                <div class="dish-price dish-button-group" data-dih-id="{{dihId}}">
+                                    <a href="#" data-dih-id="{{dihId}}"
+                                       class="button color-red btn-outline btn-dish-price" style="">
+                                        ${{dihPrice}}</a>
 
-                                    </div>
+                                </div>
 
-                                    <div class="dish-option dish-button-group" data-dih-id="{{dihId}}"
-                                         style="display: none;">
-                                        <a href="#" class="button button-fill color-green  btn-round-sm btn-subtraction"
-                                           data-dih-id="{{dihId}}"
-                                           style=" float: left">
-                                            - </a>
-                                        <div style=" " class="dish-num" data-dih-id="{{dihId}}" id="dish">1</div>
-                                        <a href="#" class="button button-fill color-green  btn-round-sm btn-add"
-                                           data-dih-id="{{dihId}}"
-                                           style=" float: left">
-                                            + </a>
-                                    </div>
-
+                                <div class="dish-option dish-button-group" data-dih-id="{{dihId}}"
+                                     style="display: none;">
+                                    <a href="#" class="button button-fill color-green  btn-round-sm btn-subtraction"
+                                       data-dih-id="{{dihId}}"
+                                       style=" float: left">
+                                        - </a>
+                                    <div style=" " class="dish-num" data-dih-id="{{dihId}}" id="dish">1</div>
+                                    <a href="#" class="button button-fill color-green  btn-round-sm btn-add"
+                                       data-dih-id="{{dihId}}"
+                                       style=" float: left">
+                                        + </a>
                                 </div>
 
                             </div>
 
                         </div>
-                    </li>
 
-                    {{/each}}
+                    </div>
+                </li>
+
+                {{/each}}
 
                 {{/each}}
 

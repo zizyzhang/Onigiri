@@ -27,13 +27,29 @@ class MyGroups { //TODO first
                 console.log(page.query + "567");
 
                 $$('.btn-contact-merchant').click(function () {
-                    console.log("asp");
-                    window.location.href = 'tel:' + $$(this).data('met-phone');
+                     window.location.href = 'tel:' + $$(this).data('met-phone');
                 });
 
                 $$('.btn-group-detail').click(function () {
                     let grpNextStatus = $$(this).dataset().grpNextStatus;
+                    //TODO reopen
+                    //if nextStatus===4 => group-setting /w  option:query {Group}
+
                     let grpId = $$(this).dataset().grpId;
+
+                    if(Number(grpNextStatus) ===4){
+                        //Get group
+
+                        let group = result.groupedOrderSums.find(obj=>obj.group.grpId===Number(grpId)).group;
+                        mainView.router.load({
+                            url:'group-setting.html',
+                            query:{group}
+                        });
+
+
+                        return;
+                    }
+
 
                     console.log("grpNextStatus",grpNextStatus);
                     ajaxMethod.updateGroupStatusPromise(grpId,grpNextStatus).then(result=>{

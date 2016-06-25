@@ -31,28 +31,32 @@
         "metName": "麦当劳",
         "metPhone": "234234234",
         "metPicUrl": "http://i.imgur.com/fcZJoz3.jpg",
-        "metMinPrice": 100
+        "metMinPrice": 100,
+        "metType":"餐廳"
       },
       {
         "metId": 3,
         "metName": "巧口快餐店",
         "metPhone": "033292081",
         "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
-        "metMinPrice": 140
+        "metMinPrice": 140,
+        "metType":"餐廳"
       },
       {
         "metId": 4,
         "metName": "京采日本料理",
         "metPhone": "033205954",
         "metPicUrl": "http://i.imgur.com/JmVtxRr.jpg",
-        "metMinPrice": 500
+        "metMinPrice": 500,
+        "metType":"餐廳"
       },
       {
         "metId": 5,
         "metName": "夜貓雞排",
         "metPhone": "0955340928",
         "metPicUrl": "http://i.imgur.com/6NooWP6.jpg",
-        "metMinPrice": 100
+        "metMinPrice": 100,
+        "metType":"餐廳"
       }
     ],
     "DISH": [

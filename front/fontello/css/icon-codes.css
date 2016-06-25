@@ -60,4 +60,7 @@
 .icon-hourglass-1:before { content: '\5b'; } /* '[' */
 .icon-stopwatch:before { content: '\5c'; } /* '\' */
 .icon-stopwatch-1:before { content: '\5d'; } /* ']' */
+.icon-group:before { content: '\5e'; } /* '^' */
+.icon-shop:before { content: '\5f'; } /* '_' */
+.icon-layout:before { content: '\60'; } /* '`' */
 .icon-link-ext:before { content: '\72'; } /* 'r' */
