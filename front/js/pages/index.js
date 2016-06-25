@@ -37,7 +37,7 @@ class IndexPage {
             }
 
             $$('#btnCreateGroup').click(function () {
-                mainView.router.loadPage({url: 'group-setting.html'});
+                mainView.router.loadPage({url: 'how-to-create.html'});
             });
 
             $$('#btnMyGroups').click(function () {
@@ -81,7 +81,8 @@ class IndexPage {
                     }
 
                     myApp.closeModal();
-                    mainView.router.loadPage({url: 'home.html'});
+                    tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(result.usrId));
+                    //mainView.router.loadPage({url: 'home.html'});
                 }).catch(function (e) {
                     myApp.alert('登录失败:' + e);
                 });

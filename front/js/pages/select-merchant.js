@@ -30,14 +30,17 @@ class SelectMerchantPage {
                 //  });
 
                 $$('#btn-create-menu').on('click', function () {
-                    //let metId = $$(this).dataset().metId;
-                    //let metId = $$('').dataset().metId;
+
 
 
                     metId = $$('input:checked').dataset().metId;
 
-                    console.log(`metId : ${metId}`);
-                    mainView.router.loadPage(`create-menu.html?metId=${metId}`); //傳 id
+                    if(!metId){
+                        myApp.alert('未選擇商家');
+                        return;
+                    }
+
+                     mainView.router.loadPage(`create-menu.html?metId=${metId}`); //傳 id
                     cookies.set('selectedMerchantId', metId);
 
                 });

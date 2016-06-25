@@ -178,13 +178,14 @@ var Server = function Server() {
         var metPhone = req.body.metPhone;
         var metMinPrice = Number(req.body.metMinPrice);
         var metPicUrl = req.body.metPicUrl || '';
+        var metType = req.body.metType || '其他';
 
         if (!(metName && metPhone && metMinPrice && metPhone.length === 10 && metMinPrice >= 0)) {
             res.json({ success: false, msg: '資料輸入錯誤' });
             return;
         }
 
-        self.addMerchantPromise({ metName: metName, metPhone: metPhone, metMinPrice: metMinPrice, metPicUrl: metPicUrl }).then(function (merchant) {
+        self.addMerchantPromise({ metName: metName, metPhone: metPhone, metMinPrice: metMinPrice, metPicUrl: metPicUrl, metType: metType }).then(function (merchant) {
             res.json({ success: true, merchant: merchant });
         }).catch(function () {
             return res.json({ success: false });
@@ -293,9 +294,9 @@ var Server = function Server() {
         //console.log(req.body);
 
         req.body = JSON.parse(req.body.data);
-        var grpHostId = req.body.grpHostId;
+        var grpHostId = Number(req.body.grpHostId);
         var dishes = req.body.dishes;
-        var metId = req.body.metId;
+        var metId = Number(req.body.metId);
         var addr = req.body.addr;
         var gorTime = req.body.gorTime;
 
@@ -529,7 +530,8 @@ var Server = function Server() {
      {metName,
      metPhone,
      metMinPrice,
-     metPicUrl}
+     metPicUrl,
+     metType}
      */
     this.addMerchantPromise = function (merchant) {
         return new Promise(function (resolve, reject) {
@@ -626,7 +628,9 @@ var Server = function Server() {
             }
         }
 
-        callback(result);
+        callback(_.sortBy(result, function (row) {
+            return -new Date(row.grpTime);
+        }));
     };
 
     this.getGroupById = function (id, callback) {
@@ -641,18 +645,11 @@ var Server = function Server() {
         var _iteratorError7 = undefined;
 
         try {
-            var _loop2 = function _loop2() {
+            for (var _iterator7 = db.MERCHANT[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
                 var _merchant = _step7.value;
 
-                var merchant = _.cloneDeep(_merchant);
-                merchant.menu = _.filter(db.DISH, function (dish) {
-                    return dish.metId === merchant.metId;
-                });
+                var merchant = this.createClassMerchantById(_merchant.metId);
                 result.push(merchant);
-            };
-
-            for (var _iterator7 = db.MERCHANT[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                _loop2();
             }
         } catch (err) {
             _didIteratorError7 = true;
@@ -673,13 +670,8 @@ var Server = function Server() {
     };
 
     this.getMerchantById = function (id, callback) {
-        var result = db.MERCHANT.find(function (merchant) {
-            return merchant.metId === id;
-        });
-        result.menu = _.filter(db.DISH, function (dish) {
-            return dish.metId === id;
-        });
-        callback(result);
+        var merchant = this.createClassMerchantById(id);
+        callback(merchant);
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
@@ -864,7 +856,7 @@ var Server = function Server() {
         var _iteratorError11 = undefined;
 
         try {
-            var _loop3 = function _loop3() {
+            var _loop2 = function _loop2() {
                 var order = _step11.value;
 
                 var tOrder = groupedOrders.find(function (gor) {
@@ -880,7 +872,7 @@ var Server = function Server() {
             };
 
             for (var _iterator11 = orders[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-                _loop3();
+                _loop2();
             }
         } catch (err) {
             _didIteratorError11 = true;
@@ -916,7 +908,7 @@ var Server = function Server() {
                     return d.dihId === ord.dihId;
                 }),
                 ordNum: ord.ordNum,
-                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss')
+                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
             };
             return newOrd;
         });
@@ -952,7 +944,7 @@ var Server = function Server() {
                         return d.dihId === ord.dihId;
                     }),
                     ordNum: ord.ordNum,
-                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss')
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
                 };
                 return newOrd;
             });
@@ -1009,7 +1001,7 @@ var Server = function Server() {
                 var _iteratorError13 = undefined;
 
                 try {
-                    var _loop4 = function _loop4() {
+                    var _loop3 = function _loop3() {
                         var _step13$value = _step13.value;
                         var ordId = _step13$value.ordId;
                         var group = _step13$value.group;
@@ -1029,7 +1021,7 @@ var Server = function Server() {
                     };
 
                     for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-                        _loop4();
+                        _loop3();
                     }
                 } catch (err) {
                     _didIteratorError13 = true;
@@ -1098,6 +1090,16 @@ var Server = function Server() {
         callback(groupedOrderSums);
     };
 
+    this.createClassMerchantById = function (metId) {
+        var result = _.cloneDeep(db.MERCHANT.find(function (merchant) {
+            return merchant.metId === metId;
+        }));
+        result.menu = _.filter(db.DISH, function (dish) {
+            return dish.metId === metId;
+        });
+        return result;
+    };
+
     this.createClassGroupByGroupId = function (grpId) {
         var that = this;
         var group = db.GROUP.find(function (g) {
@@ -1141,7 +1143,7 @@ var Server = function Server() {
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
-            grpTime: new Date(group.grpTime).pattern('yyyy-MM-dd hh:mm:ss'),
+            grpTime: new Date(group.grpTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpHostName: db.USER.find(function (user) {
                 return user.usrId === group.grpHostId;
             }).usrName,
@@ -1153,10 +1155,9 @@ var Server = function Server() {
             grpHost: that.createUserByUserId(group.grpHostId),
             grpStatus: group.grpStatus,
             menu: menu,
-            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy-MM-dd hh:mm:ss'),
+            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
             grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
-
         };
 
         return group;

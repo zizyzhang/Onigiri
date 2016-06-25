@@ -70,7 +70,7 @@ class OrderPage {
 
                     ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
                         myApp.alert('加入成功', function () {
-                            mainView.router.loadPage('home.html');
+                            tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
                     }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失敗!'));
 

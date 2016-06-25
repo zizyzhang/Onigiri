@@ -172,7 +172,7 @@ class GroupSettingPage {
                 }).then(()=> {
                     //完成新增
                     myApp.alert('開團完成!', function () {
-                        mainView.router.loadPage('home.html');
+                        tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
                     });
                 }).catch(e=>myApp.alert('開團失敗: ' + e.toString()));
 

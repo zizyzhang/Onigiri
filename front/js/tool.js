@@ -1,9 +1,12 @@
 'use strict';
+
 /**
  * Created by Zizy on 4/5/16.
  */
+
 let $$ = Dom7;
 let _ = require('lodash');
+let Vue = require('vue');
 
 
 class Tool {
@@ -44,6 +47,39 @@ class Tool {
 
 
         });
+    }
+
+
+    // 包裝loadPage和load, 先得到數據, 再跳轉, 回傳data放置在query.ajaxResult裡面
+    /*
+     url: 需要跳轉的URL
+     ajaxPromise : option 數據
+     */
+    loadPage(target, mainView, ajaxPromise) {
+        let loadFunc = function (data) {
+            if (typeof target === 'string') {
+                mainView.router.load({url:target,query:{ajaxResult:data}});
+            } else {
+
+                if(!target.query){
+                    target.query={};
+                }
+
+                target.query.ajaxResult=data;
+
+                mainView.router.load(target);
+            }
+         };
+
+        if (ajaxPromise) {
+            ajaxPromise.then((data)=> {
+                console.log(data);
+                loadFunc(data);
+            });
+        } else {
+            loadFunc();
+        }
+
     }
 
 

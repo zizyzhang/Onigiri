@@ -25,7 +25,7 @@ gulp.task('front',()=>{
                         test: /\.js$/,
                         loader: 'babel-loader',
                         query: {
-                            presets: ['es2015']
+                            presets: ['stage-0','es2015']
                         }
                     }
                 ]

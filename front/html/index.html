@@ -142,15 +142,18 @@
 <!-- Path to your app js-->
 <script type="text/javascript" src="../dist/js/bundle.js"></script>
 <!--<script type="text/javascript" src="../js/main.js"></script>-->
-<div class="popover js-popover-order">
+<div class="popover js-popover-order" id="popoverOrder">
     <div class="popover-angle"></div>
     <div class="popover-inner">
         <div class="list-block">
             <ul>
-                <li><a href="#" class="list-button item-link">按开团时间排序</a></li>
-                <li><a href="#" class="list-button item-link">按距离排序</a></li>
-                <li><a href="#" class="list-button item-link">按截止日期排序</a></li>
+                <li><a href="#" class="list-button item-link" @click="popNewGroup">最新的團購</a></li>
+                <li><a href="#" class="list-button item-link" @click="popCloseDeadline">最接近截止的團購</a></li>
+                <li><a href="#" class="list-button item-link" @click="popFarDeadline">最晚截止的團購</a></li>
+                <li><a href="#" class="list-button item-link" @click="popOldGroup">最舊的團購</a></li>
             </ul>
+
+
         </div>
     </div>
 </div>

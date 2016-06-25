@@ -151,13 +151,15 @@ var Server = function () {
             let metPhone = req.body.metPhone;
             let metMinPrice = Number(req.body.metMinPrice);
             let metPicUrl = req.body.metPicUrl || '';
+            let metType = req.body.metType || '其他';
+
 
             if (!(metName && metPhone && metMinPrice && metPhone.length === 10 && metMinPrice >= 0)) {
                 res.json({success: false, msg: '資料輸入錯誤'});
                 return;
             }
 
-            self.addMerchantPromise({metName, metPhone, metMinPrice, metPicUrl}).then((merchant)=> {
+            self.addMerchantPromise({metName, metPhone, metMinPrice, metPicUrl, metType}).then((merchant)=> {
                 res.json({success: true, merchant});
             }).catch(()=>res.json({success: false}));
 
@@ -246,9 +248,9 @@ var Server = function () {
             //console.log(req.body);
 
             req.body = JSON.parse(req.body.data);
-            let grpHostId = req.body.grpHostId;
+            let grpHostId = Number(req.body.grpHostId);
             let dishes = req.body.dishes;
-            let metId = req.body.metId;
+            let metId = Number(req.body.metId);
             let addr = req.body.addr;
             let gorTime = req.body.gorTime;
 
@@ -455,7 +457,8 @@ var Server = function () {
      {metName,
      metPhone,
      metMinPrice,
-     metPicUrl}
+     metPicUrl,
+     metType}
      */
     this.addMerchantPromise = function (merchant) {
         return new Promise((resolve, reject)=> {
@@ -508,9 +511,9 @@ var Server = function () {
         for (let _group of db.GROUP.filter(g=>g.grpStatus === 0 || g.grpStatus === 1)) {
             let group = this.createClassGroupByGroupId(_group.grpId);
             result.push(group);
-
         }
-        callback(result);
+
+        callback(_.sortBy(result,row=>-new Date(row.grpTime)));
     };
 
     this.getGroupById = function (id, callback) {
@@ -522,8 +525,7 @@ var Server = function () {
     this.allMerchant = function (callback) {
         var result = [];
         for (let _merchant of db.MERCHANT) {
-            let merchant = _.cloneDeep(_merchant);
-            merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
+            let merchant = this.createClassMerchantById(_merchant.metId);
             result.push(
                 merchant
             );
@@ -533,9 +535,8 @@ var Server = function () {
 
 
     this.getMerchantById = function (id, callback) {
-        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
-        result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
-        callback(result);
+        let merchant = this.createClassMerchantById(id);
+        callback(merchant);
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
@@ -655,7 +656,7 @@ var Server = function () {
                 usrId: ord.usrId,
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
                 ordNum: ord.ordNum,
-                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss'),
+                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             };
             return newOrd;
         });
@@ -687,7 +688,7 @@ var Server = function () {
                     usrId: ord.usrId,
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
                     ordNum: ord.ordNum,
-                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy-MM-dd hh:mm:ss'),
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
                 };
                 return newOrd;
             });
@@ -774,6 +775,12 @@ var Server = function () {
         callback(groupedOrderSums);
     };
 
+    this.createClassMerchantById = function (metId) {
+        let result = _.cloneDeep(db.MERCHANT.find(merchant=>merchant.metId === metId));
+        result.menu = _.filter(db.DISH, (dish)=>dish.metId === metId);
+        return result;
+    };
+
     this.createClassGroupByGroupId = function (grpId) {
         let that = this;
         let group = db.GROUP.find(g=>g.grpId === grpId);
@@ -807,7 +814,7 @@ var Server = function () {
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
-            grpTime: new Date(group.grpTime).pattern('yyyy-MM-dd hh:mm:ss'),
+            grpTime: new Date(group.grpTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
             merchant: merchant,
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId) || [],
@@ -815,10 +822,9 @@ var Server = function () {
             grpHost: that.createUserByUserId(group.grpHostId),
             grpStatus: group.grpStatus,
             menu: menu,
-            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy-MM-dd hh:mm:ss'),
+            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
             grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
-
         };
 
         return group;
