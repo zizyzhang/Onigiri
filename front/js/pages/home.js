@@ -28,15 +28,36 @@ class Home { //TODO first
              } else {
                 page.query.ajaxResult =window.homeAjaxResult;
             }
+            let ajaxRequest =_.cloneDeep(page.query.ajaxResult);//不變的
 
             let vueGroups = new Vue({
                 el: '#tabGroups',
-                data: page.query.ajaxResult
+                data: page.query.ajaxResult,
             });
 
             let vueMyOrders = new Vue({
                 el: '#tabMyOrders',
                 data: page.query.ajaxResult
+            });
+
+            let vuePopoverFilter = new Vue({
+                el:'#popoverFilter',
+                computed:{
+                    merchantTypes:function(){
+                        return _.chain(ajaxRequest.groups.map(o=>o.merchant.metType)).clone().uniq().value();
+                    }
+                },
+                methods:{
+                    filter : function(typeName){
+                        console.log(typeName);
+                        vueGroups.$set('groups', _.filter(_.clone(ajaxRequest.groups), row=>row.merchant.metType===typeName));
+                    },
+                    allTypes : function(){
+                        vueGroups.$set('groups',_.clone(ajaxRequest.groups));
+
+                    }
+                }
+
             });
 
             let vuePopoverOrder = new Vue({
@@ -58,7 +79,8 @@ class Home { //TODO first
                         vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
                         myApp.closeModal(this.el);
                     }
-                }
+                },
+
             });
 
             $$('.btn-join-in-group-page').on('click', function () {

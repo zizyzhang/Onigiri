@@ -95,7 +95,7 @@
                 <div class="content-block  icon-big">
                     <img src="../assets/img/icon-big.png" style="width: 50%" s alt="">
                 </div>
-                <div class="login-screen-title"   >販團</div>
+                <div class="login-screen-title">販團</div>
                 <form>
                     <div class="list-block inputs-list theme-white ">
                         <ul>
@@ -137,11 +137,7 @@
     </div>
 </div>
 
-<!-- Path to Framework7 Library JS-->
-<script type="text/javascript" src="../../bower_components/Framework7/dist/js/framework7.min.js"></script>
-<!-- Path to your app js-->
-<script type="text/javascript" src="../dist/js/bundle.js"></script>
-<!--<script type="text/javascript" src="../js/main.js"></script>-->
+
 <div class="popover js-popover-order" id="popoverOrder">
     <div class="popover-angle"></div>
     <div class="popover-inner">
@@ -157,5 +153,26 @@
         </div>
     </div>
 </div>
+<div class="popover js-popover-filter" id="popoverFilter">
+    <div class="popover-angle"></div>
+    <div class="popover-inner">
+        <div class="content-block">
+            <div class="list-block">
+                <ul>
+                    <li ><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
+
+                    <li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Path to Framework7 Library JS-->
+<script type="text/javascript" src="../../bower_components/Framework7/dist/js/framework7.min.js"></script>
+<!-- Path to your app js-->
+<script type="text/javascript" src="../dist/js/bundle.js"></script>
+<!--<script type="text/javascript" src="../js/main.js"></script>-->
 </body>
 </html>

@@ -1,6 +1,5 @@
 'use strict';
 require('babel-polyfill');
-require('./f7Hooks.js');
 
 let isDebug = true;
 
