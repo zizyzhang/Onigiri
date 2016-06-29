@@ -14,7 +14,6 @@
     </div>
 
 
-
     <div class="toolbar tabbar move-top-one-px">
         <div class="toolbar-inner"><a href="#tabGroups" class="tab-link active">附近的團購</a><a href="#tabMyOrders"
                                                                                             class="tab-link">我的訂單</a><span
@@ -22,21 +21,23 @@
     </div>
 
 
-     <div class="tabs-swipeable-wrap">
-        <div class="tabs "  style=";">
+    <div class="tabs-swipeable-wrap">
+        <div class="tabs " style=";">
             <div id="tabGroups" class="page-content tab with-subnavbar  " style="padding-top: 150px !important">
                 <div class="subnavbar theme-white" style="top:100px;position:fixed;padding:  0px;">
                     <!-- Sub navbar content, for example tabs buttons -->
                     <div class="buttons-row" style="-webkit-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);
 -moz-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);
 box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
-                        <a href="#tab1" class="button active color-black open-popover"  data-popover=".js-popover-order">最新的團購<span class="ficon">5</span></a>
-                        <a href="#tab2" class="button color-black open-popover" data-popover=".js-popover-filter">筛选<span class="ficon">5</span></a>
+                        <a href="#tab1" class="button active color-black open-popover" data-popover=".js-popover-order">最新的團購<span
+                                class="ficon">5</span></a>
+                        <a href="#tab2" class="button color-black open-popover"
+                           data-popover=".js-popover-filter">筛选<span class="ficon">5</span></a>
                     </div>
                 </div>
 
-                 <div v-for="group in groups"   class="card demo-card-header-pic">
-                    <div :style="{'background-image': 'url('+group.merchant.metPicUrl+')'}"   valign="bottom"
+                <div v-for="group in groups" v-show="!group.hidden" class="card demo-card-header-pic">
+                    <div :style="{'background-image': 'url('+group.merchant.metPicUrl+')'}" valign="bottom"
                          data-grp-id="{{group.grpId}}" class="card-img ">
                         <img
                                 style="visibility: hidden; width: 100%; max-height: 40%;display: block;"
@@ -61,13 +62,14 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
                     </div>
                 </div>
 
-             </div>
+
+            </div>
             <div id="tabMyOrders" class="page-content tab swiper-slide with-subnavbar " style="width: 420px;">
 
-                <div class="card-wrap"  v-for="groupOrder in groupedOrders" >
+                <div class="card-wrap" v-for="groupOrder in groupedOrders">
                     <div class="content-block-title">截止時間: {{groupOrder.group.grpTime}}</div>
 
-                    <div  class="card demo-card-header-pic">
+                    <div class="card demo-card-header-pic">
 
                         <div class="list-block media-list" style="margin-top: 0px;!important;">
 
@@ -89,7 +91,8 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
                                 <li v-for="order in groupOrder.orders">
                                     <label class="item-content">
                                         <div class="item-media"><img style="border-radius: 50%;"
-                                                                     src="./../assets/img/img-dish-01.png" width="36"></div>
+                                                                     src="./../assets/img/img-dish-01.png" width="36">
+                                        </div>
                                         <div class="item-inner">
                                             <div class="item-title-row" style="line-height: 36px;">
                                                 <div class="item-title">{{order.dish.dihName}}</div>

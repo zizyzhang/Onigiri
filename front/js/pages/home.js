@@ -25,10 +25,12 @@ class Home { //TODO first
 
             if (page.query.ajaxResult) {
                 window.homeAjaxResult = page.query.ajaxResult;
-             } else {
-                page.query.ajaxResult =window.homeAjaxResult;
+            } else {
+                page.query.ajaxResult = window.homeAjaxResult;
             }
-            let ajaxRequest =_.cloneDeep(page.query.ajaxResult);//不變的
+
+            console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
+
 
             let vueGroups = new Vue({
                 el: '#tabGroups',
@@ -41,20 +43,19 @@ class Home { //TODO first
             });
 
             let vuePopoverFilter = new Vue({
-                el:'#popoverFilter',
-                computed:{
-                    merchantTypes:function(){
-                        return _.chain(ajaxRequest.groups.map(o=>o.merchant.metType)).clone().uniq().value();
+                el: '#popoverFilter',
+                computed: {
+                    merchantTypes: function () {
+                        return _.chain(page.query.ajaxResult.groups.map(o=>o.merchant.metType)).uniq().value();
                     }
                 },
-                methods:{
-                    filter : function(typeName){
-                        console.log(typeName);
-                        vueGroups.$set('groups', _.filter(_.clone(ajaxRequest.groups), row=>row.merchant.metType===typeName));
-                    },
-                    allTypes : function(){
-                        vueGroups.$set('groups',_.clone(ajaxRequest.groups));
+                methods: {
+                    filter: function (typeName) {
+                         vueGroups.groups = _.cloneDeep(vueGroups.groups).map(o=> _.assign({}, o, o.hidden = o.merchant.metType === typeName ? false : true));
 
+                    },
+                    allTypes: function () {
+                        vueGroups.groups = _.cloneDeep(vueGroups.groups).map(o=> _.assign({}, o, o.hidden = false));
                     }
                 }
 
@@ -79,6 +80,7 @@ class Home { //TODO first
                         vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
                         myApp.closeModal(this.el);
                     }
+
                 },
 
             });

@@ -160,8 +160,10 @@
             <div class="list-block">
                 <ul>
                     <li ><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
+                    <li ><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
+                    <li ><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
 
-                    <li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>
+                    <!--<li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>-->
                 </ul>
             </div>
         </div>

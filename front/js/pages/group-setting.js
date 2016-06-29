@@ -40,6 +40,17 @@ class GroupSettingPage {
             console.log(products);
 
         });
+
+        $$('.js-del-product').on('click', function () {
+            let product = _.find(products, row=>row.productId === Number($$(this).dataset().id));
+            if (product) {
+                product.del = true;
+                $$(this).parent('*').parent('.card').hide();
+            }
+
+
+        });
+
     }
 
     bind() {
@@ -54,8 +65,8 @@ class GroupSettingPage {
 
 
                 $$('#products').append(`
-                    <div class="card ">
-                            <div class="card-header">商品${products.length + 1}</div>
+                    <div class="card">
+                            <div class="card-header">商品${products.length + 1}<a style="float: right;" data-id="${products.length}"  class="js-del-product button ">删除</a></div>
                             <div class="card-content">
                                 <div class="card-content-inner">
                                     <div class="list-block">
@@ -115,16 +126,21 @@ class GroupSettingPage {
                 let metName = $$('#merchantName').val();
                 let metPhone = $$('#merchantMob').val();
                 let metMinPrice = $$('#minPrice').val();
+                let metType = $$('#metType').val();
+
                 let metPicUrl = 'http://i.imgur.com/SoiypRh.jpg';
                 let metId = -1;
 
-                if (!(addr && gorTime && metName && metPhone && metMinPrice)) {
+                if (!(addr && gorTime && metName && metPhone && metMinPrice && metType)) {
                     myApp.alert('資料填寫不完整');
                     return;
                 }
 
 
                 for (let i = 0; i < products.length; i++) {
+                    if (products[i].del) {
+                        continue;
+                    }
                     if (!(products[i].productPrice && products[i].productName )) {
                         myApp.alert('商品資訊填寫不完整');
                         return;
@@ -150,16 +166,16 @@ class GroupSettingPage {
 
 
                 //新增商家
-                ajaxMethod.postMerchantPromise({metName, metPhone, metMinPrice, metPicUrl}).then((result)=> {
+                ajaxMethod.postMerchantPromise({metName, metPhone, metMinPrice, metPicUrl, metType}).then((result)=> {
                     //新增DISH
                     console.log(result);
                     metId = result.merchant.metId;
-                    let dishes = products.map(row=> {
-                        return {
-                            dihName: row.productName,
-                            dihPrice: row.productPrice,
-                            metId: metId,
-                        };
+                    let dishes = products.filter(o=>!o.del).map(row=> {
+                            return {
+                                dihName: row.productName,
+                                dihPrice: row.productPrice,
+                                metId: metId,
+                            };
                     });
 
 
@@ -172,7 +188,7 @@ class GroupSettingPage {
                 }).then(()=> {
                     //完成新增
                     myApp.alert('開團完成!', function () {
-                        tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
+                        tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
                     });
                 }).catch(e=>myApp.alert('開團失敗: ' + e.toString()));
 
@@ -185,7 +201,7 @@ class GroupSettingPage {
             let futureDays = new Date();
             let futureDaysArr = [[], []];
             for (let b = 0; b < 60; b++) {
-                futureDaysArr[0].push( (futureDays.getYear() + 1900)+'年'+(futureDays.getMonth() + 1) + '月' + futureDays.getDate() + '日' );
+                futureDaysArr[0].push((futureDays.getYear() + 1900) + '年' + (futureDays.getMonth() + 1) + '月' + futureDays.getDate() + '日');
                 futureDaysArr[1].push(b);
                 futureDays.setTime(futureDays.getTime() + 1000 * 3600 * 24);
 

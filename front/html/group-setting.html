@@ -106,13 +106,41 @@
                 </li>
 
                 <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+                            <div class="item-title label">商家类型</div>
+
+                            <a href="#" class="item-link smart-select">
+                                <!-- select -->
+                                <select name="metType" id="metType">
+                                    <option value="其他">其他</option>
+                                    <option value="餐廳">餐廳</option>
+                                </select>
+                                <div class="item-content" style="padding: 0px !important;">
+                                    <div class="item-inner" style="padding-top: 20px">
+                                        <!-- Select label -->
+                                        <!--<div class="item-title">Fruit</div>-->
+                                        <!-- Selected value, not required -->
+                                        <div class="item-after" style="margin: 0 !important;"></div>
+                                    </div>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                </li>
+                <li>
                     <div class="item-divider">團購商品列表</div>
                 </li>
 
 
                 <li id="products">
                     <div class="card ">
-                        <div class="card-header">商品1</div>
+                        <div class="card-header">
+                            商品1
+                        </div>
                         <div class="card-content">
                             <div class="card-content-inner">
                                 <div class="list-block">
@@ -127,7 +155,8 @@
 
 
                                                     <div class="item-input">
-                                                        <input type="text" placeholder="商品名稱"   data-id="0" class="js-dishName">
+                                                        <input type="text" placeholder="商品名稱" data-id="0"
+                                                               class="js-dishName">
                                                     </div>
                                                 </div>
                                             </div>
@@ -142,7 +171,8 @@
 
 
                                                     <div class="item-input">
-                                                        <input type="text" placeholder="商品價格"   data-id="0" class="js-dishPrice">
+                                                        <input type="text" placeholder="商品價格" data-id="0"
+                                                               class="js-dishPrice">
                                                     </div>
                                                 </div>
                                             </div>
@@ -155,12 +185,10 @@
                     </div>
 
 
-
-
                 </li>
 
                 <li>
-                    <div class="button-row"style="margin:0 1em">
+                    <div class="button-row" style="margin:0 1em">
                         <a style="margin: 0 auto;" class="button  button-fill color-green" id="addProduct">新增商品</a>
 
                     </div>
