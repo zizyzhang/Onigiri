@@ -1242,7 +1242,7 @@ var Server = function Server() {
             //commentId = lastComment + 1;
             //commemtArrary[commentId] = {grpComments};
 
-            db.setValueToJsonDb('GROUP', function (row) {
+            db.setValueToJsonDb('ORDER', function (row) {
                 return row.grpId === group.grpId;
             }, 'grpComments', grpComments);
             resolve(grpComments);

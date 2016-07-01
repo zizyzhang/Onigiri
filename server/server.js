@@ -908,7 +908,7 @@ var Server = function () {
 
 
 
-            db.setValueToJsonDb('GROUP', row=>row.grpId === group.grpId, 'grpComments', grpComments);
+            db.setValueToJsonDb('ORDER', row=>row.grpId === group.grpId, 'grpComments', grpComments);
             resolve(grpComments);
         });
     };
