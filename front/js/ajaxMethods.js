@@ -194,6 +194,15 @@ var AjaxMethods = function () {
                 });
         });
     };
+    this.postComment = function (grpId,grpComments) {
+        console.log("grpId:"+grpId+",comments:"+grpComments);
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/grpComments", {data: JSON.stringify({grpId, grpComments})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
 
 };
 

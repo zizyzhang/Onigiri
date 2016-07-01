@@ -1,7 +1,7 @@
 'use strict';
 require('babel-polyfill');
 
-let isDebug = true;
+let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -18,7 +18,8 @@ let ajaxMethod = require('./ajaxMethods.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
     SignUpPage = require('./pages/sign-up.js'),
     HowToCreate = require('./pages/how-to-create.js'),
-    GroupSettingSimple = require('./pages/group-setting-simple.js');
+    GroupSettingSimple = require('./pages/group-setting-simple.js'),
+    MessagePage = require('./pages/message.js');
     //Dom7 = require('dom7');
 
 // Initialize app
@@ -51,7 +52,7 @@ let mainView = myApp.addView('.view-main', {
 
 
         //mainView.router.loadPage('home.html');
-        tool.loadPage('group-setting.html',mainView);
+        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
 
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
@@ -73,6 +74,7 @@ let pageEventBind = function () {
     let signUpPage = new SignUpPage(myApp, mainView);
     let howToCreate = new HowToCreate(myApp,mainView);
     let groupSettingSimple = new GroupSettingSimple(myApp, mainView);
+    let messagePage = new MessagePage(myApp,mainView);
 
 
 
@@ -88,6 +90,7 @@ let pageEventBind = function () {
     signUpPage.bind();
     howToCreate.bind();
     groupSettingSimple.bind();
+    messagePage.bind();
 
 }();
 

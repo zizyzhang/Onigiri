@@ -30,6 +30,9 @@ var client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 var authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
+//let commemtArrary = [];
+//let commentId;
+
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
@@ -382,6 +385,18 @@ var Server = function Server() {
             return res.json(result);
         });
     });
+    app.post('/grpComments', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var comments = req.body.grpComments;
+        var grpId = Number(req.body.grpId);
+        console.log("server:" + comments + ",grpId:" + grpId);
+
+        self.postComment(grpId, comments).then(function (result) {
+            res.json({ success: true });
+        }).catch(function (e) {
+            res.json(e);
+        });
+    });
 
     app.listen(8080, function () {
         console.log('' + 'app listening on port 8080!');
@@ -533,6 +548,7 @@ var Server = function Server() {
      metPicUrl,
      metType}
      */
+
     this.addMerchantPromise = function (merchant) {
         return new Promise(function (resolve, reject) {
             merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
@@ -1213,6 +1229,23 @@ var Server = function Server() {
                 return grpId === g.grpId;
             }).grpStatus;
             resolve(status);
+        });
+    };
+    this.postComment = function (grpId, grpComments) {
+        return new Promise(function (resolve) {
+            var group = db.GROUP.find(function (s) {
+                return grpId === s.grpId;
+            });
+            console.log(JSON.stringify(group));
+
+            //let lastComment = _.maxBy(db.GROUP, 'commemtArrary');
+            //commentId = lastComment + 1;
+            //commemtArrary[commentId] = {grpComments};
+
+            db.setValueToJsonDb('GROUP', function (row) {
+                return row.grpId === group.grpId;
+            }, 'grpComments', grpComments);
+            resolve(grpComments);
         });
     };
 

@@ -30,6 +30,8 @@ let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
+//let commemtArrary = [];
+//let commentId;
 
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
@@ -350,7 +352,23 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
+    app.post('/grpComments', function (req, res) {
+            req.body = JSON.parse(req.body.data);
+            let comments = req.body.grpComments;
+            let grpId = Number(req.body.grpId);
+            console.log("server:"+comments+",grpId:"+grpId);
 
+
+
+
+            self.postComment(grpId,comments).then(result=> {
+                res.json({success: true});
+            }).catch(e=> {
+                res.json(e);
+            });
+
+        }
+    );
 
     app.listen(8080, function () {
         console.log('' +
@@ -460,6 +478,7 @@ var Server = function () {
      metPicUrl,
      metType}
      */
+
     this.addMerchantPromise = function (merchant) {
         return new Promise((resolve, reject)=> {
             merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
@@ -875,6 +894,22 @@ var Server = function () {
         return new Promise(resolve=> {
             let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
             resolve(status);
+        });
+    };
+    this.postComment= function (grpId,grpComments) {
+        return new Promise(resolve=> {
+            let group = db.GROUP.find(s=>grpId === s.grpId);
+            console.log(JSON.stringify(group));
+
+
+            //let lastComment = _.maxBy(db.GROUP, 'commemtArrary');
+            //commentId = lastComment + 1;
+            //commemtArrary[commentId] = {grpComments};
+
+
+
+            db.setValueToJsonDb('GROUP', row=>row.grpId === group.grpId, 'grpComments', grpComments);
+            resolve(grpComments);
         });
     };
 

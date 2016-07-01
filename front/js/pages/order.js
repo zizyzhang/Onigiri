@@ -25,7 +25,8 @@ class OrderPage {
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
                 self.dishes = group.grpDishes.map(gdh=>gdh.dish);
 
-
+                console.log(group.grpHost.usrName);
+                let grpId = Number(cookies.get('selectedGroupId'));
                 for (let groupDish of group.grpDishes) {
 
                     self.ordersMap.set(groupDish.dish.dihId, 0);
@@ -64,7 +65,7 @@ class OrderPage {
                     }
 
 
-                    let grpId = Number(cookies.get('selectedGroupId'));
+
                     let usrId = cookies.getJSON('user').usrId;
                     console.log(JSON.stringify({usrId, dishes, grpId}));
 
@@ -76,6 +77,15 @@ class OrderPage {
 
 
                 });
+                $$('#btnNote').click(function () {
+                    let grpHost = group.grpHost.usrName;
+
+                    mainView.router.load({
+                        url:'message.html',
+                        query:{grpHost,grpId}
+                    });
+                });
+
             });
 
 
@@ -109,7 +119,7 @@ class OrderPage {
     calcPrice() {
         let totalPrice = 0;
         for (let [odrDishId,odrDishNum] of this.ordersMap.entries()) {
-            console.log(odrDishId, odrDishNum);
+            //console.log(odrDishId, odrDishNum);
             totalPrice += odrDishNum * this.dishes.find(d=>d.dihId === odrDishId).dihPrice;
         }
 
