@@ -11,6 +11,7 @@ let tool = require('../tool.js');
 let myApp = null, mainView = null;
 const cookies = require('js-cookie');
 
+let comments;
 
 class MessagePage { //TODO first
     constructor(_myApp, _mainView) {
@@ -22,27 +23,14 @@ class MessagePage { //TODO first
         let self = this;
         myApp.onPageBeforeInit('message', function (page) {//TODO second
             console.log('before order init message');
-
-            self.grpId = page.query.grpId || self.grpId;
-
-            console.log(self.grpId);
-            console.log(page.query.grpHost);
-
-            //tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupById(self.grpId), page, ()=> {
-
                 $$('#btnSend').click(function () {
                    console.log("test");
-                    let comments=$$('#comments').val();
-                    //console.log("comments"+comments);
-
-                    tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.postComment(self.grpId,comments), page, (comment)=> {
-                        console.log("call back:"+comment);
+                   comments=$$('#comments').val();
+                    mainView.router.load({
+                        url:'order.html',
+                        query:{comments}
                     });
-
                 });
-
-            //});
-
         });
 
         myApp.onPageInit('message', (page) => {

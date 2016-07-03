@@ -19,6 +19,11 @@ class OrderPage {
         let self = this;
         myApp.onPageBeforeInit('order', function (page) {
             console.log('before order init');
+            let usrId = cookies.getJSON('user').usrId;
+
+            let grpId = Number(cookies.get('selectedGroupId'));
+            let comments = page.query.comments;
+
             let selectedGroupId = Number(cookies.get('selectedGroupId'));
             self.ordersMap = new Map();
 
@@ -26,13 +31,11 @@ class OrderPage {
                 self.dishes = group.grpDishes.map(gdh=>gdh.dish);
 
                 console.log(group.grpHost.usrName);
-                let grpId = Number(cookies.get('selectedGroupId'));
+
                 for (let groupDish of group.grpDishes) {
 
                     self.ordersMap.set(groupDish.dish.dihId, 0);
                 }
-                //console.log('map', self.ordersMap);
-
 
                 $$('.btn-dish-price').click(function () {
                     let dihId = $$(this).dataset().dihId;
@@ -64,25 +67,18 @@ class OrderPage {
                         return;
                     }
 
+                    console.log(JSON.stringify({usrId, dishes, grpId,comments}));
 
-
-                    let usrId = cookies.getJSON('user').usrId;
-                    console.log(JSON.stringify({usrId, dishes, grpId}));
-
-                    ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
+                    ajaxMethod.joinGroupPromise(usrId, dishes, grpId,comments).then((data)=> {
                         myApp.alert('加入成功', function () {
                             tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
                     }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失敗!'));
 
-
                 });
                 $$('#btnNote').click(function () {
-                    let grpHost = group.grpHost.usrName;
-
                     mainView.router.load({
-                        url:'message.html',
-                        query:{grpHost,grpId}
+                        url:'message.html'
                     });
                 });
 

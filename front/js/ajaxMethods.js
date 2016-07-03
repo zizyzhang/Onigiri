@@ -139,11 +139,11 @@ var AjaxMethods = function () {
         });
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId,comments) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/joinGroup",
                 {
-                    data: JSON.stringify({usrId, dishes, grpId})
+                    data: JSON.stringify({usrId, dishes, grpId,comments})
                 }, function (data) {
                     data = JSON.parse(data);
                     if (data.success === 1) {
@@ -194,15 +194,7 @@ var AjaxMethods = function () {
                 });
         });
     };
-    this.postComment = function (grpId,grpComments) {
-        console.log("grpId:"+grpId+",comments:"+grpComments);
-        return new Promise((resolve, reject)=> {
-            $$.post(SERVER_ADS + "/grpComments", {data: JSON.stringify({grpId, grpComments})},
-                function (result) {
-                    resolve(result);
-                });
-        });
-    };
+
 
 };
 

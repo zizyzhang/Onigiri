@@ -285,6 +285,7 @@ var Server = function () {
             let usrId = Number(req.body.usrId);
             let dishes = req.body.dishes;
             let grpId = req.body.grpId;
+            let comments = req.body.comments;
 
             if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
                 res.json({success: false, msg: '資料不完整'});
@@ -292,7 +293,7 @@ var Server = function () {
             }
 
 
-            self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+            self.joinGroupPromise(usrId, dishes, grpId,comments).then(result=> {
                 res.json(result);
             }).catch(e=> {
                 res.json(e);
@@ -352,23 +353,7 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
-    app.post('/grpComments', function (req, res) {
-            req.body = JSON.parse(req.body.data);
-            let comments = req.body.grpComments;
-            let grpId = Number(req.body.grpId);
-            console.log("server:"+comments+",grpId:"+grpId);
 
-
-
-
-            self.postComment(grpId,comments).then(result=> {
-                res.json({success: true});
-            }).catch(e=> {
-                res.json(e);
-            });
-
-        }
-    );
 
     app.listen(8080, function () {
         console.log('' +
@@ -585,7 +570,7 @@ var Server = function () {
         callback({success: 1});
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId,comments) {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise((resolve, reject)=> {
@@ -615,7 +600,8 @@ var Server = function () {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
-                grpId: grpId
+                grpId: grpId,
+                comments:comments
             });
 
             //最小外送金額
@@ -895,23 +881,8 @@ var Server = function () {
             let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
             resolve(status);
         });
-    };
-    this.postComment= function (grpId,grpComments) {
-        return new Promise(resolve=> {
-            let group = db.GROUP.find(s=>grpId === s.grpId);
-            console.log(JSON.stringify(group));
+    }
 
-
-            //let lastComment = _.maxBy(db.GROUP, 'commemtArrary');
-            //commentId = lastComment + 1;
-            //commemtArrary[commentId] = {grpComments};
-
-
-
-            db.setValueToJsonDb('ORDER', row=>row.grpId === group.grpId, 'grpComments', grpComments);
-            resolve(grpComments);
-        });
-    };
 
 
     ///////////////////後臺

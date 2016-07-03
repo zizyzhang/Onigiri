@@ -327,13 +327,14 @@ var Server = function Server() {
         var usrId = Number(req.body.usrId);
         var dishes = req.body.dishes;
         var grpId = req.body.grpId;
+        var comments = req.body.comments;
 
         if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
             res.json({ success: false, msg: '資料不完整' });
             return;
         }
 
-        self.joinGroupPromise(usrId, dishes, grpId).then(function (result) {
+        self.joinGroupPromise(usrId, dishes, grpId, comments).then(function (result) {
             res.json(result);
         }).catch(function (e) {
             res.json(e);
@@ -383,18 +384,6 @@ var Server = function Server() {
 
         self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
-        });
-    });
-    app.post('/grpComments', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var comments = req.body.grpComments;
-        var grpId = Number(req.body.grpId);
-        console.log("server:" + comments + ",grpId:" + grpId);
-
-        self.postComment(grpId, comments).then(function (result) {
-            res.json({ success: true });
-        }).catch(function (e) {
-            res.json(e);
         });
     });
 
@@ -739,7 +728,7 @@ var Server = function Server() {
         callback({ success: 1 });
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         var _this = this;
 
         //console.log(JSON.stringify({usrId, dishes, grpId}));
@@ -797,7 +786,8 @@ var Server = function Server() {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
-                grpId: grpId
+                grpId: grpId,
+                comments: comments
             });
 
             //最小外送金額
@@ -1229,23 +1219,6 @@ var Server = function Server() {
                 return grpId === g.grpId;
             }).grpStatus;
             resolve(status);
-        });
-    };
-    this.postComment = function (grpId, grpComments) {
-        return new Promise(function (resolve) {
-            var group = db.GROUP.find(function (s) {
-                return grpId === s.grpId;
-            });
-            console.log(JSON.stringify(group));
-
-            //let lastComment = _.maxBy(db.GROUP, 'commemtArrary');
-            //commentId = lastComment + 1;
-            //commemtArrary[commentId] = {grpComments};
-
-            db.setValueToJsonDb('ORDER', function (row) {
-                return row.grpId === group.grpId;
-            }, 'grpComments', grpComments);
-            resolve(grpComments);
         });
     };
 
