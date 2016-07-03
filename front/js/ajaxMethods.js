@@ -62,6 +62,14 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getUnjoinedGroups = function (usrId) {
+        return new Promise(function (resolve) {
+            $$.getJSON(SERVER_ADS + "/unjoinedGroups/"+usrId, function (data) {
+                resolve(data);
+            });
+        });
+    };
+
     this.getMerchantById = function (id) {
         return new Promise(resolve => {
             $$.getJSON(SERVER_ADS + "/merchantById/" + id, function (data) {

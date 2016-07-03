@@ -17,13 +17,14 @@ class GroupDetailPage {
 
         myApp.onPageBeforeInit('group-detail', (page) => {
             this.grpId = page.query.grpId || this.grpId;
+            let that = this;
 
             console.log('group-detail onPageBeforeInit');
-            console.log(page.query);
 
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
                 $$('#btnJoin').on('click', function () {
-                    mainView.router.loadPage('order.html');
+
+                    tool.loadPage('order.html', mainView, ajaxMethod.getGroupById(that .grpId));
                 });
 
             });

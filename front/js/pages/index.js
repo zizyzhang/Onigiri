@@ -81,7 +81,7 @@ class IndexPage {
                     }
 
                     myApp.closeModal();
-                    tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(result.usrId));
+                    tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
                     //mainView.router.loadPage({url: 'home.html'});
                 }).catch(function (e) {
                     myApp.alert('登录失败:' + e);

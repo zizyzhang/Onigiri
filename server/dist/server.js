@@ -274,6 +274,12 @@ var Server = function Server() {
         });
     });
 
+    app.get('/unjoinedGroups/:usrId', function (req, res) {
+        self.getUnjoinedGroups(Number(req.params.usrId), function (result) {
+            return res.json(result);
+        });
+    });
+
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
         self.allMerchant(function (result) {
@@ -333,6 +339,7 @@ var Server = function Server() {
         self.joinGroupPromise(usrId, dishes, grpId).then(function (result) {
             res.json(result);
         }).catch(function (e) {
+            console.log(e);
             res.json(e);
         });
     });
@@ -565,6 +572,20 @@ var Server = function Server() {
         }
     };
 
+    //unjoined groups by user id
+    this.getUnjoinedGroups = function (usrId, callback) {
+        var joinedGroupIds = _.uniqBy(db.ORDER.find(function (ord) {
+            return ord.usrId === usrId;
+        }), 'grpId').map(function (ord) {
+            return ord.grpId;
+        });
+        callback(db.GROUP.filter(function (grp) {
+            return !joinedGroupIds.find(function (grpId) {
+                return grpId === grp.grpId;
+            });
+        }));
+    };
+
     this.allGroup = function (callback) {
         var result = [];
 
@@ -730,12 +751,32 @@ var Server = function Server() {
 
         return new Promise(function (resolve, reject) {
             //拒絕用戶對同壹個group連續點兩次餐點
-            if (db.ORDER.find(function (ord) {
-                return ord.usrId === usrId && ord.grpId === grpId;
-            })) {
-                reject("重復加團!");
+            //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
+            //    reject("重復加團!");
+            //    return;
+            //}
+
+            if (!_.includes([0, 1], db.GROUP.find(function (grp) {
+                return grp.grpId === grpId;
+            }).grpStatus)) {
+                reject("團購已經截止!");
                 return;
             }
+
+            console.log('usrId, dishes, grpId', usrId, dishes, grpId);
+
+            var orderedDishIds = _.chain(db.ORDER).filter(function (ord) {
+                return ord.usrId === usrId && ord.grpId === grpId;
+            }).map(function (ord) {
+                return ord.dihId;
+            }).value();
+            console.log('orderedDishIds', orderedDishIds);
+
+            var selectRowByDishId = function selectRowByDishId(dihId) {
+                return function (row) {
+                    return row.dihId === dihId;
+                };
+            };
 
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
@@ -750,7 +791,17 @@ var Server = function Server() {
                     if (num === 0 || !_.isNumber(num)) {
                         continue;
                     }
+
+                    if (_.includes(orderedDishIds, dihId)) {
+                        db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
+                            usrId: usrId,
+                            dihId: dihId
+                        })].ordNum);
+                        continue;
+                    }
+
                     var lastOrder = _.maxBy(db.ORDER, 'ordId');
+
                     db.pushToJsonDb("ORDER", {
                         ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                         grpId: grpId,

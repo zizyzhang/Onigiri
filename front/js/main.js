@@ -1,7 +1,7 @@
 'use strict';
 require('babel-polyfill');
 
-let isDebug = true;
+let isDebug = false;
 
 let ajaxMethod = require('./ajaxMethods.js'),
     tool = require('./tool.js'),
@@ -51,7 +51,7 @@ let mainView = myApp.addView('.view-main', {
 
 
         //mainView.router.loadPage('home.html');
-        tool.loadPage('group-setting.html',mainView);
+        //tool.loadPage('group-setting.html',mainView);
 
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');

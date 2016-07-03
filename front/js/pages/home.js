@@ -29,7 +29,7 @@ class Home { //TODO first
                 page.query.ajaxResult = window.homeAjaxResult;
             }
 
-            console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
+            console.log('page.query.ajaxResult', page.query.ajaxResult);
 
 
             let vueGroups = new Vue({
@@ -37,9 +37,17 @@ class Home { //TODO first
                 data: page.query.ajaxResult,
             });
 
+
             let vueMyOrders = new Vue({
                 el: '#tabMyOrders',
-                data: page.query.ajaxResult
+                data: page.query.ajaxResult,
+                methods:{
+                    extraOrder:function(grpId){
+                        window.selectedGroupId = grpId;
+                        tool.loadPage({url:'order.html',query:{isExtraOrder:true}}, mainView, ajaxMethod.getGroupById(grpId));
+                    }
+                }
+
             });
 
             let vuePopoverFilter = new Vue({
@@ -58,6 +66,7 @@ class Home { //TODO first
                         vueGroups.groups = _.cloneDeep(vueGroups.groups).map(o=> _.assign({}, o, o.hidden = false));
                     }
                 }
+
 
             });
 
@@ -91,7 +100,9 @@ class Home { //TODO first
                 console.log(`grpId   : ${grpId}`);
 
                 cookies.set('selectedGroupId', grpId);
-                mainView.router.loadPage(`order.html?grpId=${grpId}`);
+
+
+                tool.loadPage(`order.html?grpId=${grpId}`, mainView, ajaxMethod.getGroupById(grpId));
 
 
             });

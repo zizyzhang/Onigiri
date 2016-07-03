@@ -5,6 +5,8 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let tool = require('../tool.js');
 let myApp = null, mainView = null;
+let Vue = require('vue');
+let _ = require('lodash');
 const cookies = require('js-cookie');
 
 //创建一个Map: {dihId : dihNum}
@@ -22,64 +24,86 @@ class OrderPage {
             let selectedGroupId = Number(cookies.get('selectedGroupId'));
             self.ordersMap = new Map();
 
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
-                self.dishes = group.grpDishes.map(gdh=>gdh.dish);
+            //tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
 
+            if (page.query.ajaxResult) {
+                window.orderAjaxResult = page.query.ajaxResult;
+            } else {
+                page.query.ajaxResult = window.orderAjaxResult;
+            }
 
-                for (let groupDish of group.grpDishes) {
+            console.log('orderPage Query', page.query);
 
-                    self.ordersMap.set(groupDish.dish.dihId, 0);
+            let vuePage = new Vue({
+                el: '#order',
+                data:  page.query.ajaxResult,
+                computed:{
+                    isExtraOrder:()=>true
                 }
-                //console.log('map', self.ordersMap);
-
-
-                $$('.btn-dish-price').click(function () {
-                    let dihId = $$(this).dataset().dihId;
-                    self.onOrderNumberChange(dihId, 1);
-                });
-
-                $$('.btn-add').click(function () {
-                    let dihId = $$(this).dataset().dihId;
-                    self.onOrderNumberChange(dihId, 1);
-                });
-
-                $$('.btn-subtraction').click(function () {
-                    let dihId = $$(this).dataset().dihId;
-                    self.onOrderNumberChange(dihId, -1);
-                });
-
-                $$('#btnJoinGroup').click(()=> {
-                    let dishes = [];
-
-                    for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
-                        if(odrDishNum===0) {
-                            continue;
-                        }
-                        dishes.push({dihId: odrDishId, num: odrDishNum});
-                    }
-
-                    if(dishes.length===0){
-                        myApp.alert('未選擇商品');
-                        return;
-                    }
-
-
-                    let grpId = Number(cookies.get('selectedGroupId'));
-                    let usrId = cookies.getJSON('user').usrId;
-                    console.log(JSON.stringify({usrId, dishes, grpId}));
-
-                    ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
-                        myApp.alert('加入成功', function () {
-                            tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
-                        });
-                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失敗!'));
-
-
-                });
             });
 
 
+
+            let group = page.query.ajaxResult;
+
+            self.dishes = group.grpDishes.map(gdh=>gdh.dish);
+
+
+            for (let groupDish of group.grpDishes) {
+
+                self.ordersMap.set(groupDish.dish.dihId, 0);
+            }
+            //console.log('map', self.ordersMap);
+
+
+            $$('.btn-dish-price').click(function () {
+                let dihId = $$(this).dataset().dihId;
+                self.onOrderNumberChange(dihId, 1);
+            });
+
+            $$('.btn-add').click(function () {
+                let dihId = $$(this).dataset().dihId;
+                self.onOrderNumberChange(dihId, 1);
+            });
+
+            $$('.btn-subtraction').click(function () {
+                let dihId = $$(this).dataset().dihId;
+                self.onOrderNumberChange(dihId, -1);
+            });
+
+            $$('#btnJoinGroup').click(()=> {
+                let dishes = [];
+
+                for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
+                    if (odrDishNum === 0) {
+                        continue;
+                    }
+                    dishes.push({dihId: odrDishId, num: odrDishNum});
+                }
+
+                if (dishes.length === 0) {
+                    myApp.alert('未選擇商品');
+                    return;
+                }
+
+
+                let grpId = Number(cookies.get('selectedGroupId')) || window.selectedGroupId;
+
+                let usrId = cookies.getJSON('user').usrId;
+                console.log(JSON.stringify({usrId, dishes, grpId}));
+
+                ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
+                    myApp.alert('加入成功', function () {
+                        tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
+                    });
+                }).catch(e=> myApp.alert(JSON.stringify(e) + '加入失敗!'));
+
+
+            });
         });
+
+
+        //});
 
 
     }
