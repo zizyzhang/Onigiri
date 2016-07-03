@@ -73,8 +73,9 @@ class Tool {
 
         if (ajaxPromise) {
             ajaxPromise.then((data)=> {
-                console.log(data);
+                console.log('ajaxPromise in toll.js',data);
                 loadFunc(data);
+
             });
         } else {
             loadFunc();

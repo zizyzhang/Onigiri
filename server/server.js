@@ -226,7 +226,11 @@ var Server = function () {
 
     app.get('/groupById/:id', (req, res)=> {
         self.getGroupById(Number(req.params.id), result=>res.json(result));
-    })
+    });
+
+    app.get('/unjoinedGroups/:usrId', (req, res)=> {
+        self.getUnjoinedGroups(Number(req.params.usrId), result=>res.json(result));
+    });
 
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
@@ -293,6 +297,7 @@ var Server = function () {
             self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
                 res.json(result);
             }).catch(e=> {
+                console.log(e);
                 res.json(e);
             });
 
@@ -493,6 +498,11 @@ var Server = function () {
         }
     };
 
+    //unjoined groups by user id
+    this.getUnjoinedGroups = function (usrId, callback) {
+        let joinedGroupIds = _.uniqBy(db.ORDER.find(ord=>ord.usrId === usrId), 'grpId').map(ord=>ord.grpId);
+        callback(db.GROUP.filter(grp=> !joinedGroupIds.find(grpId=>grpId === grp.grpId)));
+    };
 
     this.allGroup = function (callback) {
         let result = [];
@@ -513,7 +523,7 @@ var Server = function () {
             result.push(group);
         }
 
-        callback(_.sortBy(result,row=>-new Date(row.grpTime)));
+        callback(_.sortBy(result, row=>-new Date(row.grpTime)));
     };
 
     this.getGroupById = function (id, callback) {
@@ -571,16 +581,39 @@ var Server = function () {
 
         return new Promise((resolve, reject)=> {
             //拒絕用戶對同壹個group連續點兩次餐點
-            if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
-                reject("重復加團!");
+            //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
+            //    reject("重復加團!");
+            //    return;
+            //}
+
+            //只有0,1状态的团可以团购
+            if (!_.includes([0, 1], db.GROUP.find(grp=>grp.grpId === grpId).grpStatus)) {
+                reject("團購已經截止!");
                 return;
             }
 
+            console.log('usrId, dishes, grpId', usrId, dishes, grpId);
+
+            let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
+            console.log('orderedDishIds', orderedDishIds);
+
+            let selectRowByDishId = dihId => row=>row.dihId === dihId;
             for (let {dihId,num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
                     continue;
                 }
+
+                if (_.includes(orderedDishIds, dihId)) {
+                    db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
+                            usrId,
+                            dihId
+                        })].ordNum);
+                    continue;
+                }
+
+
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
+
                 db.pushToJsonDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
@@ -589,6 +622,7 @@ var Server = function () {
                     ordNum: num,
                     ordCreateTime: new Date().getTime()
                 });
+
 
             }
 
