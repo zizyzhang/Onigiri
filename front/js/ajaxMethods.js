@@ -194,6 +194,14 @@ var AjaxMethods = function () {
                 });
         });
     };
+    this.updateOrdStatusPromise = function (ordId) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/updateOrdStatus/"+ordId,
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
 
 };
 

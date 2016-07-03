@@ -28,7 +28,8 @@ class Home { //TODO first
             } else {
                 page.query.ajaxResult = window.homeAjaxResult;
             }
-
+            console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
+ 
             console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
 
 

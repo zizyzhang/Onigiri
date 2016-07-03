@@ -324,7 +324,6 @@ var Server = function () {
                 return;
             }
 
-
             self.getTwilioCode(usrMobi).then(result=> {
                 res.json({success: true});
             }).catch(e=> {
@@ -350,6 +349,16 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
+
+    app.post('/updateOrdStatus/:ordId',function (req,res) {
+        let ordId = Number(req.params.ordId);
+
+        self.updateOrdStatusPromise(ordId).then(result=> {
+            res.json(result);
+        }).catch(e=> {
+            res.json(e);
+        });
+    });
 
 
     app.listen(8080, function () {
@@ -393,7 +402,7 @@ var Server = function () {
             }
 
             client.messages.create({
-                body: '您的飯糰驗證碼是' + randomAuth,
+                body: '您的販團驗證碼是' + randomAuth,
                 to: '+886' + userMobi,  // Text this number
                 from: '+13342030485' // From a valid Twilio number
             }, function (err, message) {
@@ -575,6 +584,7 @@ var Server = function () {
                 reject("重復加團!");
                 return;
             }
+            let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
 
             for (let {dihId,num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
@@ -585,9 +595,11 @@ var Server = function () {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
+                    usrName:usrName,  //07.03 add
                     dihId: dihId,
                     ordNum: num,
-                    ordCreateTime: new Date().getTime()
+                    ordCreateTime: new Date().getTime(),
+                    ordStatus: 0
                 });
 
             }
@@ -596,6 +608,7 @@ var Server = function () {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
+                usrName:usrName,  //07.03 add
                 grpId: grpId
             });
 
@@ -654,8 +667,10 @@ var Server = function () {
                 ordId: ord.ordId,
                 grpId: ord.grpId,
                 usrId: ord.usrId,
+                usrName:ord.usrName,   //07.03 add
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
                 ordNum: ord.ordNum,
+                ordStatus:ord.ordStatus,    //07.03 add
                 ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             };
             return newOrd;
@@ -686,8 +701,10 @@ var Server = function () {
                     ordId: ord.ordId,
                     grpId: ord.grpId,
                     usrId: ord.usrId,
+                    usrName:ord.usrName,   //07.03 add
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
                     ordNum: ord.ordNum,
+                    ordStatus:ord.ordStatus,    //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
                 };
                 return newOrd;
@@ -869,7 +886,7 @@ var Server = function () {
 
 
         //let t = setTimeout('Timer()', 500);
-    }
+    };
 
     this.getStatus = function (grpId) {
         return new Promise(resolve=> {
@@ -878,6 +895,29 @@ var Server = function () {
         });
     };
 
+    this.updateOrdStatusPromise = function (ordId) {
+        //TODO  一次只能修改一個ordId的ordStatus
+        return new Promise((resolve, reject)=> {
+            let order = db.ORDER.find(s=>ordId === s.ordId);
+
+            if (order.ordStatus == 0 ) {
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+                //group.grpStatus = grpStatus;
+                resolve({success: 1});
+            }else if(order.ordStatus == 1){
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 2);
+                // console.log("ordStatus"+order.ordStatus);
+                resolve({success: 1});
+            }else if(order.ordStatus == 2){
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+                // console.log("ordStatus"+order.ordStatus);
+                resolve({success: 1});
+            }
+            else {
+                reject({success: 0});
+            }
+        });
+    };
 
     ///////////////////後臺
 
