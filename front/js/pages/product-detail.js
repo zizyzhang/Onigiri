@@ -35,20 +35,27 @@ class ProductDetailPage { //TODO first
                         }
                     }
                 }
-                
-                $$(".item-content").click(function () {
+
+                // $$(".item-content").click(function () {
+                //     let ordId = $$(this).dataset().ordId;
+                //     if ($$('#ordId-' + ordId).hasClass('completed')) {
+                //         // console.log("hasClass completed");
+                //         $$('#ordId-' + ordId).removeClass('completed');
+                //         $$('#ordId-' + ordId).removeAttr("style");
+                //         ajaxMethod.updateOrdStatusPromise(ordId);
+                //         // mainView.router.refreshPage();
+                //     } else {
+                //         $$('#ordId-' + ordId).addClass('completed');
+                //         $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
+                //         ajaxMethod.updateOrdStatusPromise(ordId);
+                //     }
+                // });
+
+                $$(".paid").click(function () {
                     let ordId = $$(this).dataset().ordId;
-                    if ($$('#ordId-' + ordId).hasClass('completed')) {
-                        // console.log("hasClass completed");
-                        $$('#ordId-' + ordId).removeClass('completed');
-                        $$('#ordId-' + ordId).removeAttr("style");
-                        ajaxMethod.updateOrdStatusPromise(ordId);
-                        // mainView.router.refreshPage();
-                    } else {
                         $$('#ordId-' + ordId).addClass('completed');
                         $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
                         ajaxMethod.updateOrdStatusPromise(ordId);
-                    }
                 });
 
             });

@@ -3,7 +3,7 @@
         <div class="navbar-inner">
             <div class="left"><a href="my-groups.html" class=" link icon-only"><i class="icon icon-back"></i></a>
             </div>
-            <div class="center">團購詳情</div>
+            <div class="center">付款明細</div>
         </div>
     </div>
 
@@ -19,8 +19,8 @@
                 </div>
                 <ul>
                     {{#each orders}}
-                    <li>
-                        <label class="item-content" data-ord-id="{{ordId}}" for="chbox-{{ordId}}">
+                    <li class="swipeout">
+                        <label class="item-content swipeout-content " data-ord-id="{{ordId}}">
                             <div class="item-media"><img style="border-radius: 50%;"
                                                          src="./../assets/img/img-dish-01.png" width="36"></div>
                             <div class="item-inner" id="ordId-{{ordId}}">
@@ -30,7 +30,10 @@
                                     <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
                                 </div>
                             </div>
-                            <input class="checkbox toggle" type="checkbox" id="chbox-{{ordId}}">
+                            <div class="swipeout-actions-right">
+                                <a href="#" class="bg-red paid" data-ord-id="{{ordId}}">確認已付款</a>
+                            </div>
+                            <!--<input class="checkbox toggle" type="checkbox" id="chbox-{{ordId}}">-->
                         </label>
 
                     </li>
