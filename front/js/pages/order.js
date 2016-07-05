@@ -7,8 +7,9 @@ let tool = require('../tool.js');
 let myApp = null, mainView = null;
 const cookies = require('js-cookie');
 
-//创建一个Map: {dihId : dihNum}
 
+//创建一个Map: {dihId : dihNum}
+let comments;
 class OrderPage {
     constructor(_myApp, _mainView) {
         myApp = _myApp;
@@ -22,7 +23,8 @@ class OrderPage {
             let usrId = cookies.getJSON('user').usrId;
 
             let grpId = Number(cookies.get('selectedGroupId'));
-            let comments = page.query.comments;
+            //let comments = page.query.comments;
+
 
             let selectedGroupId = Number(cookies.get('selectedGroupId'));
             self.ordersMap = new Map();
@@ -54,6 +56,10 @@ class OrderPage {
 
                 $$('#btnJoinGroup').click(()=> {
                     let dishes = [];
+                    comments=window.comments;
+                    //comments = Message.comments;
+                    //comments  = page.query.comments;
+                    //console.log("test3"+comments);
 
                     for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
                         if(odrDishNum===0) {
@@ -75,11 +81,12 @@ class OrderPage {
                         });
                     }).catch(e=> myApp.alert(JSON.stringify(e)+'加入失敗!'));
 
+                    window.comments = "";
+
                 });
-                $$('#btnNote').click(function () {
-                    mainView.router.load({
-                        url:'message.html'
-                    });
+
+                $$('#btnNote').on('click', function () {
+                    myApp.popup('.popup-message');
                 });
 
             });

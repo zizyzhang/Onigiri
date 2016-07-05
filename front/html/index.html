@@ -159,9 +159,9 @@
         <div class="content-block">
             <div class="list-block">
                 <ul>
-                    <li ><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
-                    <li ><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
-                    <li ><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
+                    <li><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
+                    <li><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
+                    <li><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
 
                     <!--<li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>-->
                 </ul>
@@ -169,7 +169,47 @@
         </div>
     </div>
 </div>
+<div class="popup tablet-fullscreen popup-message">
 
+    <div data-page="message" class="page">
+        <div class="navbar">
+            <div class="navbar-inner">
+
+                <div class="left close-popup"><a href="#" class="link"><i class="icon  icon-back"></i></a>
+                </div>
+                <div class="center">備註留言板</div>
+                <!--<div class="right"><a href="#" class="link  "><i class=""></i></a></div>-->
+            </div>
+        </div>
+
+
+        <div class="toolbar toolbar-bottom">
+            <div class="toolbar-inner">
+
+
+                <a id="btnSend" href="#"
+                   class="button button-fill color-green close-popup  toolbar-button">
+                    確定
+                </a>
+
+            </div>
+        </div>
+
+        <!--<input type="text" id="comments" style="width: 100%;  border:solid 1px #dadada; padding:2px; height:100%; "/>-->
+        <div class="content-block" style="margin-top: 60px ;height: 100%; ">
+
+                            <textarea   id="comments" placeholder="請輸入文字"
+                                      style="height: 100%;width: 100%;border: none;font-size: 14pt; resize: none;"></textarea>
+
+        </div>
+
+
+        <!--<div class="content-block-title">Data list, with icons</div>-->
+
+
+    </div>
+
+</div>
 
 <!-- Path to Framework7 Library JS-->
 <script type="text/javascript" src="../../bower_components/Framework7/dist/js/framework7.min.js"></script>

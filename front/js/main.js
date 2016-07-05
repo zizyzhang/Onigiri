@@ -18,8 +18,8 @@ let ajaxMethod = require('./ajaxMethods.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
     SignUpPage = require('./pages/sign-up.js'),
     HowToCreate = require('./pages/how-to-create.js'),
-    GroupSettingSimple = require('./pages/group-setting-simple.js'),
-    MessagePage = require('./pages/message.js');
+    GroupSettingSimple = require('./pages/group-setting-simple.js');
+
     //Dom7 = require('dom7');
 
 // Initialize app
@@ -74,7 +74,7 @@ let pageEventBind = function () {
     let signUpPage = new SignUpPage(myApp, mainView);
     let howToCreate = new HowToCreate(myApp,mainView);
     let groupSettingSimple = new GroupSettingSimple(myApp, mainView);
-    let messagePage = new MessagePage(myApp,mainView);
+
 
 
 
@@ -90,7 +90,7 @@ let pageEventBind = function () {
     signUpPage.bind();
     howToCreate.bind();
     groupSettingSimple.bind();
-    messagePage.bind();
+
 
 }();
 
