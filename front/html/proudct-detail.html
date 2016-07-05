@@ -20,7 +20,7 @@
                 <ul>
                     {{#each orders}}
                     <li>
-                        <label class="item-content" data-ord-id="{{ordId}}" >
+                        <label class="item-content" data-ord-id="{{ordId}}" for="chbox-{{ordId}}">
                             <div class="item-media"><img style="border-radius: 50%;"
                                                          src="./../assets/img/img-dish-01.png" width="36"></div>
                             <div class="item-inner" id="ordId-{{ordId}}">
@@ -30,7 +30,7 @@
                                     <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
                                 </div>
                             </div>
-                            <div class="center-block"><input class="checkbox toggle" type="checkbox" style="margin-top:12px;" id="chbox-{{ordId}}"></div>
+                            <input class="checkbox toggle" type="checkbox" id="chbox-{{ordId}}">
                         </label>
 
                     </li>

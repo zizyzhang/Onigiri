@@ -33,7 +33,8 @@ class ProductDetailPage { //TODO first
 
                         if (isChecked) {
                             $$('#ordId-' + order.ordId).addClass('completed');
-                            $$('#ordId-' + order.ordId).attr('style', 'text-decoration:line-through');
+                            $$('#ordId-' + order.ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
+                            // $$('#ordId-' + order.ordId).attr('style', 'color:blue');
                             $$('#chbox-' + order.ordId).attr('checked', 'checked');
                         }
                     }
@@ -50,13 +51,13 @@ class ProductDetailPage { //TODO first
                         ajaxMethod.updateOrdStatusPromise(ordId);
                         // mainView.router.refreshPage();
                     } else {
-                        // $$('#ordId-'+ordId).css('text-decoration', 'line-through');
                         $$('#ordId-' + ordId).addClass('completed');
-                        $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through');
+                        $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
                         ajaxMethod.updateOrdStatusPromise(ordId);
                         // $$('#chbox-'+ordId).attr('checked','checked');
                     }
                 });
+
             });
         });
     }
