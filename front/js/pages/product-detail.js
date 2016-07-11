@@ -53,9 +53,9 @@ class ProductDetailPage { //TODO first
 
                 $$(".paid").click(function () {
                     let ordId = $$(this).dataset().ordId;
-                        $$('#ordId-' + ordId).addClass('completed');
-                        $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
-                        ajaxMethod.updateOrdStatusPromise(ordId);
+                    $$('#ordId-' + ordId).addClass('completed');
+                    $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
+                    ajaxMethod.updateOrdStatusPromise(ordId);
                 });
 
             });
