@@ -58,20 +58,20 @@ class MyGroups { //TODO first
 
                 });
 
+                $$('.btn-product-detail').click(function () {
+                    //product 抓到orders的  usrId 、dish.dihPrice、ordNum
+                    // let product = result.groupedOrders.find(obj=>obj.group.grpId===grpId);
+                    // console.log(JSON.stringify(product));
+                    
+                    //TODO deliver product to product-detail.js
+                    mainView.router.load({
+                        url:'proudct-detail.html'
+                    });
+                });
+
             });
 
-            //console.log(document.getElementById("a").innerHTML==" ");
-            //if(mainView.getElementById(a).innerHTML=="已送達"){
-            //    console.log("出現吧!!");
-            //}
-            //    console.log("asdfasdf"+"為");
-            //    $$('.statusa').html("未達到開團金額") ;
-            //
-            //}
-
         });
-
-
     }
 
 }

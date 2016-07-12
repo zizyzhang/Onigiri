@@ -1,0 +1,50 @@
+<div data-page="proudct-detail" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="my-groups.html" class=" link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">付款明細</div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        {{#each groupedOrders}}
+        <!--<div class="content-block-title">發起時間: {{group.grpCreateTime}}</div>-->
+        <!--<div class="content-block-title">截止時間: {{group.grpTime}}</div>-->
+        <div class="card demo-card-header-pic">
+            <div class="list-block media-list" style="margin-top: 0px;!important;">
+                <div class="card-header item-title-row">
+                    <div>{{group.merchant.metName}}</div>
+                    <div   class="status" style="color:green">{{group.grpStatusCh}}</div>
+                </div>
+                <ul>
+                    {{#each orders}}
+                    <li class="swipeout">
+                        <label class="item-content swipeout-content " data-ord-id="{{ordId}}">
+                            <div class="item-media"><img style="border-radius: 50%;"
+                                                         src="./../assets/img/img-dish-01.png" width="36"></div>
+                            <div class="item-inner" id="ordId-{{ordId}}">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="item-title">{{usrName}}</div>
+                                    <div class="center">{{dish.dihName}}*{{ordNum}}</div>
+                                    <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
+                                </div>
+                            </div>
+                            <div class="swipeout-actions-right">
+                                <a href="#" class="bg-red paid" data-ord-id="{{ordId}}">確認已付款</a>
+                            </div>
+                            <!--<input class="checkbox toggle" type="checkbox" id="chbox-{{ordId}}">-->
+                        </label>
+
+                    </li>
+
+                    {{/each}}
+
+                </ul>
+            </div>
+
+        </div>
+        {{/each}}
+    </div>
+</div>
+
