@@ -756,6 +756,7 @@ var Server = function Server() {
             //    return;
             //}
 
+            //只有0,1状态的团可以团购
             if (!_.includes([0, 1], db.GROUP.find(function (grp) {
                 return grp.grpId === grpId;
             }).grpStatus)) {
@@ -777,7 +778,6 @@ var Server = function Server() {
                     return row.dihId === dihId;
                 };
             };
-
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
             var _iteratorError9 = undefined;
