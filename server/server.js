@@ -154,7 +154,7 @@ var Server = function () {
             let metType = req.body.metType || '其他';
 
 
-            if (!(metName && metPhone && metMinPrice && metPhone.length === 10 && metMinPrice >= 0)) {
+            if (!(metName && metPhone && metMinPrice && metMinPrice >= 0)) {
                 res.json({success: false, msg: '資料輸入錯誤'});
                 return;
             }

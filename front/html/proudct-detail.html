@@ -40,6 +40,21 @@
 
                     {{/each}}
 
+                    {{#js_compare "this.orders.length===0"}}
+                    <li>
+                        <label class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="center">還沒有人加入此團購,快去邀請朋友加入吧~</div>
+                                </div>
+
+                            </div>
+
+                        </label>
+
+                    </li>
+                    {{/js_compare}}
+
                 </ul>
             </div>
 

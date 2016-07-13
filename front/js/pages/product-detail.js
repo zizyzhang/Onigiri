@@ -23,7 +23,7 @@ class ProductDetailPage { //TODO first
             // console.log('proudct-detail page init');
 
             tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
-
+                console.log(JSON.stringify(result));
                 for (let group of result.groupedOrders) {
                     for (let order of group.orders) {
                         let isChecked = order.ordStatus == 2;
