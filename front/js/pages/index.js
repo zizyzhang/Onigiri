@@ -34,6 +34,7 @@ class IndexPage {
 
                 $$('#txtUsrName').val(cookies.getJSON('user').usrName);
                 $$('#txtUsrPwd').val(cookies.get('usrPwdSha'));
+                setTimeout(()=>$$('#btn-login').click(), 100);
             }
 
             $$('#btnCreateGroup').click(function () {

@@ -38,7 +38,7 @@ class OrderPage {
                 el: '#order',
                 data:  page.query.ajaxResult,
                 computed:{
-                    isExtraOrder:()=>true
+                    isExtraOrder:()=>!!page.query.isExtraOrder
                 }
             });
 

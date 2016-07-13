@@ -572,17 +572,34 @@ var Server = function Server() {
         }
     };
 
-    //unjoined groups by user id
+    //unjoined and available groups by user id
     this.getUnjoinedGroups = function (usrId, callback) {
-        var joinedGroupIds = _.uniqBy(db.ORDER.find(function (ord) {
+        var that = this;
+
+        var joinedGroupIds = _.uniqBy(db.ORDER.filter(function (ord) {
             return ord.usrId === usrId;
         }), 'grpId').map(function (ord) {
             return ord.grpId;
         });
-        callback(db.GROUP.filter(function (grp) {
+
+        //包含了已经结束的团
+        var allUnjoinedGroups = db.GROUP.filter(function (grp) {
             return !joinedGroupIds.find(function (grpId) {
                 return grpId === grp.grpId;
             });
+        });
+
+        //并不是标准类别
+        var unjoinedAndAvailable = allUnjoinedGroups.filter(function (g) {
+            return g.grpStatus === 0 || g.grpStatus === 1;
+        });
+
+        var stdGroups = unjoinedAndAvailable.map(function (g) {
+            return that.createClassGroupByGroupId(g.grpId);
+        });
+
+        callback(_.sortBy(stdGroups, function (row) {
+            return -new Date(row.grpTime);
         }));
     };
 

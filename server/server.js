@@ -498,10 +498,22 @@ var Server = function () {
         }
     };
 
-    //unjoined groups by user id
+    //unjoined and available groups by user id
     this.getUnjoinedGroups = function (usrId, callback) {
-        let joinedGroupIds = _.uniqBy(db.ORDER.find(ord=>ord.usrId === usrId), 'grpId').map(ord=>ord.grpId);
-        callback(db.GROUP.filter(grp=> !joinedGroupIds.find(grpId=>grpId === grp.grpId)));
+        let that = this;
+
+        let joinedGroupIds = _.uniqBy(db.ORDER.filter(ord=>ord.usrId === usrId), 'grpId').map(ord=>ord.grpId);
+
+        //包含了已经结束的团
+        let allUnjoinedGroups = db.GROUP.filter(grp=> !joinedGroupIds.find(grpId=>grpId === grp.grpId));
+
+        //并不是标准类别
+        let unjoinedAndAvailable= allUnjoinedGroups.filter(g=>g.grpStatus === 0 || g.grpStatus === 1);
+
+        let stdGroups = unjoinedAndAvailable.map(g=>that.createClassGroupByGroupId(g.grpId));
+
+
+        callback(_.sortBy(stdGroups, row=>-new Date(row.grpTime)));
     };
 
     this.allGroup = function (callback) {

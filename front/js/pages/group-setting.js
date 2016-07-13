@@ -171,11 +171,11 @@ class GroupSettingPage {
                     console.log(result);
                     metId = result.merchant.metId;
                     let dishes = products.filter(o=>!o.del).map(row=> {
-                            return {
-                                dihName: row.productName,
-                                dihPrice: row.productPrice,
-                                metId: metId,
-                            };
+                        return {
+                            dihName: row.productName,
+                            dihPrice: row.productPrice,
+                            metId: metId,
+                        };
                     });
 
 
