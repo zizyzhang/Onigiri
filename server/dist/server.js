@@ -390,10 +390,13 @@ var Server = function Server() {
         });
     });
 
-    app.post('/updateOrdStatus/:ordId', function (req, res) {
-        var ordId = Number(req.params.ordId);
+    app.post('/updateOrdStatus', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var ordId = Number(req.body.ordId);
+        var ordStatus = Number(req.body.ordStatus);
+        // console.log("ordId:" + ordId + ",ordStatus:" + ordStatus);
 
-        self.updateOrdStatusPromise(ordId).then(function (result) {
+        self.updateOrdStatusPromise(ordId, ordStatus).then(function (result) {
             res.json(result);
         }).catch(function (e) {
             res.json(e);
@@ -823,7 +826,8 @@ var Server = function Server() {
                         dihId: dihId,
                         ordNum: num,
                         ordCreateTime: new Date().getTime(),
-                        ordStatus: 0
+                        //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                        ordStatus: 1
                     });
                 }
             } catch (err) {
@@ -1287,30 +1291,18 @@ var Server = function Server() {
         });
     };
 
-    this.updateOrdStatusPromise = function (ordId) {
+    this.updateOrdStatusPromise = function (ordId, ordStatus) {
         //TODO  一次只能修改一個ordId的ordStatus
         return new Promise(function (resolve, reject) {
             var order = db.ORDER.find(function (s) {
                 return ordId === s.ordId;
             });
 
-            if (order.ordStatus == 0) {
+            if (order.ordStatus != -1) {
                 db.setValueToJsonDb('ORDER', function (row) {
                     return row.ordId === order.ordId;
-                }, 'ordStatus', 1);
+                }, 'ordStatus', ordStatus);
                 //group.grpStatus = grpStatus;
-                resolve({ success: 1 });
-            } else if (order.ordStatus == 1) {
-                db.setValueToJsonDb('ORDER', function (row) {
-                    return row.ordId === order.ordId;
-                }, 'ordStatus', 2);
-                // console.log("ordStatus"+order.ordStatus);
-                resolve({ success: 1 });
-            } else if (order.ordStatus == 2) {
-                db.setValueToJsonDb('ORDER', function (row) {
-                    return row.ordId === order.ordId;
-                }, 'ordStatus', 1);
-                // console.log("ordStatus"+order.ordStatus);
                 resolve({ success: 1 });
             } else {
                 reject({ success: 0 });

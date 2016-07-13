@@ -355,10 +355,13 @@ var Server = function () {
         }
     );
 
-    app.post('/updateOrdStatus/:ordId',function (req,res) {
-        let ordId = Number(req.params.ordId);
+    app.post('/updateOrdStatus', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let ordId = Number(req.body.ordId);
+        let ordStatus = Number(req.body.ordStatus);
+        // console.log("ordId:" + ordId + ",ordStatus:" + ordStatus);
 
-        self.updateOrdStatusPromise(ordId).then(result=> {
+        self.updateOrdStatusPromise(ordId, ordStatus).then(result=> {
             res.json(result);
         }).catch(e=> {
             res.json(e);
@@ -608,7 +611,7 @@ var Server = function () {
             console.log('orderedDishIds', orderedDishIds);
 
             let selectRowByDishId = dihId => row=>row.dihId === dihId;
-            for (let {dihId,num} of dishes) {
+            for (let {dihId, num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
                     continue;
                 }
@@ -628,11 +631,12 @@ var Server = function () {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
-                    usrName:usrName,  //07.03 add
+                    usrName: usrName,  //07.03 add
                     dihId: dihId,
                     ordNum: num,
                     ordCreateTime: new Date().getTime(),
-                    ordStatus: 0
+                    //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                    ordStatus: 1
                 });
 
 
@@ -642,7 +646,7 @@ var Server = function () {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
-                usrName:usrName,  //07.03 add
+                usrName: usrName,  //07.03 add
                 grpId: grpId
             });
 
@@ -701,10 +705,10 @@ var Server = function () {
                 ordId: ord.ordId,
                 grpId: ord.grpId,
                 usrId: ord.usrId,
-                usrName:ord.usrName,   //07.03 add
+                usrName: ord.usrName,   //07.03 add
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
                 ordNum: ord.ordNum,
-                ordStatus:ord.ordStatus,    //07.03 add
+                ordStatus: ord.ordStatus,    //07.03 add
                 ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             };
             return newOrd;
@@ -735,10 +739,10 @@ var Server = function () {
                     ordId: ord.ordId,
                     grpId: ord.grpId,
                     usrId: ord.usrId,
-                    usrName:ord.usrName,   //07.03 add
+                    usrName: ord.usrName,   //07.03 add
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
                     ordNum: ord.ordNum,
-                    ordStatus:ord.ordStatus,    //07.03 add
+                    ordStatus: ord.ordStatus,    //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
                 };
                 return newOrd;
@@ -774,10 +778,10 @@ var Server = function () {
         let groupedOrderSums = [];
         //console.log('groups',db.GROUP);
 
-        for (let {group,orders} of groupedOrders) {
+        for (let {group, orders} of groupedOrders) {
             let orderSums = [];
 
-            for (let {ordId,group,usrId,dish,ordNum} of orders) {
+            for (let {ordId, group, usrId, dish, ordNum} of orders) {
                 //如果存在直接加
                 let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId);
                 if (order) {
@@ -929,22 +933,14 @@ var Server = function () {
         });
     };
 
-    this.updateOrdStatusPromise = function (ordId) {
+    this.updateOrdStatusPromise = function (ordId, ordStatus) {
         //TODO  一次只能修改一個ordId的ordStatus
         return new Promise((resolve, reject)=> {
             let order = db.ORDER.find(s=>ordId === s.ordId);
 
-            if (order.ordStatus == 0 ) {
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+            if (order.ordStatus != -1) {
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
                 //group.grpStatus = grpStatus;
-                resolve({success: 1});
-            }else if(order.ordStatus == 1){
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 2);
-                // console.log("ordStatus"+order.ordStatus);
-                resolve({success: 1});
-            }else if(order.ordStatus == 2){
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
-                // console.log("ordStatus"+order.ordStatus);
                 resolve({success: 1});
             }
             else {

@@ -202,9 +202,9 @@ var AjaxMethods = function () {
                 });
         });
     };
-    this.updateOrdStatusPromise = function (ordId) {
+    this.updateOrdStatusPromise = function (ordId,ordStatus) {
         return new Promise((resolve, reject)=> {
-            $$.post(SERVER_ADS + "/updateOrdStatus/"+ordId,
+            $$.post(SERVER_ADS + "/updateOrdStatus", {data: JSON.stringify({ordId, ordStatus})},
                 function (result) {
                     resolve(result);
                 });
