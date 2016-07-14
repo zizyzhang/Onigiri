@@ -97,6 +97,12 @@ class IndexPage {
                 homejschange.changeTabOrder();
                 //changeTabGroup();
             });
+            $$('#btnSend').click(function () {
+                console.log("comments index:"+$$('#comments').val());
+                window.comments = $$('#comments').val();
+                $$('#comments').val("");
+                console.log("test11");
+            });
 
         });
 

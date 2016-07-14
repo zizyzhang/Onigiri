@@ -30,6 +30,8 @@ let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
+//let commemtArrary = [];
+//let commentId;
 
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
@@ -287,6 +289,7 @@ var Server = function () {
             let usrId = Number(req.body.usrId);
             let dishes = req.body.dishes;
             let grpId = req.body.grpId;
+            let comments = req.body.comments;
 
             if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
                 res.json({success: false, msg: '資料不完整'});
@@ -294,7 +297,7 @@ var Server = function () {
             }
 
 
-            self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
+            self.joinGroupPromise(usrId, dishes, grpId,comments).then(result=> {
                 res.json(result);
             }).catch(e=> {
                 console.log(e);
@@ -477,6 +480,7 @@ var Server = function () {
      metPicUrl,
      metType}
      */
+
     this.addMerchantPromise = function (merchant) {
         return new Promise((resolve, reject)=> {
             merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
@@ -588,7 +592,7 @@ var Server = function () {
         callback({success: 1});
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId,comments) {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise((resolve, reject)=> {
@@ -646,8 +650,12 @@ var Server = function () {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
+
                 usrName: usrName,  //07.03 add
-                grpId: grpId
+
+                grpId: grpId,
+                comments:comments
+
             });
 
             //最小外送金額
@@ -931,7 +939,8 @@ var Server = function () {
             let status = db.GROUP.find(g=>grpId === g.grpId).grpStatus;
             resolve(status);
         });
-    };
+    }
+
 
     this.updateOrdStatusPromise = function (ordId, ordStatus) {
         //TODO  一次只能修改一個ordId的ordStatus

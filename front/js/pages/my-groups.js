@@ -25,6 +25,7 @@ class MyGroups { //TODO first
 
                 //let grpStatus = this.arrayOfSelectedDishIds = page.query.arrayOfSelectedDishIds || this.arrayOfSelectedDishIds;
                 console.log(page.query + "567");
+                //console.log("result.groupedOrderSums:"+JSON.stringify(result.groupedOrders));
 
                 $$('.btn-contact-merchant').click(function () {
                      window.location.href = 'tel:' + $$(this).data('met-phone');
@@ -45,7 +46,6 @@ class MyGroups { //TODO first
                             url:'group-setting.html',
                             query:{group}
                         });
-
 
                         return;
                     }

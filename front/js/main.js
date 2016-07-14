@@ -21,7 +21,7 @@ let ajaxMethod = require('./ajaxMethods.js'),
     ProductDetailPage = require('./pages/product-detail.js'),
     GroupSettingSimple = require('./pages/group-setting-simple.js');
 
-    // ProductDetailPage = require('./pages/product-detail.js');
+
     //Dom7 = require('dom7');
 
 // Initialize app
@@ -57,6 +57,10 @@ let mainView = myApp.addView('.view-main', {
         // tool.loadPage('my-groups.html',mainView,ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(1));
 
 
+        //mainView.router.loadPage('home.html');
+        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
+
+
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
     }
@@ -81,6 +85,7 @@ let pageEventBind = function () {
 
 
 
+
     groupDetailPage.bind();
     orderPage.bind();
     selectMerchantPage.bind();
@@ -94,6 +99,7 @@ let pageEventBind = function () {
     howToCreate.bind();
     groupSettingSimple.bind();
     productDetailPage.bind();
+
 
 
 

@@ -30,6 +30,9 @@ var client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 var authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
+//let commemtArrary = [];
+//let commentId;
+
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
@@ -330,13 +333,14 @@ var Server = function Server() {
         var usrId = Number(req.body.usrId);
         var dishes = req.body.dishes;
         var grpId = req.body.grpId;
+        var comments = req.body.comments;
 
         if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
             res.json({ success: false, msg: '資料不完整' });
             return;
         }
 
-        self.joinGroupPromise(usrId, dishes, grpId).then(function (result) {
+        self.joinGroupPromise(usrId, dishes, grpId, comments).then(function (result) {
             res.json(result);
         }).catch(function (e) {
             console.log(e);
@@ -553,6 +557,7 @@ var Server = function Server() {
      metPicUrl,
      metType}
      */
+
     this.addMerchantPromise = function (merchant) {
         return new Promise(function (resolve, reject) {
             merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
@@ -757,7 +762,7 @@ var Server = function Server() {
         callback({ success: 1 });
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         var _this = this;
 
         //console.log(JSON.stringify({usrId, dishes, grpId}));
@@ -851,8 +856,11 @@ var Server = function Server() {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
+
                 usrName: usrName, //07.03 add
-                grpId: grpId
+                grpId: grpId,
+                comments: comments
+
             });
 
             //最小外送金額
