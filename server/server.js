@@ -132,7 +132,7 @@ var Server = function () {
                 }
                 res.json({success: false, msg: '驗證碼輸入錯誤'});
                 return;
-            } else if (db.USER.find(o=>o.usrId === usrName)) {
+            } else if (db.USER.find(o=>o.usrName === usrName)) {
                 res.json({success: false, msg: '帳號名稱重複'});
                 return;
             }
@@ -640,7 +640,7 @@ var Server = function () {
                     ordNum: num,
                     ordCreateTime: new Date().getTime(),
                     //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-                    ordStatus: 1
+                    ordStatus: 0
                 });
 
 
@@ -785,13 +785,15 @@ var Server = function () {
     this.formatOrders = function (groupedOrders, callback) {
         let groupedOrderSums = [];
         //console.log('groups',db.GROUP);
+        //console.log('groupedOrdersgroupedOrdersgroupedOrders:', JSON.stringify(groupedOrders));
 
         for (let {group, orders} of groupedOrders) {
             let orderSums = [];
 
-            for (let {ordId, group, usrId, dish, ordNum} of orders) {
+            for (let {ordId, group, usrId, dish, ordNum , ordStatus} of orders) {
                 //如果存在直接加
                 let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId);
+
                 if (order) {
                     order.ordNum += ordNum;
                 } else {
@@ -951,6 +953,8 @@ var Server = function () {
                 db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
                 //group.grpStatus = grpStatus;
                 resolve({success: 1});
+
+
             }
             else {
                 reject({success: 0});

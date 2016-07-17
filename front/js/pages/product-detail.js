@@ -20,12 +20,12 @@ class ProductDetailPage { //TODO first
     bind() {
         myApp.onPageBeforeInit('proudct-detail', function (page) {//TODO second
             let hostId = cookies.getJSON('user').usrId;
-            // console.log('proudct-detail page init');
+             console.log('proudct-detail page init');
 
             tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
-                console.log(JSON.stringify(result));
-                for (let group of result.groupedOrders) {
-                    for (let order of group.orders) {
+                //console.log(JSON.stringify(result));
+                for (let groupedOrders of result.groupedOrders) {
+                    for (let order of groupedOrders.orders) {
                         let isChecked = order.ordStatus == 2;
 
                         if (isChecked) {

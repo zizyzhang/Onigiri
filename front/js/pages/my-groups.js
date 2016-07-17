@@ -64,8 +64,15 @@ class MyGroups { //TODO first
                     // console.log(JSON.stringify(product));
                     
                     //TODO deliver product to product-detail.js
-                    mainView.router.load({
+                    mainView.router.loadPage({
                         url:'proudct-detail.html'
+                    });
+                });
+
+                $$('#ConfirmMsg').click(function () {
+
+                    mainView.router.loadPage({
+                        url:'confirm-order.html'
                     });
                 });
 

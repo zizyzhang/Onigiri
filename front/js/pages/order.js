@@ -40,7 +40,7 @@ class OrderPage {
                 page.query.ajaxResult = window.orderAjaxResult;
             }
 
-                console.log(group.grpHost.usrName);
+                //console.log(group.grpHost.usrName);
 
 
             console.log('orderPage Query', page.query);
@@ -60,9 +60,8 @@ class OrderPage {
 
             self.dishes = group.grpDishes.map(gdh=>gdh.dish);
 
-                $$('#btnJoinGroup').click(()=> {
-                    let dishes = [];
-                    comments=window.comments;
+
+
 
             for (let groupDish of group.grpDishes) {
 
@@ -88,7 +87,7 @@ class OrderPage {
 
             $$('#btnJoinGroup').click(()=> {
                 let dishes = [];
-
+                comments=window.comments;
                 for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
                     if (odrDishNum === 0) {
                         continue;
@@ -122,7 +121,7 @@ class OrderPage {
                 });
 
 
-            });
+
         });
 
 

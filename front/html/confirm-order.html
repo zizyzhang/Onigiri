@@ -1,0 +1,64 @@
+<div data-page="confirm" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="my-groups.html" class="back link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">團主確認</div>
+            <!--<div class="right"><a id="selectAll" href="#" class="link ">全選</a></div>-->
+        </div>
+    </div>
+
+    <div class="page-content ">
+
+        {{#each groupedOrders}}
+        {{#js_compare "this.orders.length !== 0 "}}
+
+        <div class="content-block-title" id="grpId-{{group.grpId}}">{{group.merchant.metName}}
+
+            <!--<div class="card-header no-border">{{group.merchant.metName}}</div>-->
+            <div class="list-block accordion-list">
+                <ul>
+                    {{#each orders}}
+
+                    {{#js_compare "this.ordStatus===0"}}
+
+                    <li class="card accordion-item">
+                        <a href="#" class="item-content item-link">
+                            <div class="card-header item-title-row no-border item-inner ">
+                                <div class="item-title"><img style="border-radius: 50%;"
+                                                                  src="./../assets/img/img-dish-01.png" width="36">
+                                </div>
+                                <div class="center">{{usrName}}</div>
+                                <div class="item-after">待審查</div>
+                            </div>
+                        </a>
+
+                        <div class="accordion-item-content item-title-row">
+                            <div class="item-title-row card-content-inner content-block item-inner">
+                                <div class="item-title ">{{dish.dihName}}</div>
+                                <div class="center">{{ordNum}} 份</div>
+                                <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
+
+                            </div>
+                        </div>
+
+                        <div class="card-footer no-border">
+                            <a href="#" class="link button-fill button color-red refuse" data-ord-id="{{ordId}}">拒絕</a>
+                            <a href="#" class="link button-fill button color-green accept"
+                               data-ord-id="{{ordId}}">接受</a>
+                        </div>
+                    </li>
+
+
+                    {{/js_compare}}
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+
+        {{/js_compare}}
+
+        {{/each}}
+
+    </div>
+</div>

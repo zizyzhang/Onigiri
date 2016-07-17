@@ -19,7 +19,8 @@ let ajaxMethod = require('./ajaxMethods.js'),
     SignUpPage = require('./pages/sign-up.js'),
     HowToCreate = require('./pages/how-to-create.js'),
     ProductDetailPage = require('./pages/product-detail.js'),
-    GroupSettingSimple = require('./pages/group-setting-simple.js');
+    GroupSettingSimple = require('./pages/group-setting-simple.js'),
+    ConfirmPage = require('./pages/confirm-order.js');
 
 
     //Dom7 = require('dom7');
@@ -82,6 +83,7 @@ let pageEventBind = function () {
     let howToCreate = new HowToCreate(myApp,mainView);
     let groupSettingSimple = new GroupSettingSimple(myApp, mainView);
     let productDetailPage=new ProductDetailPage(myApp, mainView);
+    let confirmPage=new ConfirmPage(myApp, mainView);
 
 
 
@@ -99,7 +101,7 @@ let pageEventBind = function () {
     howToCreate.bind();
     groupSettingSimple.bind();
     productDetailPage.bind();
-
+    confirmPage.bind();
 
 
 
