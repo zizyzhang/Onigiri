@@ -407,6 +407,25 @@ var Server = function Server() {
         });
     });
 
+    app.get('/confirmOrder/:id', function (req, res) {
+        var usrId = Number(req.params.id);
+
+        self.confirmOrder(usrId).then(function (result) {
+            return res.json(result);
+        });
+    });
+    app.post('/getGrpMember', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrId = Number(req.body.usrId);
+        var grpId = Number(req.body.grpId);
+
+        self.getComment(usrId, grpId).then(function (result) {
+            res.json(result);
+        }).catch(function (e) {
+            res.json(e);
+        });
+    });
+
     app.listen(8080, function () {
         console.log('' + 'app listening on port 8080!');
     });
@@ -578,7 +597,6 @@ var Server = function Server() {
                         usrName: db.USER[index].usrName,
                         usrId: db.USER[index].usrId,
                         usrMobi: db.USER[index].usrMobi
-
                     }
                 });
                 return;
@@ -763,8 +781,6 @@ var Server = function Server() {
     };
 
     this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
-        var _this = this;
-
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise(function (resolve, reject) {
@@ -856,12 +872,9 @@ var Server = function Server() {
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
-
                 usrName: usrName, //07.03 add
-
                 grpId: grpId,
                 comments: comments
-
             });
 
             //最小外送金額
@@ -875,50 +888,52 @@ var Server = function Server() {
             }).metMinPrice;
             var amount = 0;
 
-            _this.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
-                //console.log(result.groupedOrderSums);
+            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
+                // console.log("result.groupedOrderSums"+JSON.stringify(result.groupedOrderSums));
                 var groupOrderSum = result.groupedOrderSums.find(function (orderSum) {
                     return orderSum.group.grpId === grpId;
                 });
                 console.log("groupOrderSum", groupOrderSum);
 
-                var _iteratorNormalCompletion10 = true;
-                var _didIteratorError10 = false;
-                var _iteratorError10 = undefined;
+                //TODO
+                if (groupOrderSum) {
+                    var _iteratorNormalCompletion10 = true;
+                    var _didIteratorError10 = false;
+                    var _iteratorError10 = undefined;
 
-                try {
-                    for (var _iterator10 = groupOrderSum.orderSums[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-                        var orderSum = _step10.value;
-
-                        var price = orderSum.dish.dihPrice;
-                        var num = orderSum.ordNum;
-                        var total = price * num;
-                        amount += total;
-                    }
-                } catch (err) {
-                    _didIteratorError10 = true;
-                    _iteratorError10 = err;
-                } finally {
                     try {
-                        if (!_iteratorNormalCompletion10 && _iterator10.return) {
-                            _iterator10.return();
+                        for (var _iterator10 = groupOrderSum.orderSums[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                            var orderSum = _step10.value;
+
+                            var price = orderSum.dish.dihPrice;
+                            var num = orderSum.ordNum;
+                            var total = price * num;
+                            amount += total;
                         }
+                    } catch (err) {
+                        _didIteratorError10 = true;
+                        _iteratorError10 = err;
                     } finally {
-                        if (_didIteratorError10) {
-                            throw _iteratorError10;
+                        try {
+                            if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                                _iterator10.return();
+                            }
+                        } finally {
+                            if (_didIteratorError10) {
+                                throw _iteratorError10;
+                            }
                         }
                     }
-                }
 
-                db.setValueToJsonDb("GROUP", function (row) {
-                    return row.grpId === grpId;
-                }, "grpAmount", amount);
-
-                if (amount >= metMinPrice) {
-                    g.grpStatus = 1;
                     db.setValueToJsonDb("GROUP", function (row) {
                         return row.grpId === grpId;
-                    }, "grpStatus", 1);
+                    }, "grpAmount", amount);
+
+                    if (amount >= metMinPrice) {
+                        db.setValueToJsonDb("GROUP", function (row) {
+                            return row.grpId === grpId;
+                        }, "grpStatus", 1);
+                    }
                 }
                 resolve({ success: 1 });
             }).catch(function (e) {
@@ -928,7 +943,7 @@ var Server = function Server() {
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
-        var _this2 = this;
+        var _this = this;
 
         var groupedOrders = [];
         var _iteratorNormalCompletion11 = true;
@@ -939,15 +954,18 @@ var Server = function Server() {
             var _loop2 = function _loop2() {
                 var order = _step11.value;
 
-                var tOrder = groupedOrders.find(function (gor) {
-                    return gor.group.grpId === order.grpId;
-                });
-                if (tOrder) {
-                    tOrder.orders.push(order);
-                } else {
+                if (order.ordStatus > 0) {
+                    // console.log("ordStatus:" + order.ordStatus);
+                    var tOrder = groupedOrders.find(function (gor) {
+                        return gor.group.grpId === order.grpId;
+                    });
+                    if (tOrder) {
+                        tOrder.orders.push(order);
+                    } else {
 
-                    var group = _this2.createClassGroupByGroupId(order.grpId);
-                    groupedOrders.push({ group: group, orders: [order] });
+                        var group = _this.createClassGroupByGroupId(order.grpId);
+                        groupedOrders.push({ group: group, orders: [order] });
+                    }
                 }
             };
 
@@ -965,6 +983,52 @@ var Server = function Server() {
             } finally {
                 if (_didIteratorError11) {
                     throw _iteratorError11;
+                }
+            }
+        }
+
+        return _.sortBy(groupedOrders, function (row) {
+            return -new Date(row.group.grpTime);
+        });
+    };
+
+    this.convertOrdersToGroupedOrdersUsr = function (orders) {
+        var _this2 = this;
+
+        var groupedOrders = [];
+        var _iteratorNormalCompletion12 = true;
+        var _didIteratorError12 = false;
+        var _iteratorError12 = undefined;
+
+        try {
+            var _loop3 = function _loop3() {
+                var order = _step12.value;
+
+                var tOrder = groupedOrders.find(function (gor) {
+                    return gor.group.grpId === order.grpId;
+                });
+                if (tOrder) {
+                    tOrder.orders.push(order);
+                } else {
+                    var group = _this2.createClassGroupByGroupId(order.grpId);
+                    groupedOrders.push({ group: group, orders: [order] });
+                }
+            };
+
+            for (var _iterator12 = orders[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                _loop3();
+            }
+        } catch (err) {
+            _didIteratorError12 = true;
+            _iteratorError12 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion12 && _iterator12.return) {
+                    _iterator12.return();
+                }
+            } finally {
+                if (_didIteratorError12) {
+                    throw _iteratorError12;
                 }
             }
         }
@@ -995,8 +1059,7 @@ var Server = function Server() {
             return newOrd;
         });
 
-        var groupedOrders = self.convertOrdersToGroupedOrders(orders);
-
+        var groupedOrders = self.convertOrdersToGroupedOrdersUsr(orders);
         callback(groupedOrders);
     };
 
@@ -1037,6 +1100,9 @@ var Server = function Server() {
 
             groupedOrders = self.convertOrdersToGroupedOrders(orders);
 
+            // console.log("ordersordersordersorders:" + JSON.stringify(orders));
+            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
+
             self.formatOrders(groupedOrders, function (result) {
                 groupedOrderSums = result;
             });
@@ -1055,11 +1121,75 @@ var Server = function Server() {
                 });
             }
 
+            // console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
+
+            resolve({
+                groupedOrders: _.orderBy(groupedOrders, function (obj) {
+                    return obj.group.grpCreateTime;
+                }, 'desc'),
+                // groupedOrderSums: _.sortBy(groupedOrderSums, obj=>obj.group.grpCreateTime)
+                groupedOrderSums: _.orderBy(groupedOrderSums, function (obj) {
+                    return obj.group.grpCreateTime;
+                }, 'desc')
+                // groupedOrderSums: groupedOrderSums
+            });
+        });
+    };
+
+    this.confirmOrder = function (hostId) {
+        var that = this;
+
+        return new Promise(function (resolve) {
+            var groupedOrders = [];
+            var groupedOrderSums = [];
+
+            var groupIds = db.GROUP.filter(function (grp) {
+                return grp.grpHostId === hostId;
+            });
+            var orders = db.ORDER.filter(function (ord) {
+
+                return db.GROUP.find(function (grp) {
+                    return grp.grpId === ord.grpId;
+                }).grpHostId === hostId;
+            }).map(function (ord) {
+
+                var newOrd = {
+                    ordId: ord.ordId,
+                    grpId: ord.grpId,
+                    usrId: ord.usrId,
+                    usrName: ord.usrName, //07.03 add
+                    dish: db.DISH.find(function (d) {
+                        return d.dihId === ord.dihId;
+                    }),
+                    ordNum: ord.ordNum,
+                    ordStatus: ord.ordStatus, //07.03 add
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
+                };
+                return newOrd;
+            });
+
+            groupedOrders = self.convertOrdersToGroupedOrdersUsr(orders);
+
+            self.formatOrders(groupedOrders, function (result) {
+                groupedOrderSums = result;
+            });
+
+            //處理空白團
+            var emptyGroups = db.GROUP.filter(function (grp) {
+                return grp.grpHostId === hostId && !db.ORDER.find(function (ord) {
+                    return ord.grpId === grp.grpId;
+                });
+            });
+            if (emptyGroups) {
+                emptyGroups.map(function (eptGroup) {
+                    var group = that.createClassGroupByGroupId(eptGroup.grpId);
+                    groupedOrders.push({ group: group, orders: [] });
+                    groupedOrderSums.push({ group: group, orderSums: [] });
+                });
+            }
             resolve({
                 groupedOrders: groupedOrders,
-                groupedOrderSums: _.sortBy(groupedOrderSums, function (obj) {
-                    return -obj.group.grpCreateTime;
-                })
+                groupedOrderSums: groupedOrderSums
             });
         });
     };
@@ -1069,31 +1199,31 @@ var Server = function Server() {
         //console.log('groups',db.GROUP);
         //console.log('groupedOrdersgroupedOrdersgroupedOrders:', JSON.stringify(groupedOrders));
 
-        var _iteratorNormalCompletion12 = true;
-        var _didIteratorError12 = false;
-        var _iteratorError12 = undefined;
+        var _iteratorNormalCompletion13 = true;
+        var _didIteratorError13 = false;
+        var _iteratorError13 = undefined;
 
         try {
-            for (var _iterator12 = groupedOrders[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-                var _step12$value = _step12.value;
-                var group = _step12$value.group;
-                var orders = _step12$value.orders;
+            for (var _iterator13 = groupedOrders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+                var _step13$value = _step13.value;
+                var group = _step13$value.group;
+                var orders = _step13$value.orders;
 
                 var orderSums = [];
 
-                var _iteratorNormalCompletion13 = true;
-                var _didIteratorError13 = false;
-                var _iteratorError13 = undefined;
+                var _iteratorNormalCompletion14 = true;
+                var _didIteratorError14 = false;
+                var _iteratorError14 = undefined;
 
                 try {
-                    var _loop3 = function _loop3() {
-                        var _step13$value = _step13.value;
-                        var ordId = _step13$value.ordId;
-                        var group = _step13$value.group;
-                        var usrId = _step13$value.usrId;
-                        var dish = _step13$value.dish;
-                        var ordNum = _step13$value.ordNum;
-                        var ordStatus = _step13$value.ordStatus;
+                    var _loop4 = function _loop4() {
+                        var _step14$value = _step14.value;
+                        var ordId = _step14$value.ordId;
+                        var group = _step14$value.group;
+                        var usrId = _step14$value.usrId;
+                        var dish = _step14$value.dish;
+                        var ordNum = _step14$value.ordNum;
+                        var ordStatus = _step14$value.ordStatus;
 
                         //如果存在直接加
                         var order = orderSums.find(function (orm) {
@@ -1107,20 +1237,20 @@ var Server = function Server() {
                         }
                     };
 
-                    for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-                        _loop3();
+                    for (var _iterator14 = orders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+                        _loop4();
                     }
                 } catch (err) {
-                    _didIteratorError13 = true;
-                    _iteratorError13 = err;
+                    _didIteratorError14 = true;
+                    _iteratorError14 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion13 && _iterator13.return) {
-                            _iterator13.return();
+                        if (!_iteratorNormalCompletion14 && _iterator14.return) {
+                            _iterator14.return();
                         }
                     } finally {
-                        if (_didIteratorError13) {
-                            throw _iteratorError13;
+                        if (_didIteratorError14) {
+                            throw _iteratorError14;
                         }
                     }
                 }
@@ -1160,16 +1290,16 @@ var Server = function Server() {
                 groupedOrderSums.push({ group: group, orderSums: orderSums });
             }
         } catch (err) {
-            _didIteratorError12 = true;
-            _iteratorError12 = err;
+            _didIteratorError13 = true;
+            _iteratorError13 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion12 && _iterator12.return) {
-                    _iterator12.return();
+                if (!_iteratorNormalCompletion13 && _iterator13.return) {
+                    _iterator13.return();
                 }
             } finally {
-                if (_didIteratorError12) {
-                    throw _iteratorError12;
+                if (_didIteratorError13) {
+                    throw _iteratorError13;
                 }
             }
         }
@@ -1303,6 +1433,15 @@ var Server = function Server() {
         });
     };
 
+    this.getComment = function (usrId, grpId) {
+        return new Promise(function (resolve) {
+            var comments = db.GROUP_MEMBER.find(function (g) {
+                return g.grpId === grpId && g.usrId === usrId;
+            }).comments;
+            resolve(comments);
+        });
+    };
+
     this.updateOrdStatusPromise = function (ordId, ordStatus) {
         //TODO  一次只能修改一個ordId的ordStatus
         return new Promise(function (resolve, reject) {
@@ -1333,27 +1472,27 @@ var Server = function Server() {
         try {
             req.body = JSON.parse(req.body.data);
             var rows = req.body.rows;
-            var _iteratorNormalCompletion14 = true;
-            var _didIteratorError14 = false;
-            var _iteratorError14 = undefined;
+            var _iteratorNormalCompletion15 = true;
+            var _didIteratorError15 = false;
+            var _iteratorError15 = undefined;
 
             try {
-                for (var _iterator14 = rows[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-                    var row = _step14.value;
+                for (var _iterator15 = rows[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                    var row = _step15.value;
 
                     db.pushToJsonDb(req.params.tableName, row);
                 }
             } catch (err) {
-                _didIteratorError14 = true;
-                _iteratorError14 = err;
+                _didIteratorError15 = true;
+                _iteratorError15 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion14 && _iterator14.return) {
-                        _iterator14.return();
+                    if (!_iteratorNormalCompletion15 && _iterator15.return) {
+                        _iterator15.return();
                     }
                 } finally {
-                    if (_didIteratorError14) {
-                        throw _iteratorError14;
+                    if (_didIteratorError15) {
+                        throw _iteratorError15;
                     }
                 }
             }

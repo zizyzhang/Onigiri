@@ -27,7 +27,7 @@ class ConfirmPage { //TODO first
             //let metId = Number(cookies.get('selectedMerchantId'));
 
             console.log('onPageBeforeInit : confirm');
-            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
+            tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getconfirmOrderPromise(hostId), page, function (result) {
                 //console.log(JSON.stringify(result));
 
                 let StatusByGrp = [];
@@ -55,7 +55,7 @@ class ConfirmPage { //TODO first
                 }
 
 
-                console.log(JSON.stringify(StatusByGrp));
+                // console.log(JSON.stringify(StatusByGrp));
 
 
                 $$('.refuse').click(function () {
@@ -73,7 +73,6 @@ class ConfirmPage { //TODO first
                     ajaxMethod.updateOrdStatusPromise(ordId, 1);
                     mainView.router.refreshPage();
                 });
-
 
             });
 

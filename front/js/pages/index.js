@@ -43,14 +43,17 @@ class IndexPage {
             $$('#btnMyGroups').click(function () {
 
                 mainView.router.loadPage({url: 'my-groups.html'});
+            });
 
+            $$('#btnConfirm').click(function () {
+
+                mainView.router.loadPage({url: 'confirm-order.html'});
             });
 
             $$('#txtUsrName').on('focus', function () {
                 $$('.usrName').css('color', 'white !important');
                 setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);
             });
-
 
             $$('#txtUsrPwd').on('click', function () {
                 setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);

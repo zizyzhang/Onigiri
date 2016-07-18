@@ -194,6 +194,15 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getconfirmOrderPromise = function (hostId) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/confirmOrder/" + hostId,
+                function (jsonData) {
+                    resolve(jsonData);
+                });
+        });
+    };
+
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/groupStatus?date=" + new Date(), {data: JSON.stringify({grpId, grpStatus})},
@@ -210,7 +219,15 @@ var AjaxMethods = function () {
                 });
         });
     };
-
+    this.getComment = function (usrId,grpId) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({usrId,grpId})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+    
 
 };
 

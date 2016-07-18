@@ -49,7 +49,6 @@ class ProductDetailPage { //TODO first
         });
     }
 }
-
 module.exports = ProductDetailPage;////TODO third
 //TODO fourth : 加入到Main.js里面注册bind方法
 
