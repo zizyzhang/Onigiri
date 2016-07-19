@@ -11,7 +11,7 @@ var SHA256 = require("crypto-js/sha256");
 
 const Public = require('../public.js');
 const cookies = require('js-cookie');
-
+window.comments = "";
 
 let homejschange = new home();
 class IndexPage {
@@ -24,8 +24,18 @@ class IndexPage {
     bind() {
         $$(document).on('DOMContentLoaded', function () {
 
-            if (!!cookies.getJSON('user') && cookies.get('usrPwdSha')) {
+            // var json={time:new Date().getTime()};
+            // window.history.replaceState("#");
+            // window.history.pushState(json,"","/Onigiri/front/html/index.html");
+            // window.history.pushState(json,"","#");
 
+            window.location.hash = "no-back-button";
+            window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
+            window.onhashchange = function () {
+                window.location.hash = "no-back-button";
+            };
+
+            if (!!cookies.getJSON('user') && cookies.get('usrPwdSha')) {
 
                 $$('#floatLabelName').addClass('not-empty-state');
                 $$('#floatLabelPwd').addClass('not-empty-state');
@@ -52,11 +62,11 @@ class IndexPage {
 
             $$('#txtUsrName').on('focus', function () {
                 $$('.usrName').css('color', 'white !important');
-                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000), 500);
             });
 
             $$('#txtUsrPwd').on('click', function () {
-                setTimeout(()=>$$('.login-screen-content').scrollTop(1000),500);
+                setTimeout(()=>$$('.login-screen-content').scrollTop(1000), 500);
             });
 
             $$('#btn-sign-up').click(function () {
@@ -64,7 +74,7 @@ class IndexPage {
                 mainView.router.loadPage({url: 'sign-up.html'});
             });
 
-            $$('#txtUsrPwd').on('keyup',function(){
+            $$('#txtUsrPwd').on('keyup', function () {
                 cookies.remove('usrPwdSha');
             });
 
@@ -84,10 +94,10 @@ class IndexPage {
                     }
 
                     myApp.closeModal();
-                    tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
+                    tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
                     //mainView.router.loadPage({url: 'home.html'});
                 }).catch(function (e) {
-                    myApp.alert('登录失败:' + e);
+                    myApp.alert('登入失敗:' + e);
                 });
 
             });
@@ -101,10 +111,8 @@ class IndexPage {
                 //changeTabGroup();
             });
             $$('#btnSend').click(function () {
-                console.log("comments index:"+$$('#comments').val());
                 window.comments = $$('#comments').val();
                 $$('#comments').val("");
-                console.log("test11");
             });
 
         });

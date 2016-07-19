@@ -17,7 +17,7 @@ class OrderPage {
         myApp = _myApp;
         mainView = _mainView;
     }
-
+    
     bind() {
         let self = this;
         myApp.onPageBeforeInit('order', function (page) {

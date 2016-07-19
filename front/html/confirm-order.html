@@ -39,7 +39,9 @@
                                 <div class="center">{{ordNum}} 份</div>
                                 <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
 
+
                             </div>
+
                         </div>
 
                         <div class="card-footer no-border">
@@ -52,6 +54,17 @@
 
                     {{/js_compare}}
                     {{/each}}
+                    <li>
+                        <div class="content-block  item-inner card-content-inner">備註:
+
+                            {{#each group.grpComments}}
+
+                            <div>{{usrName}}:{{comments}}</div>
+
+                            {{/each}}
+                        </div>
+                    </li>
+
                 </ul>
             </div>
         </div>

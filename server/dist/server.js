@@ -869,6 +869,10 @@ var Server = function Server() {
             var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
                 return gmr.gmrId;
             });
+            if (!comments) {
+                console.log("commentscomments=" + comments);
+                comments = "";
+            }
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
@@ -946,6 +950,7 @@ var Server = function Server() {
         var _this = this;
 
         var groupedOrders = [];
+
         var _iteratorNormalCompletion11 = true;
         var _didIteratorError11 = false;
         var _iteratorError11 = undefined;
@@ -964,6 +969,8 @@ var Server = function Server() {
                     } else {
 
                         var group = _this.createClassGroupByGroupId(order.grpId);
+                        console.log("====group" + JSON.stringify(group));
+
                         groupedOrders.push({ group: group, orders: [order] });
                     }
                 }
@@ -1328,6 +1335,7 @@ var Server = function Server() {
         }
 
         var menu = [];
+        var grpComments = [];
         var grpDishes = _.filter(db.GROUP_DISHES, function (grh) {
             return grh.grpId === group.grpId;
         }).map(function (grh) {
@@ -1357,6 +1365,43 @@ var Server = function Server() {
             return merchant.metId === group.metId;
         });
 
+        // grpComments.push(db.GROUP_MEMBER.filter(g=>g.grpId === grpId));
+
+        var grpCom = db.GROUP_MEMBER.filter(function (g) {
+            return g.grpId === grpId;
+        });
+
+        var _iteratorNormalCompletion15 = true;
+        var _didIteratorError15 = false;
+        var _iteratorError15 = undefined;
+
+        try {
+            for (var _iterator15 = grpCom[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                var gc = _step15.value;
+
+                if (gc.comments) {
+                    grpComments.push({
+                        'usrId': gc.usrId,
+                        'usrName': gc.usrName,
+                        'comments': gc.comments
+                    });
+                }
+            }
+        } catch (err) {
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion15 && _iterator15.return) {
+                    _iterator15.return();
+                }
+            } finally {
+                if (_didIteratorError15) {
+                    throw _iteratorError15;
+                }
+            }
+        }
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
@@ -1374,7 +1419,8 @@ var Server = function Server() {
             menu: menu,
             grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
-            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
+            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice),
+            grpComments: grpComments
         };
 
         return group;
@@ -1472,27 +1518,27 @@ var Server = function Server() {
         try {
             req.body = JSON.parse(req.body.data);
             var rows = req.body.rows;
-            var _iteratorNormalCompletion15 = true;
-            var _didIteratorError15 = false;
-            var _iteratorError15 = undefined;
+            var _iteratorNormalCompletion16 = true;
+            var _didIteratorError16 = false;
+            var _iteratorError16 = undefined;
 
             try {
-                for (var _iterator15 = rows[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-                    var row = _step15.value;
+                for (var _iterator16 = rows[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                    var row = _step16.value;
 
                     db.pushToJsonDb(req.params.tableName, row);
                 }
             } catch (err) {
-                _didIteratorError15 = true;
-                _iteratorError15 = err;
+                _didIteratorError16 = true;
+                _iteratorError16 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion15 && _iterator15.return) {
-                        _iterator15.return();
+                    if (!_iteratorNormalCompletion16 && _iterator16.return) {
+                        _iterator16.return();
                     }
                 } finally {
-                    if (_didIteratorError15) {
-                        throw _iteratorError15;
+                    if (_didIteratorError16) {
+                        throw _iteratorError16;
                     }
                 }
             }

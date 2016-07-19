@@ -372,22 +372,22 @@ var Server = function () {
     });
 
     app.get('/confirmOrder/:id', function (req, res) {
-            let usrId = Number(req.params.id);
+        let usrId = Number(req.params.id);
 
-            self.confirmOrder(usrId).then(result=>res.json(result));
-        });
+        self.confirmOrder(usrId).then(result=>res.json(result));
+    });
     app.post('/getGrpMember', function (req, res) {
-            req.body = JSON.parse(req.body.data);
-            let usrId = Number(req.body.usrId);
-            let grpId = Number(req.body.grpId);
+        req.body = JSON.parse(req.body.data);
+        let usrId = Number(req.body.usrId);
+        let grpId = Number(req.body.grpId);
 
-            self.getComment(usrId,grpId).then(result=> {
-                res.json(result);
-            }).catch(e=> {
-                res.json(e);
-            });
-
+        self.getComment(usrId, grpId).then(result=> {
+            res.json(result);
+        }).catch(e=> {
+            res.json(e);
         });
+
+    });
 
 
     app.listen(8080, function () {
@@ -664,6 +664,10 @@ var Server = function () {
             }
 
             let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
+            if (!comments) {
+                console.log("commentscomments="+comments);
+                comments = "";
+            }
             db.pushToJsonDb("GROUP_MEMBER", {
                 gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                 usrId: usrId,
@@ -706,6 +710,7 @@ var Server = function () {
 
     this.convertOrdersToGroupedOrders = function (orders) {
         let groupedOrders = [];
+
         for (let order of orders) {
             if (order.ordStatus > 0) {
                 // console.log("ordStatus:" + order.ordStatus);
@@ -715,6 +720,9 @@ var Server = function () {
                 } else {
 
                     let group = this.createClassGroupByGroupId(order.grpId);
+                    console.log("====group" + JSON.stringify(group));
+
+
                     groupedOrders.push({group: group, orders: [order]});
                 }
             }
@@ -940,6 +948,7 @@ var Server = function () {
         }
 
         let menu = [];
+        let grpComments = [];
         let grpDishes = _.filter(db.GROUP_DISHES, grh => grh.grpId === group.grpId).map(grh=> {
                 let grpDish = {};
                 grpDish.dish = _.find(db.DISH, dish=> dish.dihId === grh.dihId);
@@ -961,6 +970,22 @@ var Server = function () {
 
         let merchant = db.MERCHANT.find(merchant => merchant.metId === group.metId);
 
+        // grpComments.push(db.GROUP_MEMBER.filter(g=>g.grpId === grpId));
+
+
+        let grpCom = db.GROUP_MEMBER.filter(g=>g.grpId === grpId);
+
+        for (let gc of grpCom) {
+            if (gc.comments) {
+                grpComments.push({
+                    'usrId': gc.usrId,
+                    'usrName': gc.usrName,
+                    'comments': gc.comments
+                });
+            }
+        }
+
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
@@ -974,7 +999,8 @@ var Server = function () {
             menu: menu,
             grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
-            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
+            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice),
+            grpComments: grpComments
         };
 
         return group;
@@ -1027,10 +1053,10 @@ var Server = function () {
             resolve(status);
         });
     };
-    
-    this.getComment =function (usrId,grpId) {
+
+    this.getComment = function (usrId, grpId) {
         return new Promise(resolve=> {
-            let comments = db.GROUP_MEMBER.find(g=>g.grpId ===  grpId && g.usrId === usrId).comments;
+            let comments = db.GROUP_MEMBER.find(g=>g.grpId === grpId && g.usrId === usrId).comments;
             resolve(comments);
         });
     };
@@ -1044,7 +1070,6 @@ var Server = function () {
                 db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
                 //group.grpStatus = grpStatus;
                 resolve({success: 1});
-
 
             }
             else {
