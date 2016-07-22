@@ -60,9 +60,12 @@ class ConfirmPage { //TODO first
 
                 $$('.refuse').click(function () {
                     let ordId = $$(this).dataset().ordId;
+                    // let gmrId = $$(this).dataset().gmrId;
+                    
                     console.log("ordId:" + ordId);
 
                     ajaxMethod.updateOrdStatusPromise(ordId, -1);
+                    // ajaxMethod.getComment(gmrId, -1);
                     mainView.router.refreshPage();
                 });
 

@@ -219,9 +219,9 @@ var AjaxMethods = function () {
                 });
         });
     };
-    this.getComment = function (usrId,grpId) {
+    this.getComment = function (gmrId,comStatus) {
         return new Promise((resolve, reject)=> {
-            $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({usrId,grpId})},
+            $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({gmrId,comStatus})},
                 function (result) {
                     resolve(result);
                 });

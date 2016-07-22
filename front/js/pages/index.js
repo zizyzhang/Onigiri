@@ -28,7 +28,7 @@ class IndexPage {
             // window.history.replaceState("#");
             // window.history.pushState(json,"","/Onigiri/front/html/index.html");
             // window.history.pushState(json,"","#");
-
+            //控制返回鍵
             window.location.hash = "no-back-button";
             window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
             window.onhashchange = function () {
@@ -113,6 +113,12 @@ class IndexPage {
             $$('#btnSend').click(function () {
                 window.comments = $$('#comments').val();
                 $$('#comments').val("");
+            });
+
+            $$('#btnLogout').click(function () {
+                location.reload();
+
+                // $$('#txtUsrPwd').val("");
             });
 
         });

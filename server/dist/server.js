@@ -416,10 +416,10 @@ var Server = function Server() {
     });
     app.post('/getGrpMember', function (req, res) {
         req.body = JSON.parse(req.body.data);
-        var usrId = Number(req.body.usrId);
-        var grpId = Number(req.body.grpId);
+        var gmrId = Number(req.body.gmrId);
+        var comStatus = Number(req.body.comStatus);
 
-        self.getComment(usrId, grpId).then(function (result) {
+        self.getComment(gmrId, comStatus).then(function (result) {
             res.json(result);
         }).catch(function (e) {
             res.json(e);
@@ -878,6 +878,7 @@ var Server = function Server() {
                 usrId: usrId,
                 usrName: usrName, //07.03 add
                 grpId: grpId,
+                comStatus: 0,
                 comments: comments
             });
 
@@ -1381,9 +1382,11 @@ var Server = function Server() {
 
                 if (gc.comments) {
                     grpComments.push({
-                        'usrId': gc.usrId,
-                        'usrName': gc.usrName,
-                        'comments': gc.comments
+                        gmrId: gc.gmrId,
+                        usrId: gc.usrId,
+                        usrName: gc.usrName,
+                        comStatus: gc.comStatus,
+                        comments: gc.comments
                     });
                 }
             }
@@ -1479,8 +1482,9 @@ var Server = function Server() {
         });
     };
 
-    this.getComment = function (usrId, grpId) {
+    this.getComment = function (gmrId, comStatus) {
         return new Promise(function (resolve) {
+            //TODO
             var comments = db.GROUP_MEMBER.find(function (g) {
                 return g.grpId === grpId && g.usrId === usrId;
             }).comments;
