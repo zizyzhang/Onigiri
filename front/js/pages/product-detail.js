@@ -29,10 +29,9 @@ class ProductDetailPage { //TODO first
                 //     el: '#grpOrd',
                 //     data: result
                 // });
-                
-                
+
                 let GrpUsersOrders = {
-                    GrpUsersOrders:[]
+                    GrpUsersOrders: []
                 };
 
                 for (let grpOrd of result.groupedOrders) {
@@ -42,22 +41,25 @@ class ProductDetailPage { //TODO first
 
                     for (let order of grpOrd.orders) {
                         order.dish.ordNum = order.ordNum;
-                        let uosobj=uos.find(u=>u.usrId === order.usrId);
+                        let uosobj = uos.find(u=>u.usrId === order.usrId);
 
-                        if ( !uosobj ) {
+                        if (!uosobj) {
+
                             uos.push({
                                 usrId: order.usrId,
                                 usrName: order.usrName,
-                                usrAmount: 0,
+                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
                                 usrDishes: [order.dish],
-                                usrComments: _.filter(grpComments,(com) => com.usrId === order.usrId),
-                                usrOrdIds:[{ordId:order.ordId}]
+                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
+                                usrOrdIds: [{ordId: order.ordId}]
                             });
                             // console.log("====uos" + JSON.stringify(uos));
-                        }else{
+                        } else {
+                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
                             uosobj.usrDishes.push(order.dish);
-                            uosobj.usrOrdIds.push({ordId:order.ordId});
+                            uosobj.usrOrdIds.push({ordId: order.ordId});
                         }
+
                     }
                     // console.log("====uos" + JSON.stringify(uos));
 
@@ -66,47 +68,72 @@ class ProductDetailPage { //TODO first
                     GrpUsersOrders.GrpUsersOrders.push(neGUO);
                 }
                 // console.log("====result.groupedOrders" + JSON.stringify(result.groupedOrders));
-                console.log("====GrpUsersOrders" + JSON.stringify(GrpUsersOrders));
-
+                // console.log("====GrpUsersOrders" + JSON.stringify(GrpUsersOrders));
 
                 let groupOrder = new Vue({
                     el: '#grpOrd',
                     data: GrpUsersOrders
                 });
 
-
-                
                 for (let groupedOrders of result.groupedOrders) {
                     for (let order of groupedOrders.orders) {
                         let isChecked = order.ordStatus == 2;
 
                         if (isChecked) {
-                            $$('#ordId-' + order.ordId).addClass('completed');
-                            $$('#ordId-' + order.ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
-                            $$('#chbox-' + order.ordId).attr('checked', 'checked');
+                            let item = $$('#g' + order.grpId + 'u' + order.usrId);
+                            item.addClass('completed');
+                            item.attr('style', 'text-decoration:line-through; color:DarkGray;');
+                            item.attr('checked', 'checked');
+                            // $$('#icong' + order.grpId + 'u' + order.usrId).removeAttr('style');
+                            $$('#icong' + order.grpId + 'u' + order.usrId).attr('style', 'color:green; display:inline;');
                         }
                     }
                 }
 
                 $$(".paid").click(function () {
-                    let ordId = $$(this).dataset().ordId;
+                    let grpId = $$(this).dataset().grpId;
+                    let usrId = $$(this).dataset().usrId;
+                    console.log("====grpid" + grpId + "====usrId" + usrId);
                     //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     let ordStatus = 2;
-                    $$('#ordId-' + ordId).addClass('completed');
-                    $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
-                    ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
+                    let item = $$('#g' + grpId + 'u' + usrId);
+                    item.addClass('completed');
+                    item.attr('style', 'text-decoration:line-through; color:DarkGray;');
+                    $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:inline;');
+
+                    let usrOrdIds =
+                        GrpUsersOrders.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
+                    console.log(JSON.stringify(usrOrdIds));
+
+                    for (let ord of usrOrdIds) {
+                        let ordId = ord.ordId;
+                        ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
+                    }
+                    // ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                 });
 
                 $$(".unPaid").click(function () {
-                    let ordId = $$(this).dataset().ordId;
+                    let grpId = $$(this).dataset().grpId;
+                    let usrId = $$(this).dataset().usrId;
+                    console.log("====grpid" + grpId + "====usrId" + usrId);
+
                     //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     let ordStatus = 1;
-                    $$('#ordId-' + ordId).removeClass('completed');
-                    $$('#ordId-' + ordId).removeAttr('style');
-                    ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
+                    let item = $$('#g' + grpId + 'u' + usrId);
+                    item.removeClass('completed');
+                    item.removeAttr('style');
+                    $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:none;');
+                    let usrOrdIds =
+                        GrpUsersOrders.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
+                    console.log(JSON.stringify(usrOrdIds));
+
+                    for (let ord of usrOrdIds) {
+                        let ordId = ord.ordId;
+                        ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
+                    }
+                    // ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                 });
             });
-
 
             // tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
             //     // console.log(JSON.stringify(result));

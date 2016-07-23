@@ -6,54 +6,56 @@
             <div class="center">付款明細</div>
         </div>
     </div>
+
     <div class="page-content" id="grpOrd">
         <!--<div class="card demo-card-header-pic" v-for="groupOrder in groupedOrders">-->
-        <div class="card demo-card-header-pic" v-for="groupOrder in GrpUsersOrders">
+
+        <div class="" v-for="groupOrder in GrpUsersOrders">
+            <div class="card-header item-title-row">
+                <div>{{groupOrder.group.merchant.metName}}</div>
+                <div class="status" style="color:green">{{groupOrder.group.grpStatusCh}}</div>
+            </div>
+
             <div class="list-block media-list" style="margin-top: 0px;!important;">
-                <div class="card-header item-title-row">
-                    <div>{{groupOrder.group.merchant.metName}}</div>
-                    <div class="status" style="color:green">{{groupOrder.group.grpStatusCh}}</div>
-                </div>
 
+                <ul v-if="groupOrder.usrOrders.length !== 0">
+                    <li class=" swipeout " v-for="usrOrder in groupOrder.usrOrders">
 
-                <!--<ul v-if="groupOrder.orders.length!==0">-->
-                <ul v-if="groupOrder.usrOrders.length!==0" v-for="usrOrder in groupOrder.usrOrders">
-                    <!--<li class="swipeout" v-for="order in groupOrder.orders">-->
-                    <li class="swipeout" v-for="usrDish in usrOrder.usrDishes">
-                        <!--<label class="item-content swipeout-content " data-ord-id="{{order.ordId}}">-->
-                        <label class="item-content swipeout-content " data-ord-id="">
-                            <div class="item-media"><img style="border-radius: 50%;"
-                                                         src="./../assets/img/img-dish-01.png" width="36"></div>
-                            <!--<div class="item-inner" id="ordId-{{order.ordId}}">-->
-                            <div class="item-inner" id="">
-                                <div class="item-title-row" style="line-height: 36px;">
-                                    <!--<div class="item-title">{{order.usrName}}</div>-->
-                                    <!--<div class="center">{{order.dish.dihName}}*{{order.ordNum}}</div>-->
-                                    <!--<div class="item-after">NT{{order.ordNum*order.dish.dihPrice}}</div>-->
+                        <div class="card swipeout">
+                            <div class="card-header">
+                                <!--<div class=" item-media card-content item-title-row">-->
+                                <span class="ficon" style="display:none;"
+                                      id="icong{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">W</span>
+                                <img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36">
+                                <div class="center">{{usrOrder.usrName}}</div>
+                                <div class="item-after">總額:NT{{usrOrder.usrAmount}}</div>
+                                <span class="ficon">$</span>
 
-                                    <div class="item-title">{{usrOrder.usrName}}</div>
-                                    <div class="center">{{usrDish.dihName}}*{{usrDish.ordNum}}</div>
-                                    <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}}</div>
-
+                                <!--</div>-->
+                                <div class="swipeout-actions-right">
+                                    <a href="#" class="bg-red paid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">確認已付款</a>
+                                    <a href="#" class="unPaid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">取消</a>
+                                </div>
+                                <div class="swipeout-actions-left">
+                                    <a href="#" class="unPaid " data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">取消</a>
+                                    <a href="#" class="bg-red paid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">確認已付款</a>
                                 </div>
                             </div>
-                        </label>
-                        <div class="swipeout-actions-right">
-                            <!--<a href="#" class="bg-red paid" data-ord-id="{{order.ordId}}">確認已付款</a>-->
-                            <!--<a href="#" class="unPaid" data-ord-id="{{order.ordId}}">取消</a>-->
-
-                            <a href="#" class="bg-red paid" data-ord-id="">確認已付款</a>
-                            <a href="#" class="unPaid" data-ord-id="">取消</a>
-                        </div>
-                        <div class="swipeout-actions-left">
-                            <!--<a href="#" class="bg-red paid" data-ord-id="{{order.ordId}}">確認已付款</a>-->
-                            <!--<a href="#" class="unPaid " data-ord-id="{{order.ordId}}">取消</a>-->
-
-                            <a href="#" class="bg-red paid" data-ord-id="">確認已付款</a>
-                            <a href="#" class="unPaid " data-ord-id="">取消</a>
+                            <div class=""  id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
+                            <ul v-for="usrDish in usrOrder.usrDishes">
+                                <li class="item-title-row item-inner" style="line-height: 36px;">
+                                    <div>{{usrDish.dihName}}</div>
+                                    <div class="center">{{usrDish.ordNum}}份</div>
+                                    <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}} <span></span></div>
+                                </li>
+                            </ul>
+                            </div>
                         </div>
                     </li>
-
                 </ul>
                 <ul v-else>
                     <li>
@@ -62,7 +64,6 @@
                                 <div class="item-title-row" style="line-height: 36px;">
                                     <div class="center">還沒有人加入此團購,快去邀請朋友加入吧~</div>
                                 </div>
-
                             </div>
                         </label>
                     </li>
@@ -70,6 +71,7 @@
 
 
             </div>
+
 
         </div>
     </div>
