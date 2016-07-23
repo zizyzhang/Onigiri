@@ -6,40 +6,56 @@
             <div class="center">付款明細</div>
         </div>
     </div>
-    <div class="page-content">
-        {{#each groupedOrders}}
-        <!--<div class="content-block-title">發起時間: {{group.grpCreateTime}}</div>-->
-        <!--<div class="content-block-title">截止時間: {{group.grpTime}}</div>-->
-        <div class="card demo-card-header-pic">
+    <div class="page-content" id="grpOrd">
+        <!--<div class="card demo-card-header-pic" v-for="groupOrder in groupedOrders">-->
+        <div class="card demo-card-header-pic" v-for="groupOrder in GrpUsersOrders">
             <div class="list-block media-list" style="margin-top: 0px;!important;">
                 <div class="card-header item-title-row">
-                    <div>{{group.merchant.metName}}</div>
-                    <div   class="status" style="color:green">{{group.grpStatusCh}}</div>
+                    <div>{{groupOrder.group.merchant.metName}}</div>
+                    <div class="status" style="color:green">{{groupOrder.group.grpStatusCh}}</div>
                 </div>
-                <ul>
-                    {{#each orders}}
-                    <li class="swipeout">
-                        <label class="item-content swipeout-content " data-ord-id="{{ordId}}">
+
+
+                <!--<ul v-if="groupOrder.orders.length!==0">-->
+                <ul v-if="groupOrder.usrOrders.length!==0" v-for="usrOrder in groupOrder.usrOrders">
+                    <!--<li class="swipeout" v-for="order in groupOrder.orders">-->
+                    <li class="swipeout" v-for="usrDish in usrOrder.usrDishes">
+                        <!--<label class="item-content swipeout-content " data-ord-id="{{order.ordId}}">-->
+                        <label class="item-content swipeout-content " data-ord-id="">
                             <div class="item-media"><img style="border-radius: 50%;"
                                                          src="./../assets/img/img-dish-01.png" width="36"></div>
-                            <div class="item-inner" id="ordId-{{ordId}}">
+                            <!--<div class="item-inner" id="ordId-{{order.ordId}}">-->
+                            <div class="item-inner" id="">
                                 <div class="item-title-row" style="line-height: 36px;">
-                                    <div class="item-title">{{usrName}}</div>
-                                    <div class="center">{{dish.dihName}}*{{ordNum}}</div>
-                                    <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
+                                    <!--<div class="item-title">{{order.usrName}}</div>-->
+                                    <!--<div class="center">{{order.dish.dihName}}*{{order.ordNum}}</div>-->
+                                    <!--<div class="item-after">NT{{order.ordNum*order.dish.dihPrice}}</div>-->
+
+                                    <div class="item-title">{{usrOrder.usrName}}</div>
+                                    <div class="center">{{usrDish.dihName}}*{{usrDish.ordNum}}</div>
+                                    <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}}</div>
+
                                 </div>
                             </div>
-                            <div class="swipeout-actions-right">
-                                <a href="#" class="bg-red paid" data-ord-id="{{ordId}}">確認已付款</a>
-                            </div>
-                            <!--<input class="checkbox toggle" type="checkbox" id="chbox-{{ordId}}">-->
                         </label>
+                        <div class="swipeout-actions-right">
+                            <!--<a href="#" class="bg-red paid" data-ord-id="{{order.ordId}}">確認已付款</a>-->
+                            <!--<a href="#" class="unPaid" data-ord-id="{{order.ordId}}">取消</a>-->
 
+                            <a href="#" class="bg-red paid" data-ord-id="">確認已付款</a>
+                            <a href="#" class="unPaid" data-ord-id="">取消</a>
+                        </div>
+                        <div class="swipeout-actions-left">
+                            <!--<a href="#" class="bg-red paid" data-ord-id="{{order.ordId}}">確認已付款</a>-->
+                            <!--<a href="#" class="unPaid " data-ord-id="{{order.ordId}}">取消</a>-->
+
+                            <a href="#" class="bg-red paid" data-ord-id="">確認已付款</a>
+                            <a href="#" class="unPaid " data-ord-id="">取消</a>
+                        </div>
                     </li>
 
-                    {{/each}}
-
-                    {{#js_compare "this.orders.length===0"}}
+                </ul>
+                <ul v-else>
                     <li>
                         <label class="item-content">
                             <div class="item-inner">
@@ -48,19 +64,15 @@
                                 </div>
 
                             </div>
-
                         </label>
-
                     </li>
-                    {{/js_compare}}
-
                 </ul>
+
+
             </div>
 
         </div>
-        {{/each}}
     </div>
-
 
 </div>
 
