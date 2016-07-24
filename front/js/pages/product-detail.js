@@ -42,7 +42,7 @@ class ProductDetailPage { //TODO first
                     $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:inline;');
 
                     let usrOrdIds =
-                        GrpUsersOrders.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
                     console.log(JSON.stringify(usrOrdIds));
 
                     for (let ord of usrOrdIds) {
@@ -63,7 +63,7 @@ class ProductDetailPage { //TODO first
                     item.removeAttr('style');
                     $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:none;');
                     let usrOrdIds =
-                        GrpUsersOrders.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
                     console.log(JSON.stringify(usrOrdIds));
 
                     for (let ord of usrOrdIds) {

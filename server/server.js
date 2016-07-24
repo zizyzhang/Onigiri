@@ -380,7 +380,6 @@ var Server = function () {
     app.get('/grpUsersOrdersByHostId/:hostId', function (req, res) {
         let hostId = Number(req.params.hostId);
         let from = Number(req.query.from);
-        console.log(hostId + "," + from);
         self.getGrpUsersOrdersByHostIdPromise(hostId, from).then(result=>res.json(result));
     });
 
@@ -1095,9 +1094,42 @@ var Server = function () {
             console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
+                let GrpUsersOrders = {
+                    GrpUsersOrders:[]
+                };
+
+                for (let grpOrd of result.groupedOrders) {
+                    let neGUO = {};
+                    let uos = [];
+                    let grpComments = grpOrd.group.grpComments;
+
+                    for (let order of grpOrd.orders) {
+                        order.dish.ordNum = order.ordNum;
+                        let uosobj = uos.find(u=>u.usrId === order.usrId);
+                        if (!uosobj) {
+                            uos.push({
+                                usrId: order.usrId,
+                                usrName: order.usrName,
+                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                                usrDishes: [order.dish],
+                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
+                                usrOrdIds: [{ordId: order.ordId}]
+                            });
+                        } else {
+                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                            uosobj.usrDishes.push(order.dish);
+                            uosobj.usrOrdIds.push({ordId: order.ordId});
+                        }
+                    }
+                    neGUO = {
+                        group: grpOrd.group,
+                        usrOrders: uos
+                    };
+                    GrpUsersOrders.GrpUsersOrders.push(neGUO);
+                }
 
                 // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
-                resolve(result);
+                resolve(GrpUsersOrders);
             });
 
 
