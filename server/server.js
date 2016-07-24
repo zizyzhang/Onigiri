@@ -376,6 +376,16 @@ var Server = function () {
 
         self.confirmOrder(usrId).then(result=>res.json(result));
     });
+
+    app.post('/grpUsersOrdersByHostId', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let hostId = Number(req.body.hostId);
+        let from = Number(req.body.from);
+        console.log(hostId + "," + from);
+        self.getGrpUsersOrdersByHostIdPromise(hostId, from).then(result=>res.json(result));
+    });
+
+
     app.post('/getGrpMember', function (req, res) {
         req.body = JSON.parse(req.body.data);
         let gmrId = Number(req.body.gmrId);
@@ -665,7 +675,7 @@ var Server = function () {
 
             let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
             if (!comments) {
-                console.log("commentscomments="+comments);
+                console.log("commentscomments=" + comments);
                 comments = "";
             }
             db.pushToJsonDb("GROUP_MEMBER", {
@@ -673,7 +683,7 @@ var Server = function () {
                 usrId: usrId,
                 usrName: usrName,  //07.03 add
                 grpId: grpId,
-                comStatus:0,
+                comStatus: 0,
                 comments: comments
             });
 
@@ -721,8 +731,7 @@ var Server = function () {
                 } else {
 
                     let group = this.createClassGroupByGroupId(order.grpId);
-                    console.log("====group" + JSON.stringify(group));
-
+                    // console.log("====group" + JSON.stringify(group));
 
                     groupedOrders.push({group: group, orders: [order]});
                 }
@@ -982,7 +991,7 @@ var Server = function () {
                     gmrId: gc.gmrId,
                     usrId: gc.usrId,
                     usrName: gc.usrName,
-                    comStatus:gc.comStatus,
+                    comStatus: gc.comStatus,
                     comments: gc.comments
                 });
             }
@@ -1066,7 +1075,7 @@ var Server = function () {
     };
 
     this.updateOrdStatusPromise = function (ordId, ordStatus) {
-        //TODO  一次只能修改一個ordId的ordStatus
+        //一次只能修改一個ordId的ordStatus
         return new Promise((resolve, reject)=> {
             let order = db.ORDER.find(s=>ordId === s.ordId);
 
@@ -1080,6 +1089,59 @@ var Server = function () {
                 reject({success: 0});
             }
         });
+    };
+
+    this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
+        //from :  0=> confirmOrder  , 1=>productDetail
+        return new Promise(resolve=> {
+            console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
+
+            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=>{
+                let GrpUsersOrders = {
+                    GrpUsersOrders:[]
+                };
+
+                for (let grpOrd of result.groupedOrders) {
+                    let neGUO = {};
+                    let uos = [];
+                    let grpComments = grpOrd.group.grpComments;
+
+                    for (let order of grpOrd.orders) {
+                        order.dish.ordNum = order.ordNum;
+                        let uosobj = uos.find(u=>u.usrId === order.usrId);
+                        if (!uosobj) {
+                            uos.push({
+                                usrId: order.usrId,
+                                usrName: order.usrName,
+                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                                usrDishes: [order.dish],
+                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
+                                usrOrdIds: [{ordId: order.ordId}]
+                            });
+                        } else {
+                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                            uosobj.usrDishes.push(order.dish);
+                            uosobj.usrOrdIds.push({ordId: order.ordId});
+                        }
+                    }
+                    neGUO = {
+                        group: grpOrd.group,
+                        usrOrders: uos
+                    };
+                    GrpUsersOrders.GrpUsersOrders.push(neGUO);
+                }
+
+                console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                resolve(GrpUsersOrders);
+            });
+
+
+        });
+    };
+
+    this.convertGroupedOrdersToGrpUsrOrders = function (hostId) {
+
+        // callback(GrpUsersOrders);
     };
 
     ///////////////////後臺

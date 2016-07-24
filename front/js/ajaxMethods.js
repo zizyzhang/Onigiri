@@ -211,6 +211,7 @@ var AjaxMethods = function () {
                 });
         });
     };
+    
     this.updateOrdStatusPromise = function (ordId,ordStatus) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/updateOrdStatus", {data: JSON.stringify({ordId, ordStatus})},
@@ -219,6 +220,16 @@ var AjaxMethods = function () {
                 });
         });
     };
+    
+    this.getGrpUsersOrdersByHostIdPromise = function (hostId,from) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/grpUsersOrdersByHostId", {data: JSON.stringify({hostId, from})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+    
     this.getComment = function (gmrId,comStatus) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({gmrId,comStatus})},

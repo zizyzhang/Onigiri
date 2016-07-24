@@ -22,73 +22,13 @@ class ProductDetailPage { //TODO first
             let hostId = cookies.getJSON('user').usrId;
             console.log('proudct-detail page init');
 
+            ajaxMethod.getGrpUsersOrdersByHostIdPromise(hostId,1).then(function (result) {
 
-            ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
-
-                // let groupOrder = new Vue({
-                //     el: '#grpOrd',
-                //     data: result
-                // });
-
-                let GrpUsersOrders = {
-                    GrpUsersOrders: []
-                };
-
-                for (let grpOrd of result.groupedOrders) {
-                    let neGUO = {};
-                    let uos = [];
-                    let grpComments = grpOrd.group.grpComments;
-
-                    for (let order of grpOrd.orders) {
-                        order.dish.ordNum = order.ordNum;
-                        let uosobj = uos.find(u=>u.usrId === order.usrId);
-
-                        if (!uosobj) {
-
-                            uos.push({
-                                usrId: order.usrId,
-                                usrName: order.usrName,
-                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                usrDishes: [order.dish],
-                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
-                                usrOrdIds: [{ordId: order.ordId}]
-                            });
-                            // console.log("====uos" + JSON.stringify(uos));
-                        } else {
-                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                            uosobj.usrDishes.push(order.dish);
-                            uosobj.usrOrdIds.push({ordId: order.ordId});
-                        }
-
-                    }
-                    // console.log("====uos" + JSON.stringify(uos));
-
-                    neGUO.group = grpOrd.group;
-                    neGUO.usrOrders = uos;
-                    GrpUsersOrders.GrpUsersOrders.push(neGUO);
-                }
-                // console.log("====result.groupedOrders" + JSON.stringify(result.groupedOrders));
-                // console.log("====GrpUsersOrders" + JSON.stringify(GrpUsersOrders));
-
+                console.log('====result' + JSON.stringify(result));
                 let groupOrder = new Vue({
                     el: '#grpOrd',
-                    data: GrpUsersOrders
+                    data: result
                 });
-
-                for (let groupedOrders of result.groupedOrders) {
-                    for (let order of groupedOrders.orders) {
-                        let isChecked = order.ordStatus == 2;
-
-                        if (isChecked) {
-                            let item = $$('#g' + order.grpId + 'u' + order.usrId);
-                            item.addClass('completed');
-                            item.attr('style', 'text-decoration:line-through; color:DarkGray;');
-                            item.attr('checked', 'checked');
-                            // $$('#icong' + order.grpId + 'u' + order.usrId).removeAttr('style');
-                            $$('#icong' + order.grpId + 'u' + order.usrId).attr('style', 'color:green; display:inline;');
-                        }
-                    }
-                }
 
                 $$(".paid").click(function () {
                     let grpId = $$(this).dataset().grpId;
@@ -109,7 +49,6 @@ class ProductDetailPage { //TODO first
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
-                    // ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                 });
 
                 $$(".unPaid").click(function () {
@@ -131,10 +70,25 @@ class ProductDetailPage { //TODO first
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
-                    // ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                 });
             });
 
+            ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
+                for (let groupedOrders of result.groupedOrders) {
+                    for (let order of groupedOrders.orders) {
+                        let isChecked = order.ordStatus == 2;
+
+                        if (isChecked) {
+                            let item = $$('#g' + order.grpId + 'u' + order.usrId);
+                            item.addClass('completed');
+                            item.attr('style', 'text-decoration:line-through; color:DarkGray;');
+                            item.attr('checked', 'checked');
+                            // $$('#icong' + order.grpId + 'u' + order.usrId).removeAttr('style');
+                            $$('#icong' + order.grpId + 'u' + order.usrId).attr('style', 'color:green; display:inline;');
+                        }
+                    }
+                }
+            });
             // tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
             //     // console.log(JSON.stringify(result));
             //
