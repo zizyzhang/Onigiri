@@ -415,10 +415,9 @@ var Server = function Server() {
         });
     });
 
-    app.post('/grpUsersOrdersByHostId', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        var hostId = Number(req.body.hostId);
-        var from = Number(req.body.from);
+    app.get('/grpUsersOrdersByHostId/:hostId', function (req, res) {
+        var hostId = Number(req.params.hostId);
+        var from = Number(req.query.from);
         console.log(hostId + "," + from);
         self.getGrpUsersOrdersByHostIdPromise(hostId, from).then(function (result) {
             return res.json(result);
@@ -1528,93 +1527,9 @@ var Server = function Server() {
             console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
-                var GrpUsersOrders = {
-                    GrpUsersOrders: []
-                };
 
-                var _iteratorNormalCompletion16 = true;
-                var _didIteratorError16 = false;
-                var _iteratorError16 = undefined;
-
-                try {
-                    for (var _iterator16 = result.groupedOrders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-                        var grpOrd = _step16.value;
-
-                        var neGUO = {};
-                        var uos = [];
-                        var grpComments = grpOrd.group.grpComments;
-
-                        var _iteratorNormalCompletion17 = true;
-                        var _didIteratorError17 = false;
-                        var _iteratorError17 = undefined;
-
-                        try {
-                            var _loop5 = function _loop5() {
-                                var order = _step17.value;
-
-                                order.dish.ordNum = order.ordNum;
-                                var uosobj = uos.find(function (u) {
-                                    return u.usrId === order.usrId;
-                                });
-                                if (!uosobj) {
-                                    uos.push({
-                                        usrId: order.usrId,
-                                        usrName: order.usrName,
-                                        usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                        usrDishes: [order.dish],
-                                        usrComments: _.filter(grpComments, function (com) {
-                                            return com.usrId === order.usrId;
-                                        }),
-                                        usrOrdIds: [{ ordId: order.ordId }]
-                                    });
-                                } else {
-                                    uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                                    uosobj.usrDishes.push(order.dish);
-                                    uosobj.usrOrdIds.push({ ordId: order.ordId });
-                                }
-                            };
-
-                            for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                                _loop5();
-                            }
-                        } catch (err) {
-                            _didIteratorError17 = true;
-                            _iteratorError17 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion17 && _iterator17.return) {
-                                    _iterator17.return();
-                                }
-                            } finally {
-                                if (_didIteratorError17) {
-                                    throw _iteratorError17;
-                                }
-                            }
-                        }
-
-                        neGUO = {
-                            group: grpOrd.group,
-                            usrOrders: uos
-                        };
-                        GrpUsersOrders.GrpUsersOrders.push(neGUO);
-                    }
-                } catch (err) {
-                    _didIteratorError16 = true;
-                    _iteratorError16 = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion16 && _iterator16.return) {
-                            _iterator16.return();
-                        }
-                    } finally {
-                        if (_didIteratorError16) {
-                            throw _iteratorError16;
-                        }
-                    }
-                }
-
-                console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
-                resolve(GrpUsersOrders);
+                // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                resolve(result);
             });
         });
     };
@@ -1635,27 +1550,27 @@ var Server = function Server() {
         try {
             req.body = JSON.parse(req.body.data);
             var rows = req.body.rows;
-            var _iteratorNormalCompletion18 = true;
-            var _didIteratorError18 = false;
-            var _iteratorError18 = undefined;
+            var _iteratorNormalCompletion16 = true;
+            var _didIteratorError16 = false;
+            var _iteratorError16 = undefined;
 
             try {
-                for (var _iterator18 = rows[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
-                    var row = _step18.value;
+                for (var _iterator16 = rows[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                    var row = _step16.value;
 
                     db.pushToJsonDb(req.params.tableName, row);
                 }
             } catch (err) {
-                _didIteratorError18 = true;
-                _iteratorError18 = err;
+                _didIteratorError16 = true;
+                _iteratorError16 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion18 && _iterator18.return) {
-                        _iterator18.return();
+                    if (!_iteratorNormalCompletion16 && _iterator16.return) {
+                        _iterator16.return();
                     }
                 } finally {
-                    if (_didIteratorError18) {
-                        throw _iteratorError18;
+                    if (_didIteratorError16) {
+                        throw _iteratorError16;
                     }
                 }
             }

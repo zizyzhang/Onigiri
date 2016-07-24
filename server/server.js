@@ -377,14 +377,12 @@ var Server = function () {
         self.confirmOrder(usrId).then(result=>res.json(result));
     });
 
-    app.post('/grpUsersOrdersByHostId', function (req, res) {
-        req.body = JSON.parse(req.body.data);
-        let hostId = Number(req.body.hostId);
-        let from = Number(req.body.from);
+    app.get('/grpUsersOrdersByHostId/:hostId', function (req, res) {
+        let hostId = Number(req.params.hostId);
+        let from = Number(req.query.from);
         console.log(hostId + "," + from);
         self.getGrpUsersOrdersByHostIdPromise(hostId, from).then(result=>res.json(result));
     });
-
 
     app.post('/getGrpMember', function (req, res) {
         req.body = JSON.parse(req.body.data);
@@ -1096,43 +1094,10 @@ var Server = function () {
         return new Promise(resolve=> {
             console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
 
-            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=>{
-                let GrpUsersOrders = {
-                    GrpUsersOrders:[]
-                };
+            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
 
-                for (let grpOrd of result.groupedOrders) {
-                    let neGUO = {};
-                    let uos = [];
-                    let grpComments = grpOrd.group.grpComments;
-
-                    for (let order of grpOrd.orders) {
-                        order.dish.ordNum = order.ordNum;
-                        let uosobj = uos.find(u=>u.usrId === order.usrId);
-                        if (!uosobj) {
-                            uos.push({
-                                usrId: order.usrId,
-                                usrName: order.usrName,
-                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                usrDishes: [order.dish],
-                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
-                                usrOrdIds: [{ordId: order.ordId}]
-                            });
-                        } else {
-                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                            uosobj.usrDishes.push(order.dish);
-                            uosobj.usrOrdIds.push({ordId: order.ordId});
-                        }
-                    }
-                    neGUO = {
-                        group: grpOrd.group,
-                        usrOrders: uos
-                    };
-                    GrpUsersOrders.GrpUsersOrders.push(neGUO);
-                }
-
-                console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
-                resolve(GrpUsersOrders);
+                // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                resolve(result);
             });
 
 
