@@ -1091,7 +1091,7 @@ var Server = function () {
     this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
         //from :  0=> confirmOrder  , 1=>productDetail
         return new Promise(resolve=> {
-            console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
+            // console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
                 let GrpUsersOrders = {

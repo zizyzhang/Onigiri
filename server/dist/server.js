@@ -1523,7 +1523,7 @@ var Server = function Server() {
     this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
         //from :  0=> confirmOrder  , 1=>productDetail
         return new Promise(function (resolve) {
-            console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
+            // console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
                 var GrpUsersOrders = {

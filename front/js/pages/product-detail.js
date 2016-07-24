@@ -24,7 +24,7 @@ class ProductDetailPage { //TODO first
 
             ajaxMethod.getGrpUsersOrdersByHostIdPromise(hostId,1).then(function (result) {
 
-                console.log('====result' + JSON.stringify(result));
+                // console.log('====result' + JSON.stringify(result));
                 let groupOrder = new Vue({
                     el: '#grpOrd',
                     data: result
@@ -89,32 +89,6 @@ class ProductDetailPage { //TODO first
                     }
                 }
             });
-            // tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(hostId), page, function (result) {
-            //     // console.log(JSON.stringify(result));
-            //
-            //     for (let groupedOrders of result.groupedOrders) {
-            //         for (let order of groupedOrders.orders) {
-            //             let isChecked = order.ordStatus == 2;
-            //
-            //             if (isChecked) {
-            //                 $$('#ordId-' + order.ordId).addClass('completed');
-            //                 $$('#ordId-' + order.ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
-            //                 $$('#chbox-' + order.ordId).attr('checked', 'checked');
-            //             }
-            //         }
-            //     }
-            //
-            //     $$(".paid").click(function () {
-            //         let ordId = $$(this).dataset().ordId;
-            //         //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-            //         let ordStatus = 2;
-            //         $$('#ordId-' + ordId).addClass('completed');
-            //         $$('#ordId-' + ordId).attr('style', 'text-decoration:line-through; color:DarkGray;');
-            //         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
-            //     });
-            //
-            // });
-
 
         });
     }
