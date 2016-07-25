@@ -1,67 +1,54 @@
 <div data-page="confirm" class="page">
     <div class="navbar">
         <div class="navbar-inner">
-            <div class="left" id="back"><a href="my-groups.html" class="link icon-only"><i class="icon icon-back"></i></a>
+            <div class="left" id="back"><a href="my-groups.html" class="link icon-only"><i
+                    class="icon icon-back"></i></a>
             </div>
             <div class="center">團主確認</div>
             <!--<div class="right"><a id="selectAll" href="#" class="link ">全選</a></div>-->
         </div>
     </div>
 
-    <div class="page-content ">
+    <div class="page-content " id="confirmOrder">
 
-        {{#each groupedOrders}}
-        {{#js_compare "this.orders.length !== 0 "}}
+        <div class="content-block-title" v-for="groupOrder in GrpUsersOrders" id="">
+            <div>{{groupOrder.group.merchant.metName}}</div>
 
-        <div class="content-block-title" id="grpId-{{group.grpId}}">{{group.merchant.metName}}
-
-            <!--<div class="card-header no-border">{{group.merchant.metName}}</div>-->
             <div class="list-block accordion-list">
                 <ul>
-                    {{#each orders}}
 
-                    {{#js_compare "this.ordStatus===0"}}
-
-                    <li class="card accordion-item">
+                    <li class="card accordion-item" v-for="usrOrder in groupOrder.usrOrders" id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
                         <a href="#" class="item-content item-link">
                             <div class="card-header item-title-row no-border item-inner ">
                                 <div class="item-title"><img style="border-radius: 50%;"
-                                                                  src="./../assets/img/img-dish-01.png" width="36">
+                                                             src="./../assets/img/img-dish-01.png" width="36">
                                 </div>
-                                <div class="center">{{usrName}}</div>
+                                <div class="center">{{usrOrder.usrName}}</div>
                                 <div class="item-after">待審查</div>
                             </div>
                         </a>
-
                         <div class="accordion-item-content item-title-row">
-                            <div class="item-title-row card-content-inner content-block item-inner">
-                                <div class="item-title ">{{dish.dihName}}</div>
-                                <div class="center">{{ordNum}} 份</div>
-                                <div class="item-after">NT {{js "this.dish.dihPrice * this.ordNum"}}</div>
-
-
+                            <div class="item-title-row card-content-inner content-block item-inner"
+                                 v-for="usrDish in usrOrder.usrDishes">
+                                <div class="item-title ">{{usrDish.dihName}}</div>
+                                <div class="center">{{usrDish.ordNum}} 份</div>
+                                <div class="item-after">NT {{usrDish.dihPrice * usrDish.ordNum}}</div>
                             </div>
+                            <div class="card-content-inner " v-if="usrOrder.usrComments.length!==0">
+                                    <span class="item-title ficon">(</span>
+                                <div style="margin-right: 10px" v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</div>
 
+                                <!--<div class="center" style="white-space: pre-line;">-->
+                                    <!--<span style="margin-right: 10px" v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</span>-->
+                                <!--</div>-->
+                            </div>
                         </div>
 
                         <div class="card-footer no-border">
-                            <a href="#" class="link button-fill button color-red refuse" data-ord-id="{{ordId}}">拒絕</a>
-                            <a href="#" class="link button-fill button color-green accept"
-                               data-ord-id="{{ordId}}">接受</a>
-                        </div>
-                    </li>
-
-
-                    {{/js_compare}}
-                    {{/each}}
-                    <li>
-                        <div class="content-block  item-inner card-content-inner">備註:
-
-                            {{#each group.grpComments}}
-
-                            <div>{{usrName}}:{{comments}}</div>
-
-                            {{/each}}
+                            <a href="#" class="link button-fill button color-red refuse" data-usr-id="{{usrOrder.usrId}}"
+                               data-grp-id="{{groupOrder.group.grpId}}">拒絕</a>
+                            <a href="#" class="link button-fill button color-green accept" data-usr-id="{{usrOrder.usrId}}"
+                               data-grp-id="{{groupOrder.group.grpId}}">接受</a>
                         </div>
                     </li>
 
@@ -69,9 +56,6 @@
             </div>
         </div>
 
-        {{/js_compare}}
-
-        {{/each}}
 
     </div>
 </div>

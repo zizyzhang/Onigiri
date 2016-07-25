@@ -1523,104 +1523,131 @@ var Server = function Server() {
     this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
         //from :  0=> confirmOrder  , 1=>productDetail
         return new Promise(function (resolve) {
-            // console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
+            switch (from) {
+                case 0:
+                    {
+                        self.confirmOrder(hostId).then(function (result) {
+                            console.log('switch 0');
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
+                                guo.usrOrders = guo.usrOrders.filter(function (uo) {
+                                    return uo.ordStatus === 0;
+                                });
+                                // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                                return guo.usrOrders.length !== 0;
+                            });
+                            // GrpUsersOrders.GrpUsersOrders.filter(function (guo) {
+                            //     guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus===0);
+                            //         console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                            //     return guo;
+                            // });
+                            console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                            resolve({ GrpUsersOrders: GrpUsersOrders });
+                        });
+                        break;
+                    }
+                case 1:
+                    {
+                        self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
+                            console.log('switch 1');
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                            resolve(GrpUsersOrders);
+                        });
+                        break;
+                    }
+            }
+        });
+    };
 
-            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
-                var GrpUsersOrders = {
-                    GrpUsersOrders: []
-                };
+    this.convertGroupedOrdersToGrpUsrOrders = function (result) {
+        var GrpUsersOrders = {
+            GrpUsersOrders: []
+        };
 
-                var _iteratorNormalCompletion16 = true;
-                var _didIteratorError16 = false;
-                var _iteratorError16 = undefined;
+        var _iteratorNormalCompletion16 = true;
+        var _didIteratorError16 = false;
+        var _iteratorError16 = undefined;
+
+        try {
+            for (var _iterator16 = result.groupedOrders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                var grpOrd = _step16.value;
+
+                var neGUO = {};
+                var uos = [];
+                var grpComments = grpOrd.group.grpComments;
+
+                var _iteratorNormalCompletion17 = true;
+                var _didIteratorError17 = false;
+                var _iteratorError17 = undefined;
 
                 try {
-                    for (var _iterator16 = result.groupedOrders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-                        var grpOrd = _step16.value;
+                    var _loop5 = function _loop5() {
+                        var order = _step17.value;
 
-                        var neGUO = {};
-                        var uos = [];
-                        var grpComments = grpOrd.group.grpComments;
-
-                        var _iteratorNormalCompletion17 = true;
-                        var _didIteratorError17 = false;
-                        var _iteratorError17 = undefined;
-
-                        try {
-                            var _loop5 = function _loop5() {
-                                var order = _step17.value;
-
-                                order.dish.ordNum = order.ordNum;
-                                var uosobj = uos.find(function (u) {
-                                    return u.usrId === order.usrId;
-                                });
-                                if (!uosobj) {
-                                    uos.push({
-                                        usrId: order.usrId,
-                                        usrName: order.usrName,
-                                        usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                        usrDishes: [order.dish],
-                                        usrComments: _.filter(grpComments, function (com) {
-                                            return com.usrId === order.usrId;
-                                        }),
-                                        usrOrdIds: [{ ordId: order.ordId }]
-                                    });
-                                } else {
-                                    uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                                    uosobj.usrDishes.push(order.dish);
-                                    uosobj.usrOrdIds.push({ ordId: order.ordId });
-                                }
-                            };
-
-                            for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                                _loop5();
-                            }
-                        } catch (err) {
-                            _didIteratorError17 = true;
-                            _iteratorError17 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion17 && _iterator17.return) {
-                                    _iterator17.return();
-                                }
-                            } finally {
-                                if (_didIteratorError17) {
-                                    throw _iteratorError17;
-                                }
-                            }
+                        order.dish.ordNum = order.ordNum;
+                        var uosobj = uos.find(function (u) {
+                            return u.usrId === order.usrId;
+                        });
+                        if (!uosobj) {
+                            uos.push({
+                                usrId: order.usrId,
+                                usrName: order.usrName,
+                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                                ordStatus: order.ordStatus,
+                                usrDishes: [order.dish],
+                                usrComments: _.filter(grpComments, function (com) {
+                                    return com.usrId === order.usrId;
+                                }),
+                                usrOrdIds: [{ ordId: order.ordId }]
+                            });
+                        } else {
+                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                            uosobj.usrDishes.push(order.dish);
+                            uosobj.usrOrdIds.push({ ordId: order.ordId });
                         }
+                    };
 
-                        neGUO = {
-                            group: grpOrd.group,
-                            usrOrders: uos
-                        };
-                        GrpUsersOrders.GrpUsersOrders.push(neGUO);
+                    for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+                        _loop5();
                     }
-
-                    // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                 } catch (err) {
-                    _didIteratorError16 = true;
-                    _iteratorError16 = err;
+                    _didIteratorError17 = true;
+                    _iteratorError17 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion16 && _iterator16.return) {
-                            _iterator16.return();
+                        if (!_iteratorNormalCompletion17 && _iterator17.return) {
+                            _iterator17.return();
                         }
                     } finally {
-                        if (_didIteratorError16) {
-                            throw _iteratorError16;
+                        if (_didIteratorError17) {
+                            throw _iteratorError17;
                         }
                     }
                 }
 
-                resolve(GrpUsersOrders);
-            });
-        });
-    };
+                neGUO = {
+                    group: grpOrd.group,
+                    usrOrders: uos
+                };
+                GrpUsersOrders.GrpUsersOrders.push(neGUO);
+            }
 
-    this.convertGroupedOrdersToGrpUsrOrders = function (hostId) {
+            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+        } catch (err) {
+            _didIteratorError16 = true;
+            _iteratorError16 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion16 && _iterator16.return) {
+                    _iterator16.return();
+                }
+            } finally {
+                if (_didIteratorError16) {
+                    throw _iteratorError16;
+                }
+            }
+        }
 
-        // callback(GrpUsersOrders);
+        return GrpUsersOrders;
     };
 
     ///////////////////後臺

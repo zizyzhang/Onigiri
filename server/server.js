@@ -1091,54 +1091,77 @@ var Server = function () {
     this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
         //from :  0=> confirmOrder  , 1=>productDetail
         return new Promise(resolve=> {
-            // console.log('getGrpUsersOrdersByHostIdPromise init hostId:' + hostId);
-
-            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
-                let GrpUsersOrders = {
-                    GrpUsersOrders:[]
-                };
-
-                for (let grpOrd of result.groupedOrders) {
-                    let neGUO = {};
-                    let uos = [];
-                    let grpComments = grpOrd.group.grpComments;
-
-                    for (let order of grpOrd.orders) {
-                        order.dish.ordNum = order.ordNum;
-                        let uosobj = uos.find(u=>u.usrId === order.usrId);
-                        if (!uosobj) {
-                            uos.push({
-                                usrId: order.usrId,
-                                usrName: order.usrName,
-                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                usrDishes: [order.dish],
-                                usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
-                                usrOrdIds: [{ordId: order.ordId}]
-                            });
-                        } else {
-                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                            uosobj.usrDishes.push(order.dish);
-                            uosobj.usrOrdIds.push({ordId: order.ordId});
-                        }
-                    }
-                    neGUO = {
-                        group: grpOrd.group,
-                        usrOrders: uos
-                    };
-                    GrpUsersOrders.GrpUsersOrders.push(neGUO);
+            switch (from) {
+                case 0:
+                {
+                    self.confirmOrder(hostId).then(result=> {
+                        console.log('switch 0');
+                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
+                            guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
+                            // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                            return guo.usrOrders.length!==0;
+                        });
+                        // GrpUsersOrders.GrpUsersOrders.filter(function (guo) {
+                        //     guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus===0);
+                        //         console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                        //     return guo;
+                        // });
+                        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                        resolve({GrpUsersOrders:GrpUsersOrders});
+                    });
+                    break;
                 }
-
-                // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
-                resolve(GrpUsersOrders);
-            });
-
-
+                case 1:
+                {
+                    self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
+                        console.log('switch 1');
+                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                        resolve(GrpUsersOrders);
+                    });
+                    break;
+                }
+            }
         });
     };
 
-    this.convertGroupedOrdersToGrpUsrOrders = function (hostId) {
+    this.convertGroupedOrdersToGrpUsrOrders = function (result) {
+        let GrpUsersOrders = {
+            GrpUsersOrders: []
+        };
 
-        // callback(GrpUsersOrders);
+        for (let grpOrd of result.groupedOrders) {
+            let neGUO = {};
+            let uos = [];
+            let grpComments = grpOrd.group.grpComments;
+
+            for (let order of grpOrd.orders) {
+                order.dish.ordNum = order.ordNum;
+                let uosobj = uos.find(u=>u.usrId === order.usrId);
+                if (!uosobj) {
+                    uos.push({
+                        usrId: order.usrId,
+                        usrName: order.usrName,
+                        usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                        ordStatus: order.ordStatus,
+                        usrDishes: [order.dish],
+                        usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
+                        usrOrdIds: [{ordId: order.ordId}]
+                    });
+                } else {
+                    uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                    uosobj.usrDishes.push(order.dish);
+                    uosobj.usrOrdIds.push({ordId: order.ordId});
+                }
+            }
+            neGUO = {
+                group: grpOrd.group,
+                usrOrders: uos
+            };
+            GrpUsersOrders.GrpUsersOrders.push(neGUO);
+        }
+
+        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+        return GrpUsersOrders;
     };
 
     ///////////////////後臺

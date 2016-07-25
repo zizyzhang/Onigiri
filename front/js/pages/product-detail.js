@@ -31,9 +31,10 @@ class ProductDetailPage { //TODO first
                 });
 
                 $$(".paid").click(function () {
-                    let grpId = $$(this).dataset().grpId;
-                    let usrId = $$(this).dataset().usrId;
-                    console.log("====grpid" + grpId + "====usrId" + usrId);
+                    let dataset =$$(this).dataset();
+                    let grpId = dataset.grpId;
+                    let usrId = dataset.usrId;
+                    console.log("====g" + grpId + "u" + usrId);
                     //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     let ordStatus = 2;
                     let item = $$('#g' + grpId + 'u' + usrId);
@@ -52,9 +53,10 @@ class ProductDetailPage { //TODO first
                 });
 
                 $$(".unPaid").click(function () {
-                    let grpId = $$(this).dataset().grpId;
-                    let usrId = $$(this).dataset().usrId;
-                    console.log("====grpid" + grpId + "====usrId" + usrId);
+                    let dataset =$$(this).dataset();
+                    let grpId = dataset.grpId;
+                    let usrId = dataset.usrId;
+                    console.log("====g" + grpId + "u" + usrId);
 
                     //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     let ordStatus = 1;
@@ -62,6 +64,7 @@ class ProductDetailPage { //TODO first
                     item.removeClass('completed');
                     item.removeAttr('style');
                     $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:none;');
+                    
                     let usrOrdIds =
                         result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
                     console.log(JSON.stringify(usrOrdIds));
