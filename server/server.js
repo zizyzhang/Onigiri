@@ -680,7 +680,7 @@ var Server = function () {
                 usrId: usrId,
                 usrName: usrName,  //07.03 add
                 grpId: grpId,
-                comStatus: 0,
+                // comStatus: 0,
                 comments: comments
             });
 

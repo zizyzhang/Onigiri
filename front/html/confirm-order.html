@@ -35,8 +35,13 @@
                                 <div class="item-after">NT {{usrDish.dihPrice * usrDish.ordNum}}</div>
                             </div>
                             <div class="card-content-inner " v-if="usrOrder.usrComments.length!==0">
-                                    <span class="item-title ficon">(</span>
-                                <div style="margin-right: 10px" v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</div>
+                                <div class="" v-for="usrComment in usrOrder.usrComments">
+                                    <span class=" ficon" v-if="$index ===0">(</span>
+                                    <span class=" ficon" style="visibility:hidden" v-else>(</span>
+                                    <span >{{usrComment.comments}}</span>
+                                </div>
+                                    <!--<span class="item-title ficon">(</span>-->
+                                <!--<div v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</div>-->
 
                                 <!--<div class="center" style="white-space: pre-line;">-->
                                     <!--<span style="margin-right: 10px" v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</span>-->

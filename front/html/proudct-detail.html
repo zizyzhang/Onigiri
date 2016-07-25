@@ -46,16 +46,28 @@
 
                                 </div>
                             </div>
-                            <div class=""  id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
-                            <ul v-for="usrDish in usrOrder.usrDishes">
-                                <li class="item-title-row item-inner" style="line-height: 36px;">
-                                    <div>{{usrDish.dihName}}</div>
-                                    <div class="center">{{usrDish.ordNum}}份</div>
-                                    <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}} <span></span></div>
-                                </li>
-                            </ul>
+                            <div class="" id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
+                                <ul>
+                                    <li class="item-title-row item-inner" style="line-height: 36px;"
+                                        v-for="usrDish in usrOrder.usrDishes">
+                                        <div class="item-title">{{usrDish.dihName}}</div>
+                                        <div class="center">{{usrDish.ordNum}}份</div>
+                                        <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}} <span></span>
+                                        </div>
+                                    </li>
+
+                                </ul>
                             </div>
+                            <div class="card-footer item-inner " v-if="usrOrder.usrComments.length!==0">
+                                    <div class="" v-for="usrComment in usrOrder.usrComments">
+                                        <span class=" ficon" v-if="$index ===0">(</span>
+                                        <span class=" ficon" style="visibility:hidden" v-else>(</span>
+                                        <span >{{usrComment.comments}}</span>
+                                    </div>
+                            </div>
+
                         </div>
+
                     </li>
                 </ul>
                 <ul v-else>
