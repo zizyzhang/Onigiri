@@ -29,8 +29,8 @@ class Home { //TODO first
                 page.query.ajaxResult = window.homeAjaxResult;
             }
 
-            // console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
-            // console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
+             console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
+             console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
 
             // console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
             //console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
