@@ -719,19 +719,28 @@ var Server = function () {
         let groupedOrders = [];
 
         for (let order of orders) {
-            if (order.ordStatus > 0) {
-                // console.log("ordStatus:" + order.ordStatus);
-                let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
-                if (tOrder) {
+            // if (order.ordStatus > 0) {
+            // console.log("ordStatus:" + order.ordStatus);
+            let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
+            if (tOrder) {
+                if (order.ordStatus > 0) {
                     tOrder.orders.push(order);
+                }
+            } else {
+
+                let group = this.createClassGroupByGroupId(order.grpId);
+                // console.log("====group" + JSON.stringify(group));
+
+                if (order.ordStatus === 0) {
+                    //TODO ordersorders
+                    group.ordNotConfirm=true;
+                    groupedOrders.push({group: group, orders: []});
                 } else {
-
-                    let group = this.createClassGroupByGroupId(order.grpId);
-                    // console.log("====group" + JSON.stringify(group));
-
                     groupedOrders.push({group: group, orders: [order]});
                 }
+
             }
+            // }
         }
         return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime));
     };
@@ -805,11 +814,12 @@ var Server = function () {
                 self.convertOrdersToGroupedOrders(orders);
 
             // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
+            console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
 
             self.formatOrders(groupedOrders, (result)=> {
                 groupedOrderSums = result;
             });
+
 
             //處理空白團
             let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
@@ -821,7 +831,7 @@ var Server = function () {
                 });
             }
 
-            // console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
+            console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
 
             resolve({
                 groupedOrders: _.orderBy(groupedOrders, obj=>obj.group.grpCreateTime, 'desc'),
@@ -1098,7 +1108,7 @@ var Server = function () {
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
                             guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                             // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
-                            return guo.usrOrders.length!==0;
+                            return guo.usrOrders.length !== 0;
                         });
                         // GrpUsersOrders.GrpUsersOrders.filter(function (guo) {
                         //     guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus===0);
@@ -1106,7 +1116,7 @@ var Server = function () {
                         //     return guo;
                         // });
                         console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
-                        resolve({GrpUsersOrders:GrpUsersOrders});
+                        resolve({GrpUsersOrders: GrpUsersOrders});
                     });
                     break;
                 }

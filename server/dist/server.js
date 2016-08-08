@@ -968,21 +968,29 @@ var Server = function Server() {
             var _loop2 = function _loop2() {
                 var order = _step11.value;
 
-                if (order.ordStatus > 0) {
-                    // console.log("ordStatus:" + order.ordStatus);
-                    var tOrder = groupedOrders.find(function (gor) {
-                        return gor.group.grpId === order.grpId;
-                    });
-                    if (tOrder) {
+                // if (order.ordStatus > 0) {
+                // console.log("ordStatus:" + order.ordStatus);
+                var tOrder = groupedOrders.find(function (gor) {
+                    return gor.group.grpId === order.grpId;
+                });
+                if (tOrder) {
+                    if (order.ordStatus > 0) {
                         tOrder.orders.push(order);
+                    }
+                } else {
+
+                    var group = _this.createClassGroupByGroupId(order.grpId);
+                    // console.log("====group" + JSON.stringify(group));
+
+                    if (order.ordStatus === 0) {
+                        //TODO ordersorders
+                        group.ordNotConfirm = true;
+                        groupedOrders.push({ group: group, orders: [] });
                     } else {
-
-                        var group = _this.createClassGroupByGroupId(order.grpId);
-                        // console.log("====group" + JSON.stringify(group));
-
                         groupedOrders.push({ group: group, orders: [order] });
                     }
                 }
+                // }
             };
 
             for (var _iterator11 = orders[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
@@ -1117,7 +1125,7 @@ var Server = function Server() {
             groupedOrders = self.convertOrdersToGroupedOrders(orders);
 
             // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
+            console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
 
             self.formatOrders(groupedOrders, function (result) {
                 groupedOrderSums = result;
@@ -1137,7 +1145,7 @@ var Server = function Server() {
                 });
             }
 
-            // console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
+            console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
 
             resolve({
                 groupedOrders: _.orderBy(groupedOrders, function (obj) {

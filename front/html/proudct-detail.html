@@ -22,7 +22,7 @@
                     <li class=" swipeout " v-for="usrOrder in groupOrder.usrOrders">
 
                         <div class="card swipeout">
-                            <div class="card-header">
+                            <div class="card-header ">
                                 <!--<div class=" item-media card-content item-title-row">-->
                                 <span class="ficon" style="display:none;"
                                       id="icong{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">W</span>
@@ -71,7 +71,16 @@
                     </li>
                 </ul>
                 <ul v-else>
-                    <li>
+                    <li v-if="groupOrder.group.ordNotConfirm">
+                        <label class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="center">有人申請加入了,趕緊去確認吧~~</div>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    <li v-else>
                         <label class="item-content">
                             <div class="item-inner">
                                 <div class="item-title-row" style="line-height: 36px;">
