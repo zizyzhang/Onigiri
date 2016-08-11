@@ -718,22 +718,21 @@ var Server = function () {
     this.convertOrdersToGroupedOrders = function (orders) {
         let groupedOrders = [];
 
+
         for (let order of orders) {
             // if (order.ordStatus > 0) {
             // console.log("ordStatus:" + order.ordStatus);
             let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
+
             if (tOrder) {
                 if (order.ordStatus > 0) {
                     tOrder.orders.push(order);
                 }
             } else {
-
                 let group = this.createClassGroupByGroupId(order.grpId);
-                // console.log("====group" + JSON.stringify(group));
 
                 if (order.ordStatus === 0) {
-                    //TODO ordersorders
-                    group.ordNotConfirm=true;
+                    group.ordNotConfirm = true;
                     groupedOrders.push({group: group, orders: []});
                 } else {
                     groupedOrders.push({group: group, orders: [order]});
@@ -805,6 +804,7 @@ var Server = function () {
                     ordStatus: ord.ordStatus,    //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
                 };
+
                 return newOrd;
             });
 
@@ -814,7 +814,7 @@ var Server = function () {
                 self.convertOrdersToGroupedOrders(orders);
 
             // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
+            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
 
             self.formatOrders(groupedOrders, (result)=> {
                 groupedOrderSums = result;
@@ -831,7 +831,7 @@ var Server = function () {
                 });
             }
 
-            console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
+            // console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
 
             resolve({
                 groupedOrders: _.orderBy(groupedOrders, obj=>obj.group.grpCreateTime, 'desc'),
@@ -1104,18 +1104,14 @@ var Server = function () {
                 case 0:
                 {
                     self.confirmOrder(hostId).then(result=> {
+                        // TODO WHAT THE FUCK
                         console.log('switch 0');
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
                             guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
-                            // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                            console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                             return guo.usrOrders.length !== 0;
                         });
-                        // GrpUsersOrders.GrpUsersOrders.filter(function (guo) {
-                        //     guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus===0);
-                        //         console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
-                        //     return guo;
-                        // });
-                        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve({GrpUsersOrders: GrpUsersOrders});
                     });
                     break;
@@ -1125,6 +1121,7 @@ var Server = function () {
                     self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
                         console.log('switch 1');
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve(GrpUsersOrders);
                     });
                     break;
@@ -1137,6 +1134,7 @@ var Server = function () {
         let GrpUsersOrders = {
             GrpUsersOrders: []
         };
+        // console.log('====result:' + JSON.stringify(result.groupedOrders));
 
         for (let grpOrd of result.groupedOrders) {
             let neGUO = {};
@@ -1144,18 +1142,35 @@ var Server = function () {
             let grpComments = grpOrd.group.grpComments;
 
             for (let order of grpOrd.orders) {
+
                 order.dish.ordNum = order.ordNum;
+                order.ordNum = undefined;
+                // console.log('order.dish:' + JSON.stringify(order.dish));
+                // console.log('====order:' + JSON.stringify(order));
+
                 let uosobj = uos.find(u=>u.usrId === order.usrId);
+
                 if (!uosobj) {
                     uos.push({
                         usrId: order.usrId,
                         usrName: order.usrName,
                         usrAmount: order.dish.ordNum * order.dish.dihPrice,
                         ordStatus: order.ordStatus,
-                        usrDishes: [order.dish],
+                        usrDishes: [{
+                            dihId: order.dish.dihId,
+                            dihName: order.dish.dihName,
+                            metId: order.dish.metId,
+                            dihType: order.dish.dihType,
+                            dihPrice: order.dish.dihPrice,
+                            ordNum: order.dish.ordNum
+                        }],
                         usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
                         usrOrdIds: [{ordId: order.ordId}]
+                        // 無法理解錯在哪裡
+                        // ,usrDishesWhy: [order.dish]
                     });
+                    // console.log('====order.dish:' + JSON.stringify(order.dish));
+
                 } else {
                     uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
                     uosobj.usrDishes.push(order.dish);
@@ -1169,7 +1184,7 @@ var Server = function () {
             GrpUsersOrders.GrpUsersOrders.push(neGUO);
         }
 
-        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         return GrpUsersOrders;
     };
 

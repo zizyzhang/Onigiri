@@ -24,7 +24,7 @@ class ProductDetailPage { //TODO first
 
             ajaxMethod.getGrpUsersOrdersByHostIdPromise(hostId,1).then(function (result) {
 
-                console.log('====result' + JSON.stringify(result));
+                console.log('====proudct-detail result: ' + JSON.stringify(result));
                 
                 let groupOrder = new Vue({
                     el: '#grpOrd',

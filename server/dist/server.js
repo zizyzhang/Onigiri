@@ -973,17 +973,15 @@ var Server = function Server() {
                 var tOrder = groupedOrders.find(function (gor) {
                     return gor.group.grpId === order.grpId;
                 });
+
                 if (tOrder) {
                     if (order.ordStatus > 0) {
                         tOrder.orders.push(order);
                     }
                 } else {
-
                     var group = _this.createClassGroupByGroupId(order.grpId);
-                    // console.log("====group" + JSON.stringify(group));
 
                     if (order.ordStatus === 0) {
-                        //TODO ordersorders
                         group.ordNotConfirm = true;
                         groupedOrders.push({ group: group, orders: [] });
                     } else {
@@ -1117,6 +1115,7 @@ var Server = function Server() {
                     ordStatus: ord.ordStatus, //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
                 };
+
                 return newOrd;
             });
 
@@ -1125,7 +1124,7 @@ var Server = function Server() {
             groupedOrders = self.convertOrdersToGroupedOrders(orders);
 
             // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
+            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
 
             self.formatOrders(groupedOrders, function (result) {
                 groupedOrderSums = result;
@@ -1145,7 +1144,7 @@ var Server = function Server() {
                 });
             }
 
-            console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
+            // console.log("groupedOrderSumsgroupedOrderSums:" + JSON.stringify(groupedOrderSums));
 
             resolve({
                 groupedOrders: _.orderBy(groupedOrders, function (obj) {
@@ -1534,20 +1533,16 @@ var Server = function Server() {
                 case 0:
                     {
                         self.confirmOrder(hostId).then(function (result) {
+                            // TODO WHAT THE FUCK
                             console.log('switch 0');
                             var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
                                 guo.usrOrders = guo.usrOrders.filter(function (uo) {
                                     return uo.ordStatus === 0;
                                 });
-                                // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                                console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                                 return guo.usrOrders.length !== 0;
                             });
-                            // GrpUsersOrders.GrpUsersOrders.filter(function (guo) {
-                            //     guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus===0);
-                            //         console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
-                            //     return guo;
-                            // });
-                            console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve({ GrpUsersOrders: GrpUsersOrders });
                         });
                         break;
@@ -1557,6 +1552,7 @@ var Server = function Server() {
                         self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
                             console.log('switch 1');
                             var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve(GrpUsersOrders);
                         });
                         break;
@@ -1569,6 +1565,7 @@ var Server = function Server() {
         var GrpUsersOrders = {
             GrpUsersOrders: []
         };
+        // console.log('====result:' + JSON.stringify(result.groupedOrders));
 
         var _iteratorNormalCompletion16 = true;
         var _didIteratorError16 = false;
@@ -1590,27 +1587,43 @@ var Server = function Server() {
                     var _loop5 = function _loop5() {
                         var order = _step17.value;
 
+
                         order.dish.ordNum = order.ordNum;
+                        order.ordNum = undefined;
+                        // console.log('order.dish:' + JSON.stringify(order.dish));
+                        // console.log('====order:' + JSON.stringify(order));
+
                         var uosobj = uos.find(function (u) {
                             return u.usrId === order.usrId;
                         });
+
                         if (!uosobj) {
                             uos.push({
                                 usrId: order.usrId,
                                 usrName: order.usrName,
                                 usrAmount: order.dish.ordNum * order.dish.dihPrice,
                                 ordStatus: order.ordStatus,
-                                usrDishes: [order.dish],
+                                usrDishes: [{
+                                    dihId: order.dish.dihId,
+                                    dihName: order.dish.dihName,
+                                    metId: order.dish.metId,
+                                    dihType: order.dish.dihType,
+                                    dihPrice: order.dish.dihPrice,
+                                    ordNum: order.dish.ordNum
+                                }],
                                 usrComments: _.filter(grpComments, function (com) {
                                     return com.usrId === order.usrId;
                                 }),
                                 usrOrdIds: [{ ordId: order.ordId }]
+                                // 無法理解錯在哪裡
+                                // ,usrDishesWhy: [order.dish]
                             });
+                            // console.log('====order.dish:' + JSON.stringify(order.dish));
                         } else {
-                            uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                            uosobj.usrDishes.push(order.dish);
-                            uosobj.usrOrdIds.push({ ordId: order.ordId });
-                        }
+                                uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                                uosobj.usrDishes.push(order.dish);
+                                uosobj.usrOrdIds.push({ ordId: order.ordId });
+                            }
                     };
 
                     for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
@@ -1637,8 +1650,6 @@ var Server = function Server() {
                 };
                 GrpUsersOrders.GrpUsersOrders.push(neGUO);
             }
-
-            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         } catch (err) {
             _didIteratorError16 = true;
             _iteratorError16 = err;
@@ -1654,6 +1665,7 @@ var Server = function Server() {
             }
         }
 
+        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         return GrpUsersOrders;
     };
 
