@@ -64,10 +64,10 @@ class SignUpPage { //TODO first
 
                 $$(this).attr('disabled', true);
                 let timeTick = 60;
-                $$(that ).text(`重发(${timeTick})`);
+                $$(that ).text(`重發(${timeTick})`);
                 let authInterval = setInterval(function(){
                     timeTick -= 1;
-                    $$(that ).text(`重发(${timeTick})`);
+                    $$(that ).text(`重發(${timeTick})`);
                     if(timeTick===0){
                         clearInterval(authInterval);
                         $$(that ).removeAttr('disabled');
@@ -77,7 +77,7 @@ class SignUpPage { //TODO first
 
                 ajaxMethod.mobiAuth($$('#signUsrMobi').val()).then(result=> {
                     let notificationSent = myApp.addNotification({
-                        message: '已發送(測試階段,驗證碼请填写123)',
+                        message: '已發送(測試階段,驗證碼請填寫123)',
                         button: {
                             text: '關閉',
                         }

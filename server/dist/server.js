@@ -1621,7 +1621,15 @@ var Server = function Server() {
                             // console.log('====order.dish:' + JSON.stringify(order.dish));
                         } else {
                                 uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                                uosobj.usrDishes.push(order.dish);
+                                // uosobj.usrDishes.push(order.dish);
+                                uosobj.usrDishes.push({
+                                    dihId: order.dish.dihId,
+                                    dihName: order.dish.dihName,
+                                    metId: order.dish.metId,
+                                    dihType: order.dish.dihType,
+                                    dihPrice: order.dish.dihPrice,
+                                    ordNum: order.dish.ordNum
+                                });
                                 uosobj.usrOrdIds.push({ ordId: order.ordId });
                             }
                     };
