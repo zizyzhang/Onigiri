@@ -105,10 +105,10 @@ class OrderPage {
                     console.log(JSON.stringify({usrId, dishes, grpId,comments}));
 
                     ajaxMethod.joinGroupPromise(usrId, dishes, grpId,comments).then((data)=> {
-                        myApp.alert('加訂成功', function () {
+                        myApp.alert('加購成功', function () {
                             tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
-                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加訂失敗!'));
+                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加購失敗!'));
 
 
                     window.comments = "";
