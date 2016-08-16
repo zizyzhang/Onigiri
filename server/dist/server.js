@@ -823,26 +823,47 @@ var Server = function Server() {
                     return row.dihId === dihId;
                 };
             };
+
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
             var _iteratorError9 = undefined;
 
             try {
-                for (var _iterator9 = dishes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                var _loop2 = function _loop2() {
                     var _step9$value = _step9.value;
                     var dihId = _step9$value.dihId;
                     var num = _step9$value.num;
 
                     if (num === 0 || !_.isNumber(num)) {
-                        continue;
+                        return 'continue';
                     }
 
+                    //加購
                     if (_.includes(orderedDishIds, dihId)) {
-                        db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
-                            usrId: usrId,
-                            dihId: dihId
-                        })].ordNum);
-                        continue;
+
+                        // let o = db.ORDER.find(ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId).ordNum;
+
+                        var o = db.ORDER.find(function (ord) {
+                            if (ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId) {
+                                return ord;
+                            }
+                        });
+                        console.log('o.ordNum ', o.ordNum);
+                        console.log('dihId ', dihId);
+                        console.log('usrId ', usrId);
+                        console.log('grpId ', grpId);
+
+                        db.setValueToJsonDb('ORDER', function (ord) {
+                            return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                        }, 'ordNum', num + o.ordNum);
+
+                        // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
+                        //         // usrId,
+                        //         dihId,
+                        //         grpId
+                        //     })].ordNum);
+
+                        return 'continue';
                     }
 
                     var lastOrder = _.maxBy(db.ORDER, 'ordId');
@@ -858,6 +879,12 @@ var Server = function Server() {
                         //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                         ordStatus: 0
                     });
+                };
+
+                for (var _iterator9 = dishes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                    var _ret2 = _loop2();
+
+                    if (_ret2 === 'continue') continue;
                 }
             } catch (err) {
                 _didIteratorError9 = true;
@@ -878,7 +905,7 @@ var Server = function Server() {
                 return gmr.gmrId;
             });
             if (!comments) {
-                console.log("commentscomments=" + comments);
+                // console.log("commentscomments=" + comments);
                 comments = "";
             }
             db.pushToJsonDb("GROUP_MEMBER", {
@@ -906,7 +933,7 @@ var Server = function Server() {
                 var groupOrderSum = result.groupedOrderSums.find(function (orderSum) {
                     return orderSum.group.grpId === grpId;
                 });
-                console.log("groupOrderSum", groupOrderSum);
+                // console.log("groupOrderSum", groupOrderSum);
 
                 //TODO
                 if (groupOrderSum) {
@@ -965,7 +992,7 @@ var Server = function Server() {
         var _iteratorError11 = undefined;
 
         try {
-            var _loop2 = function _loop2() {
+            var _loop3 = function _loop3() {
                 var order = _step11.value;
 
                 // if (order.ordStatus > 0) {
@@ -992,7 +1019,7 @@ var Server = function Server() {
             };
 
             for (var _iterator11 = orders[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-                _loop2();
+                _loop3();
             }
         } catch (err) {
             _didIteratorError11 = true;
@@ -1023,7 +1050,7 @@ var Server = function Server() {
         var _iteratorError12 = undefined;
 
         try {
-            var _loop3 = function _loop3() {
+            var _loop4 = function _loop4() {
                 var order = _step12.value;
 
                 var tOrder = groupedOrders.find(function (gor) {
@@ -1038,7 +1065,7 @@ var Server = function Server() {
             };
 
             for (var _iterator12 = orders[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-                _loop3();
+                _loop4();
             }
         } catch (err) {
             _didIteratorError12 = true;
@@ -1239,7 +1266,7 @@ var Server = function Server() {
                 var _iteratorError14 = undefined;
 
                 try {
-                    var _loop4 = function _loop4() {
+                    var _loop5 = function _loop5() {
                         var _step14$value = _step14.value;
                         var ordId = _step14$value.ordId;
                         var group = _step14$value.group;
@@ -1261,7 +1288,7 @@ var Server = function Server() {
                     };
 
                     for (var _iterator14 = orders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-                        _loop4();
+                        _loop5();
                     }
                 } catch (err) {
                     _didIteratorError14 = true;
@@ -1539,7 +1566,7 @@ var Server = function Server() {
                                 guo.usrOrders = guo.usrOrders.filter(function (uo) {
                                     return uo.ordStatus === 0;
                                 });
-                                console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
+                                // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                                 return guo.usrOrders.length !== 0;
                             });
                             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
@@ -1584,7 +1611,7 @@ var Server = function Server() {
                 var _iteratorError17 = undefined;
 
                 try {
-                    var _loop5 = function _loop5() {
+                    var _loop6 = function _loop6() {
                         var order = _step17.value;
 
 
@@ -1635,7 +1662,7 @@ var Server = function Server() {
                     };
 
                     for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                        _loop5();
+                        _loop6();
                     }
                 } catch (err) {
                     _didIteratorError17 = true;
@@ -1658,6 +1685,8 @@ var Server = function Server() {
                 };
                 GrpUsersOrders.GrpUsersOrders.push(neGUO);
             }
+
+            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         } catch (err) {
             _didIteratorError16 = true;
             _iteratorError16 = err;
@@ -1673,7 +1702,6 @@ var Server = function Server() {
             }
         }
 
-        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         return GrpUsersOrders;
     };
 

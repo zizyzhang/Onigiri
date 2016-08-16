@@ -73,9 +73,12 @@ class GroupSettingSimple { //TODO first
             futureDaysArr[0].push( (futureDays.getYear() + 1900)+'年'+(futureDays.getMonth() + 1) + '月' + futureDays.getDate() + '日' );
             futureDaysArr[1].push(b);
             futureDays.setTime(futureDays.getTime() + 1000 * 3600 * 24);
-
         }
 
+        console.log('today'+today);
+        console.log('futureDays.getHours()'+futureDays.getHours());
+        let nhour = futureDays.getHours()==23 ? 1 : 0;
+        console.log('nhour'+nhour);
 
         var pickerInline = myApp.picker({
             input: '#grpTimeSimple',
@@ -83,7 +86,8 @@ class GroupSettingSimple { //TODO first
             //toolbar: false,
             rotateEffect: true,
 
-            value: [0, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
+            // value: [0, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
+            value: [nhour, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
 
             onChange: function (picker, values, displayValues) {
                 //var daysInMonth = new Date(picker.value[2], picker.value[0] * 1 + 1, 0).getDate();
