@@ -83,7 +83,7 @@ class MyGroups { //TODO first
 
                     let group = result.groupedOrderSums.find(obj=>obj.group.grpId === Number(grpId)).group;//太神啦!!
 
-                    window.open("http://line.naver.jp/R/msg/text/ "+encodeURIComponent(location.href)+" ("+encodeURIComponent(document.title)+") 團主:"+group.grpHostName+"今天訂的是:"+group.merchant.metName);
+                    window.open("http://line.naver.jp/R/msg/text/ " + encodeURIComponent(location.href) + "  (" + encodeURIComponent(document.title) + ") 團主:" + group.grpHostName + "今天訂的是:" + group.merchant.metName);
 
 
                 });
