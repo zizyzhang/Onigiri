@@ -136,6 +136,7 @@ var Server = function Server() {
 
         var usrName = req.body.usrName;
         var usrPwd = req.body.usrPwd;
+        var usrMail = req.body.usrMail;
         var usrMobi = req.body.usrMobi;
         var authCode = req.body.authCode;
 
@@ -167,7 +168,7 @@ var Server = function Server() {
         }
 
         //console.log(JSON.stringify(req.body));
-        self.addUser(usrName, usrPwd, usrMobi, function (result) {
+        self.addUser(usrName, usrPwd, usrMail, usrMobi, function (result) {
             res.json(result);
         });
     });
@@ -528,7 +529,7 @@ var Server = function Server() {
         });
     };
 
-    this.addUser = function (usrName, usrPwd, usrMobi, callback) {
+    this.addUser = function (usrName, usrPwd, usrMail, usrMobi, callback) {
         var usrId = 0;
 
         var _iteratorNormalCompletion4 = true;
@@ -564,6 +565,7 @@ var Server = function Server() {
             usrId: usrId,
             usrName: usrName,
             usrPwd: usrPwd,
+            usrMail: usrMail,
             usrCreateTime: usrCreateTime,
             usrMobi: usrMobi
         };

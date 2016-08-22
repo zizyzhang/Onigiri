@@ -111,6 +111,7 @@ var Server = function () {
 
             let usrName = req.body.usrName;
             let usrPwd = req.body.usrPwd;
+            let usrMail = req.body.usrMail;
             let usrMobi = req.body.usrMobi;
             let authCode = req.body.authCode;
 
@@ -138,7 +139,7 @@ var Server = function () {
 
 
             //console.log(JSON.stringify(req.body));
-            self.addUser(usrName, usrPwd, usrMobi, function (result) {
+            self.addUser(usrName, usrPwd, usrMail, usrMobi, function (result) {
                 res.json(result);
             });
         }
@@ -467,7 +468,7 @@ var Server = function () {
         });
     };
 
-    this.addUser = function (usrName, usrPwd, usrMobi, callback) {
+    this.addUser = function (usrName, usrPwd, usrMail, usrMobi, callback) {
         var usrId = 0;
 
         for (let user of db.USER) {
@@ -483,6 +484,7 @@ var Server = function () {
             usrId: usrId,
             usrName: usrName,
             usrPwd: usrPwd,
+            usrMail: usrMail,
             usrCreateTime: usrCreateTime,
             usrMobi: usrMobi
         };
@@ -651,17 +653,17 @@ var Server = function () {
 
                     // let o = db.ORDER.find(ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId).ordNum;
 
-                    let o = db.ORDER.find( function (ord) {
-                        if(ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId){
+                    let o = db.ORDER.find(function (ord) {
+                        if (ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId) {
                             return ord;
                         }
                     });
-                    console.log('o.ordNum ' , o.ordNum);
-                    console.log('dihId ' , dihId);
-                    console.log('usrId ' , usrId);
-                    console.log('grpId ' , grpId);
+                    console.log('o.ordNum ', o.ordNum);
+                    console.log('dihId ', dihId);
+                    console.log('usrId ', usrId);
+                    console.log('grpId ', grpId);
 
-                    db.setValueToJsonDb('ORDER', ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId, 'ordNum', num+o.ordNum );
+                    db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum', num + o.ordNum);
 
 
                     // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
