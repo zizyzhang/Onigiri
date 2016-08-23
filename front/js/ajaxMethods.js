@@ -239,6 +239,14 @@ var AjaxMethods = function () {
         });
     };
 
+    this.alertMailFromRefuseOrder = function (usrId, grpId) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/refuseOrder", {data: JSON.stringify({usrId, grpId})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
 
 };
 

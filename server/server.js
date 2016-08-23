@@ -30,8 +30,15 @@ let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
-//let commemtArrary = [];
-//let commentId;
+var nodemailer = require('nodemailer');
+
+var mailTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'o.grpbuy@gmail.com',
+        pass: 'asd1q2w3e'
+    }
+});
 
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
@@ -396,6 +403,17 @@ var Server = function () {
 
     });
 
+    app.post('/refuseOrder', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let usrId = Number(req.body.usrId);
+        let grpId = Number(req.body.grpId);
+        console.log('usrId , grpId', usrId, grpId);
+
+        self.refuseOrder(usrId, grpId, result=> {
+            res.json(result);
+        });
+    });
+
 
     app.listen(8080, function () {
         console.log('' +
@@ -633,14 +651,13 @@ var Server = function () {
                 return;
             }
             let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
-
-            console.log('usrId, dishes, grpId', usrId, dishes, grpId);
+            // console.log('usrId, dishes, grpId', usrId, dishes, grpId);
 
             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
-            console.log('orderedDishIds', orderedDishIds);
+            // console.log('orderedDishIds', orderedDishIds);
 
             let selectRowByDishId = dihId => row=>row.dihId === dihId;
-
+            let snedornot = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);
 
             for (let {dihId, num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
@@ -658,13 +675,12 @@ var Server = function () {
                             return ord;
                         }
                     });
-                    console.log('o.ordNum ', o.ordNum);
-                    console.log('dihId ', dihId);
-                    console.log('usrId ', usrId);
-                    console.log('grpId ', grpId);
+                    // console.log('o.ordNum ', o.ordNum);
+                    // console.log('dihId ', dihId);
+                    // console.log('usrId ', usrId);
+                    // console.log('grpId ', grpId);
 
                     db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum', num + o.ordNum);
-
 
                     // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
                     //         // usrId,
@@ -674,7 +690,6 @@ var Server = function () {
 
                     continue;
                 }
-
 
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
 
@@ -689,7 +704,6 @@ var Server = function () {
                     //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     ordStatus: 0
                 });
-
 
             }
 
@@ -711,7 +725,8 @@ var Server = function () {
             let g = db.GROUP.find(g=>g.grpId === grpId);
             let metId = g.metId;
             let hostId = g.grpHostId;
-            let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
+            let m = db.MERCHANT.find(m=>m.metId === metId);
+            let metMinPrice = m.metMinPrice;
             let amount = 0;
 
             self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
@@ -719,7 +734,6 @@ var Server = function () {
                 let groupOrderSum = result.groupedOrderSums.find(orderSum=>orderSum.group.grpId === grpId);
                 // console.log("groupOrderSum", groupOrderSum);
 
-                //TODO
                 if (groupOrderSum) {
                     for (let orderSum of groupOrderSum.orderSums) {
                         let price = orderSum.dish.dihPrice;
@@ -735,6 +749,25 @@ var Server = function () {
                 }
                 resolve({success: 1});
             }).catch(e=>console.log(e));
+
+
+            // console.log('snedornot'+snedornot);
+            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入、團員加購
+            if (usrId !== hostId && snedornot) {
+                let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
+                let metName = m.metName;
+                let subject = '販團 : ' + metName + ' - 有新成員加入!';
+                let now = new Date();
+                let detime = new Date(g.grpTime);
+
+
+                let html = '<p>申請時間: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes()) + '</p>' +
+                    '<p>申請人: ' + usrName + '</p>' +
+                    '<p>申請團購: ' + metName + '</p>' +
+                    '<p>團購截止時間: ' + (detime.getMonth() + 1) + '/' + detime.getDate() + ' ' + detime.getHours() + ':' + (detime.getMinutes() < 10 ? '0' + detime.getMinutes() : detime.getMinutes()) + '</p>' +
+                    '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
+                self.sendMail(hostMail, subject, html);
+            }
 
         });
     };
@@ -1111,9 +1144,7 @@ var Server = function () {
 
             if (order.ordStatus != -1) {
                 db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
-                //group.grpStatus = grpStatus;
                 resolve({success: 1});
-
             }
             else {
                 reject({success: 0});
@@ -1129,8 +1160,9 @@ var Server = function () {
                 {
                     self.confirmOrder(hostId).then(result=> {
                         // TODO WHAT THE FUCK
-                        console.log('switch 0');
+                        // console.log('switch 0');
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
+                            //  TODO
                             guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                             // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                             return guo.usrOrders.length !== 0;
@@ -1143,7 +1175,7 @@ var Server = function () {
                 case 1:
                 {
                     self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
-                        console.log('switch 1');
+                        // console.log('switch 1');
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
                         // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve(GrpUsersOrders);
@@ -1189,7 +1221,7 @@ var Server = function () {
                             ordNum: order.dish.ordNum
                         }],
                         usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
-                        usrOrdIds: [{ordId: order.ordId}]
+                        usrOrdIds: [{ordId: order.ordId , ordStatus: order.ordStatus}]
                         // 無法理解錯在哪裡
                         // ,usrDishesWhy: [order.dish]
                     });
@@ -1218,6 +1250,64 @@ var Server = function () {
 
         // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         return GrpUsersOrders;
+    };
+
+    this.sendMail = function (usrMail, subject, html) {
+
+        if (usrMail && subject && html) {
+            mailTransport.sendMail({
+                from: 'o.grpbuy@gmail.com',
+                to: usrMail,
+                subject: subject,
+                html: html
+            }, function (err) {
+                if (err) {
+                    console.log('Unable to send email: ' + err);
+                }
+            });
+        }
+    };
+
+    this.refuseOrder = function (usrId, grpId, callback) {
+        let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
+
+        if (orders) {
+            let dishes = '';
+            for (let order of orders) {
+                let dihName = db.DISH.find(dih=>dih.dihId === order.dihId).dihName;
+                dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>'
+            }
+            // console.log(JSON.stringify(orders));
+            console.log(dishes);
+
+            let g = db.GROUP.find(g=>g.grpId === grpId);
+            let metId = g.metId;
+            let metName = db.MERCHANT.find(m=>m.metId === metId).metName;
+            let ordCreateTime = orders[0].ordCreateTime;
+            let hostName = db.USER.find(usr=>usr.usrId === g.grpHostId).usrName;
+
+            // 通知團員訂單被拒絕
+            let usrMail = db.USER.find(usr=>usr.usrId === usrId).usrMail;
+            let subject = '販團 : 很不幸的 - 您的申請遭到拒絕';
+            let jointime = new Date(ordCreateTime);
+            // let detime = new Date(g.grpTime);
+
+            let html = '<p>申請時間: ' + (jointime.getMonth() + 1) + '/' + jointime.getDate() + ' ' + jointime.getHours() + ':' + (jointime.getMinutes() < 10 ? '0' + jointime.getMinutes() : jointime.getMinutes()) + '</p>' +
+                '<p>申請團購: ' + metName + '</p>' +
+                '<p>團主 : ' + hostName + '</p>' +
+                '<br><p>訂購項目: </p><ul>' + dishes + '</ul>' +
+                // '<p>團購截止時間: ' + (detime.getMonth() + 1) + '/' + detime.getDate() + ' ' + detime.getHours() + ':' + (detime.getMinutes() < 10 ? '0' + detime.getMinutes() : detime.getMinutes()) + '</p>' +
+                '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
+
+            console.log('usrMail , metName ', usrMail, metName);
+
+            self.sendMail(usrMail, subject, html);
+
+            callback({success: 1});
+        }
+        else {
+            callback({success: 0});
+        }
     };
 
     ///////////////////後臺

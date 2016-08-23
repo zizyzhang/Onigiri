@@ -76,6 +76,8 @@ class ConfirmPage { //TODO first
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
+
+                    ajaxMethod.alertMailFromRefuseOrder(usrId, grpId);
                     // mainView.router.refreshPage();
                 });
                 
