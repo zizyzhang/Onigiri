@@ -257,6 +257,7 @@ var Server = function () {
             let metId = Number(req.body.metId);
             let addr = req.body.addr;
             let gorTime = req.body.gorTime;
+            let grpAmountLimit = Number(req.body.grpAmountLimit) || 0 ;
 
             //TODO Check Time
             let deadLine = new Date(gorTime.replace(/(\d*)年(\d*)月(\d*)日\,/gi, '$1/$2/$3'));
@@ -275,7 +276,7 @@ var Server = function () {
             }
 
 
-            self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
+            self.postGroup(grpHostId, dishes, metId, addr, gorTime,grpAmountLimit , function (result) {
                 res.json(result);
             });
 
@@ -561,7 +562,7 @@ var Server = function () {
         callback(merchant);
     };
 
-    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime,grpAmountLimit , callback) {
         let lastGroup = _.maxBy(db.GROUP, 'grpId');
         let grpId = lastGroup ? lastGroup.grpId + 1 : 1;
         db.pushToJsonDb('GROUP', {
@@ -572,7 +573,8 @@ var Server = function () {
             grpTime: gorTime,
             grpStatus: 0,
             grpCreateTime: new Date().getTime(),
-            grpAmount: 0
+            grpAmount: 0,
+            grpAmountLimit:grpAmountLimit||0
 
             //minAmount: minAmount
         });
@@ -604,6 +606,20 @@ var Server = function () {
                 return;
             }
 
+            //是否超过最高上限
+            let amountThisTime = 0;
+            let funcFindDish = dih=> d=>d.dihId === dih.dihId;
+            for(let dih of dishes){
+                amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
+            }
+            let grpAmountLimit = db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit;
+            let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount ;
+            if(amountThisTime+grpAmount > grpAmountLimit){
+                reject('超過團購上限! 超出'+ (amountThisTime+grpAmount-grpAmountLimit)+'元');
+                return;
+            }
+
+            console.log('grpAmountLimit ,grpAmount ', grpAmountLimit,grpAmount);
             console.log('usrId, dishes, grpId', usrId, dishes, grpId);
 
             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
@@ -870,7 +886,8 @@ var Server = function () {
             menu: menu,
             grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
-            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
+            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice),
+            grpAmountLimit:group.grpAmountLimit
         };
 
         return group;

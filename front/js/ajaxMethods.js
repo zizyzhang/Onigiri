@@ -122,8 +122,8 @@ var AjaxMethods = function () {
         });
     };
 
-    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {
-        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime,grpAmountLimit) {
+        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime,grpAmountLimit);
 
         return new Promise((resolve,reject)=> {
 
@@ -133,7 +133,8 @@ var AjaxMethods = function () {
                     dishes,
                     metId,
                     addr,
-                    gorTime
+                    gorTime,
+                    grpAmountLimit
                 })
             }, function (data) {
                 data = JSON.parse(data);

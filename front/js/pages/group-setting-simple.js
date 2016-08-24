@@ -36,6 +36,8 @@ class GroupSettingSimple { //TODO first
                         let addr = $$('#grpAdrSimple').val();
                         let gorTime = $$('#grpTimeSimple').val();
                         let metId = cookies.get('selectedMerchantId');
+                        let grpAmountLimit = Number ($$('#grpAmountLimitSimple').val());
+
 
                         if (!(addr && gorTime )) {
                             myApp.alert('資料填寫不完整');
@@ -50,7 +52,7 @@ class GroupSettingSimple { //TODO first
                             return;
                         }
 
-                        ajaxMethod.postGroup(grpHostId, that.dishes, metId, addr, gorTime).then(()=> {
+                        ajaxMethod.postGroup(grpHostId, that.dishes, metId, addr, gorTime,grpAmountLimit).then(()=> {
                             //完成新增
                             myApp.alert('開團完成!', function () {
                                 tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
