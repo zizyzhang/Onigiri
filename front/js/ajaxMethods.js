@@ -7,45 +7,64 @@ var AjaxMethods = function () {
     'use strict';
 
 
-    this.addUserPromise = function (usrName, usrPwd,usrMobi) {
+    this.addUserPromise = function (usrName, usrPwd,usrMobi,authCode) {
         return new Promise((resolve, reject)=> {
-            let data = JSON.stringify({usrName, usrPwd,usrMobi});
+            let data = JSON.stringify({usrName, usrPwd,usrMobi,authCode});
              $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
                 if (JSON.parse(result).success) {
                     resolve(!!result);
                 } else {
-                    reject(!!result);
+                    reject(JSON.parse(result).msg);
                 }
             });
         });
 
     };
 
-    this.userAuth = function () {
-        return new Promise(function (resolve, reject) {
-            var usrName = $$('#txtUsrName').val();
+    this.mobiAuth = function (usrMobi) {
+        return new Promise((resolve, reject)=> {
 
+            let data = usrMobi;
 
-            var usrPwd = $$('#txtUsrPwd').val();
-
-
-            $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwd}, function (result) {
-                if (JSON.parse(result).success === 1) {
-                    console.log('login success');
-
-                    resolve(JSON.parse(result));
+            $$.post(SERVER_ADS + "/mobiAuth", {data}, function (result) {
+                if (JSON.parse(result).success) {
+                    resolve();
                 } else {
                     reject();
                 }
             });
         });
 
+    };
 
+    this.userAuth = function (usrName,usrPwdSha) {
+        return new Promise(function (resolve, reject) {
+
+
+
+            $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwdSha}, function (result) {
+                if (JSON.parse(result).success === 1) {
+                    console.log('login success');
+
+                    resolve(JSON.parse(result));
+                } else {
+                    reject(JSON.parse(result).err);
+                }
+            });
+        });
     };
 
     this.getAllGroup = function () {
         return new Promise(function (resolve) {
             $$.getJSON(SERVER_ADS + "/allGroup", function (data) {
+                resolve(data);
+            });
+        });
+    };
+
+    this.getUnjoinedGroups = function (usrId) {
+        return new Promise(function (resolve) {
+            $$.getJSON(SERVER_ADS + "/unjoinedGroups/"+usrId, function (data) {
                 resolve(data);
             });
         });
@@ -76,13 +95,37 @@ var AjaxMethods = function () {
                 resolve(data);
             });
         });
+     };
 
+    this.postMerchantPromise = function(merchant){
+      return new Promise((resolve,reject)=>{
+          $$.post(SERVER_ADS + "/merchant",{data:JSON.stringify(merchant)}, function (data) {
+              if(JSON.parse(data).msg){
+                  reject(JSON.parse(data).msg);
+              }else{
+                  resolve(JSON.parse(data));
+              }
+          });
+      });
+    };
+
+    this.postDishPromise = function(dishes){
+
+        return new Promise((resolve,reject)=>{
+            $$.post(SERVER_ADS + "/dishes",{data:JSON.stringify(dishes)}, function (data) {
+                if(JSON.parse(data).msg){
+                    reject(JSON.parse(data).msg);
+                }else{
+                    resolve(JSON.parse(data));
+                }
+            });
+        });
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {
         console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
 
-        return new Promise(resolve=> {
+        return new Promise((resolve,reject)=> {
 
             $$.post(SERVER_ADS + "/group", {
                 data: JSON.stringify({
@@ -95,8 +138,10 @@ var AjaxMethods = function () {
             }, function (data) {
                 data = JSON.parse(data);
                 console.log(data);
-                if (data.success === 1) {
-                    resolve();
+                if (data.msg) {
+                    reject(data.msg);
+                }else{
+                    resolve(data);
                 }
             });
         });

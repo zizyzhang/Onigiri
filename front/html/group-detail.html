@@ -1,5 +1,5 @@
 <div data-page="group-detail" class="page">
-    <div class="navbar navbar-trans">
+    <div class="navbar ">
 
         <div class="navbar-inner">
             <div class="left"><a href="home.html" class=" link icon-only"><i class="icon icon-back"></i></a></div>
@@ -9,11 +9,11 @@
 
     <div class="toolbar toolbar-bottom ">
         <div class="toolbar-inner">
-            <a href="#tab-1" class="button button-fill button color-green toolbar-button">
-                查看菜单
-            </a>
+            <!--<a href="#tab-1" class="button button-fill button color-green toolbar-button">-->
+                <!--查看菜單-->
+            <!--</a>-->
             <a href="#" id="btnJoin" class="button button-fill color-red toolbar-button">
-                加入团购
+                加入團購
             </a>
 
         </div>
@@ -21,7 +21,14 @@
 
 
     <div class="page-content hide-navbar-on-scroll">
-        <div class="group-detail-img" style="background-image: url('{{merchant.metPicUrl}}');"></div>
+        <div class="group-detail-img" style="background-image: url('{{merchant.metPicUrl}}');">
+            <div style='width:100% ;height: 20px;;top: 230px; color: white;background-color:rgba(0, 0, 0, 0.31);;position: relative;'>
+                <div style="display: inline-block; height:100%;width: {{grpReachRatePercent}}%;" class="bg-green"></div>
+
+                <div style="display:inline;position: absolute;left: calc(50% - 10px);">${{grpAmount}}/${{merchant.metMinPrice}}</div>
+            </div>
+        </div>
+
         <div class="card demo-card-header-pic">
 
             <div class="card-content">
@@ -34,7 +41,7 @@
                     </p>
 
                     <p>
-                        <span class="ficon ">M</span>取餐地點: {{grpAddr}}
+                        <span class="ficon ">M</span>地點: {{grpAddr}}
                     </p>
                 </div>
             </div>
@@ -46,7 +53,7 @@
             <div class="card-content">
                 <div class="card-content-inner">
                     <div class="text-center">
-                        <p class="color-black comment-title">餐厅评价: <span
+                        <p class="color-black comment-title">商家评价: <span
                                 class="ficon icon-user-8 color-red">999K8</span></p>
                     </div>
 
@@ -63,7 +70,7 @@
                             999K8
                         </div>
                         <div>
-                            <span class="comment-content">好吃的餐厅! 推荐</span>
+                            <span class="comment-content">好吃的餐廳!推薦!</span>
                         </div>
                         <div class="clear-both"></div>
                     </div>
@@ -80,7 +87,7 @@
                             99K88
                         </div>
                         <div>
-                            <span class="comment-content">味道还不错</span>
+                            <span class="comment-content">味道還不錯</span>
                         </div>
                     </div>
                     <div class="clear-both"></div>

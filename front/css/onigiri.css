@@ -2,10 +2,13 @@
     background-image: url("../assets/img/login-bg.jpg");
     background-repeat: no-repeat;
     background-position: center;
+
 }
 
-.icon-big {
+.icon-big,.login-screen-title {
     text-align: center;
+    margin:0px auto!important;
+
 }
 
 .icon-usr-pwd {
@@ -87,7 +90,7 @@
     width: 100%;
     background-size: cover;
     background-repeat: no-repeat;
-
+    background-position: center;
 }
 
 @font-face {
@@ -275,4 +278,8 @@ margin-top: 50%;
 }
 .font-gray{
     color:gray;
+}
+
+.group-setting-dishes{
+    padding:0px !important;
 }

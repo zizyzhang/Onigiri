@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let Vue = require('vue');
 
 
 class Page { //TODO first

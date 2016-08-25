@@ -41,12 +41,15 @@ class CreateMenuPage { //TODO first
                     let arrayOfSelectedDishIds = [];
                     let checkedCheckBoxes = _.filter(Array.from($$('.dih-checkbox')), el=>$$(el).prop('checked') === true);
                     for (let checkbox of checkedCheckBoxes) {
+                         arrayOfSelectedDishIds.push($$(checkbox).dataset().dihId);
+                    }
 
-                        arrayOfSelectedDishIds.push($$(checkbox).dataset().dihId);
+                    if(arrayOfSelectedDishIds.length===0){
+                        myApp.alert('未選擇商品');
                     }
 
 
-                    mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds,date:new Date()}});
+                    mainView.router.loadPage({url: 'group-setting-simple.html', query: {arrayOfSelectedDishIds,date:new Date()}});
                 });
 
 

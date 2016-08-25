@@ -3,6 +3,7 @@
         <div class="navbar-inner">
             <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div>
             <div class="center">團購資訊設定</div>
+
         </div>
     </div>
     <div class="toolbar toolbar-bottom ">
@@ -20,30 +21,67 @@
 
             <ul>
                 <li>
-                    <!--<a href="#" class="item-link item-content">-->
-                        <!--<div class="item-media"><i class="icon icon-f7"></i></div>-->
-                        <!--<div class="item-inner">-->
-                            <!--<div class="item-title"></div>-->
-                            <!--<div class="item-after" id="txtGrpTime"></div>-->
-                        <!--</div>-->
-                    <!--</a>-->
-                    <!--<div class="item-content">-->
-                        <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
-                        <!--<div class="item-inner">-->
-                            <!--<div class="item-title label">取餐日期</div>-->
-                            <!--<div class="item-input">-->
-                                <!--<input type="text" placeholder="取餐日期">-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
+                    <div class="item-divider">團購基本資訊</div>
+                </li>
+
+
+                <li>
                     <div class="item-content">
                         <div class="item-media"><i class="icon icon-form-name"></i></div>
 
                         <div class="item-inner">
 
-                            <div class="item-title label">取餐日期</div>
+                            <div class="item-title label">商家名稱</div>
+
+
                             <div class="item-input">
-                                <input type="text" placeholder="取餐日期" readonly id="grpTime">
+                                <input type="text" placeholder="商家名稱" id="merchantName">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">商家聯系電話</div>
+
+
+                            <div class="item-input">
+                                <input type="text" placeholder="商家電話" id="merchantMob">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">最低外送金額</div>
+
+
+                            <div class="item-input">
+                                <input type="text" placeholder="最低外送金額" id="minPrice">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+                <li>
+
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+
+                            <div class="item-title label">截止時間</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="截止時間" readonly id="grpTime">
                             </div>
                         </div>
                     </div>
@@ -52,9 +90,9 @@
                     <div class="item-content">
                         <div class="item-media"><i class="icon icon-form-name"></i></div>
                         <div class="item-inner">
-                            <div class="item-title label">取餐地點</div>
+                            <div class="item-title label">地點</div>
                             <div class="item-input">
-                                <input id="grpAdr" type="text" placeholder="取餐地點">
+                                <input id="grpAdr" type="text" placeholder="地點">
                             </div>
                         </div>
                     </div>
@@ -67,6 +105,94 @@
                     <!--</a>-->
                 </li>
 
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-name"></i></div>
+
+                        <div class="item-inner">
+                            <div class="item-title label">商家类型</div>
+
+                            <a href="#" class="item-link smart-select">
+                                <!-- select -->
+                                <select name="metType" id="metType">
+                                    <option value="其他">其他</option>
+                                    <option value="餐廳">餐廳</option>
+                                </select>
+                                <div class="item-content" style="padding: 0px !important;">
+                                    <div class="item-inner" style="padding-top: 20px">
+                                        <!-- Select label -->
+                                        <!--<div class="item-title">Fruit</div>-->
+                                        <!-- Selected value, not required -->
+                                        <div class="item-after" style="margin: 0 !important;"></div>
+                                    </div>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-divider">團購商品列表</div>
+                </li>
+
+
+                <li id="products">
+                    <div class="card ">
+                        <div class="card-header">
+                            商品1
+                        </div>
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="list-block">
+                                    <ul class="group-setting-dishes">
+                                        <li>
+                                            <div class="item-content">
+                                                <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+
+                                                <div class="item-inner">
+
+                                                    <div class="item-title label">商品名稱</div>
+
+
+                                                    <div class="item-input">
+                                                        <input type="text" placeholder="商品名稱" data-id="0"
+                                                               class="js-dishName">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </li>
+                                        <li>
+                                            <div class="item-content">
+
+                                                <div class="item-inner">
+
+                                                    <div class="item-title label">商品價格</div>
+
+
+                                                    <div class="item-input">
+                                                        <input type="text" placeholder="商品價格" data-id="0"
+                                                               class="js-dishPrice">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </li>
+
+                <li>
+                    <div class="button-row" style="margin:0 1em">
+                        <a style="margin: 0 auto;" class="button  button-fill color-green" id="addProduct">新增商品</a>
+
+                    </div>
+                </li>
             </ul>
         </div>
     </div>

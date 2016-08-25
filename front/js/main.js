@@ -16,15 +16,18 @@ let ajaxMethod = require('./ajaxMethods.js'),
     MyGroups = require('./pages/my-groups.js'),
     Public = require('./public.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
-    SignUpPage = require('./pages/sign-up.js');
-
+    SignUpPage = require('./pages/sign-up.js'),
+    HowToCreate = require('./pages/how-to-create.js'),
+    GroupSettingSimple = require('./pages/group-setting-simple.js');
+    //Dom7 = require('dom7');
 
 // Initialize app
 let myApp = new Framework7({
-    modalTitle: 'Onigiri',
+    modalTitle: '販團',
     //template7Pages: true,
     // Enable Material theme
     material: true,
+    debug: true
 
 });
 
@@ -47,7 +50,9 @@ let mainView = myApp.addView('.view-main', {
         myApp.closeModal();
 
 
-        mainView.router.loadPage('home.html');
+        //mainView.router.loadPage('home.html');
+        //tool.loadPage('group-setting.html',mainView);
+
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
     }
@@ -64,8 +69,12 @@ let pageEventBind = function () {
     let createMenuPage = new CreateMenuPage(myApp, mainView);
     let home = new Home(myApp, mainView);
     let myGoups = new MyGroups(myApp, mainView);
-    let orderDetailPage= new OrderDetailPage(myApp, mainView);
+    let orderDetailPage = new OrderDetailPage(myApp, mainView);
     let signUpPage = new SignUpPage(myApp, mainView);
+    let howToCreate = new HowToCreate(myApp,mainView);
+    let groupSettingSimple = new GroupSettingSimple(myApp, mainView);
+
+
 
     groupDetailPage.bind();
     orderPage.bind();
@@ -77,7 +86,8 @@ let pageEventBind = function () {
     myGoups.bind();
     orderDetailPage.bind();
     signUpPage.bind();
-
+    howToCreate.bind();
+    groupSettingSimple.bind();
 
 }();
 

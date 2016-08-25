@@ -3,9 +3,11 @@
 /**
  * Created by User on 2016/3/24.
  */
+
 require('source-map-support').install();
 
 const isDebug = true;
+const fakeAuthCode = true;
 
 const _ = require('lodash');
 //let db = require('./mock-db');
@@ -16,7 +18,17 @@ let JsonDB = require('node-json-db');
 //debugger;
 let jsonDb = new JsonDB("./onigiri", true, true);
 let db = jsonDb.getData('/db');
+require('./time.js');
+
 //console.log(__dirname);
+
+//let twilio = require('twilio');
+//const twilio = require("./twilio/lib");
+//let client = new twilio.RestClient(accountSid, authToken);
+
+let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c1f28236cb262e6b32ba8ab");
+
+let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
 
 db.pushToJsonDb = function (table, value) {
@@ -33,21 +45,21 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     //    db[table].push(value);
 };
 
-//CLEAN GROUP 删掉超时的
+//CLEAN GROUP 刪掉超時的
 (()=> {
     setInterval(()=> {
-        //得到所有没过期的团
-        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus=== 0);
+        //得到所有沒過期的團
+        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
 
         for (let g of availableGroups) {
-            let deadLine = new Date(g.grpTime.replace(/(\d*)月 (\d*)日\,/gi, '$1/$2/2016'));
-             if (deadLine.getTime() - new Date().getTime() < 0) {
+            let deadLine = new Date(g.grpTime);
+            if (deadLine.getTime() - new Date().getTime() < 0) {
                 db.setValueToJsonDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
             }
         }
     }, 5000);
 
- })();
+})();
 
 var Server = function () {
 
@@ -96,9 +108,34 @@ var Server = function () {
 
             req.body = JSON.parse(req.body.data);
 
-            var usrName = req.body.usrName;
-            var usrPwd = req.body.usrPwd;
-            var usrMobi = req.body.usrMobi;
+            let usrName = req.body.usrName;
+            let usrPwd = req.body.usrPwd;
+            let usrMobi = req.body.usrMobi;
+            let authCode = req.body.authCode;
+
+
+            if (!usrName || !usrPwd || !usrMobi || !authCode) {
+                res.json({success: false, msg: '資料填寫不完整!'});
+                return;
+            }
+
+            let result = authCodes.find(obj=>obj.phone === usrMobi);
+            if (!result) {
+                res.json({success: false, msg: '請驗證手機號碼'});
+                return;
+            } else if (result.authCode !== authCode) {
+                result.triedTimes++;
+                if (result.triedTimes === 3) {
+                    authCodes.splice(authCodes.findIndex(obj=>obj.phone === usrMobi), 1);
+                }
+                res.json({success: false, msg: '驗證碼輸入錯誤'});
+                return;
+            } else if (db.USER.find(o=>o.usrId === usrName)) {
+                res.json({success: false, msg: '帳號名稱重複'});
+                return;
+            }
+
+
             //console.log(JSON.stringify(req.body));
             self.addUser(usrName, usrPwd, usrMobi, function (result) {
                 res.json(result);
@@ -106,10 +143,70 @@ var Server = function () {
         }
     );
 
+    app.post('/merchant', function (req, res) {
+
+            req.body = JSON.parse(req.body.data);
+
+            let metName = req.body.metName;
+            let metPhone = req.body.metPhone;
+            let metMinPrice = Number(req.body.metMinPrice);
+            let metPicUrl = req.body.metPicUrl || '';
+            let metType = req.body.metType || '其他';
+
+
+            if (!(metName && metPhone && metMinPrice && metPhone.length === 10 && metMinPrice >= 0)) {
+                res.json({success: false, msg: '資料輸入錯誤'});
+                return;
+            }
+
+            self.addMerchantPromise({metName, metPhone, metMinPrice, metPicUrl, metType}).then((merchant)=> {
+                res.json({success: true, merchant});
+            }).catch(()=>res.json({success: false}));
+
+        }
+    );
+
+    app.post('/dishes', function (req, res) {
+
+            req.body = JSON.parse(req.body.data);
+
+            console.log(JSON.stringify(req.body));
+
+            for (let dish of req.body) {
+                dish.dihPrice = Number(dish.dihPrice);
+
+                if (!(dish.dihName && dish.dihPrice && dish.metId)) {
+                    res.json({success: false, msg: '資料不完整'});
+                    return;
+                }
+
+                if (dish.dihPrice < 0) {
+                    res.json({success: false, msg: '商品價格不正確'});
+                    return;
+                }
+            }
+
+            req.body = req.body.map(row=> {
+                row.dihType = row.dihType || '主食';
+                return row;
+            });
+
+
+            self.addDishPromise(req.body).then((result)=> {
+                res.json({success: true, dishes: result});
+            }).catch(()=>res.json({success: false}));
+
+        }
+    );
 
     app.post('/userAuth', function (req, res) {
             var usrName = req.body.usrName;
             var usrPwd = req.body.usrPwd;
+
+            if (!(usrName && usrPwd)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
             //console.log(JSON.stringify(req.body));
 
@@ -129,7 +226,11 @@ var Server = function () {
 
     app.get('/groupById/:id', (req, res)=> {
         self.getGroupById(Number(req.params.id), result=>res.json(result));
-    })
+    });
+
+    app.get('/unjoinedGroups/:usrId', (req, res)=> {
+        self.getUnjoinedGroups(Number(req.params.usrId), result=>res.json(result));
+    });
 
     app.get('/allMerchant', function (req, res) {
         // Pass to next layer of middleware
@@ -140,6 +241,7 @@ var Server = function () {
 
     app.get('/merchantById/:id', function (req, res) {
         // Pass to next layer of middleware
+
         self.getMerchantById(Number(req.params.id), function (result) {
             res.json(result);
         });
@@ -150,12 +252,27 @@ var Server = function () {
             //console.log(req.body);
 
             req.body = JSON.parse(req.body.data);
-            var grpHostId = req.body.grpHostId;
-            var dishes = req.body.dishes;
-            var metId = req.body.metId;
-            var addr = req.body.addr;
-            var gorTime = req.body.gorTime;
-            var minAmount = req.body.minAmount;
+            let grpHostId = Number(req.body.grpHostId);
+            let dishes = req.body.dishes;
+            let metId = Number(req.body.metId);
+            let addr = req.body.addr;
+            let gorTime = req.body.gorTime;
+
+            //TODO Check Time
+            let deadLine = new Date(gorTime.replace(/(\d*)年(\d*)月(\d*)日\,/gi, '$1/$2/$3'));
+            gorTime = deadLine.getTime();
+
+            if (gorTime < new Date().getTime()) {
+                res.json({success: false, msg: '截止時間不能早於當前時間'});
+                return;
+            }
+
+
+            if (!( grpHostId && dishes && metId && addr && gorTime)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+
+            }
 
 
             self.postGroup(grpHostId, dishes, metId, addr, gorTime, function (result) {
@@ -167,16 +284,20 @@ var Server = function () {
 
     app.post('/joinGroup', function (req, res) {
             req.body = JSON.parse(req.body.data);
-            var usrId = Number(req.body.usrId);
-            var dishes = req.body.dishes;
-            var grpId = req.body.grpId;
+            let usrId = Number(req.body.usrId);
+            let dishes = req.body.dishes;
+            let grpId = req.body.grpId;
 
+            if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
-            //console.log(JSON.stringify(req.body));
 
             self.joinGroupPromise(usrId, dishes, grpId).then(result=> {
                 res.json(result);
             }).catch(e=> {
+                console.log(e);
                 res.json(e);
             });
 
@@ -185,12 +306,32 @@ var Server = function () {
 
     app.post('/groupStatus', function (req, res) {
             req.body = JSON.parse(req.body.data);
-            var grpId = Number(req.body.grpId);
-            var grpStatus = Number(req.body.grpStatus);
-
+            let grpId = Number(req.body.grpId);
+            let grpStatus = Number(req.body.grpStatus);
+            if (!(grpId && grpStatus)) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
 
             self.updateGroupStatusPromise(grpId, grpStatus).then(result=> {
                 res.json(result);
+            }).catch(e=> {
+                res.json(e);
+            });
+
+        }
+    );
+
+    app.post('/mobiAuth', function (req, res) {
+            let usrMobi = req.body.data;
+            if (!usrMobi) {
+                res.json({success: false, msg: '資料不完整'});
+                return;
+            }
+
+
+            self.getTwilioCode(usrMobi).then(result=> {
+                res.json({success: true});
             }).catch(e=> {
                 res.json(e);
             });
@@ -221,6 +362,71 @@ var Server = function () {
             'app listening on port 8080!');
     });
 
+    this.addDishPromise = function (dishes) {
+
+        return new Promise((resolve, reject)=> {
+            for (let dish of dishes) {
+                dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
+                db.pushToJsonDb('DISH', dish);
+            }
+            resolve(dishes);
+        });
+    };
+
+    this.getTwilioCode = function (userMobi) {
+        return new Promise(function (resolve, reject) {
+            var min = 100;
+            var max = 999;
+            var randomAuth = Math.floor(Math.random() * (max - min + 1) + min) + '';
+            if (fakeAuthCode) {
+                randomAuth = '123';
+                resolve('123');
+                authCodes.push({
+                    phone: userMobi,
+                    authCode: randomAuth,
+                    endTime: new Date().getTime() + 1000 * 60 * 5,
+                    triedTimes: 0
+                });
+
+                setTimeout(()=> {
+                    let indexOfAuthCode = authCodes.findIndex(obj=>obj.authCode === authCodes);
+                    if (indexOfAuthCode) {
+                        authCodes.splice(indexOfAuthCode, 1);
+                    }
+                }, 1000 * 60 * 5);
+                return;
+            }
+
+            client.messages.create({
+                body: '您的飯糰驗證碼是' + randomAuth,
+                to: '+886' + userMobi,  // Text this number
+                from: '+13342030485' // From a valid Twilio number
+            }, function (err, message) {
+                if (err) {
+                    console.log(err);
+                    reject(randomAuth);
+                } else {
+                    console.log(message && message.sid);
+                    resolve(randomAuth);
+                    authCodes.push({
+                        phone: userMobi,
+                        authCode: randomAuth,
+                        endTime: new Date().getTime() + 1000 * 60 * 5,
+                        triedTimes: 0
+                    });
+
+                    setTimeout(()=> {
+                        let indexOfAuthCode = authCodes.findIndex(obj=>obj.authCode === authCodes);
+                        if (indexOfAuthCode) {
+                            authCodes.splice(indexOfAuthCode, 1);
+                        }
+                    }, 1000 * 60 * 5);
+                }
+            });
+
+
+        });
+    };
 
     this.addUser = function (usrName, usrPwd, usrMobi, callback) {
         var usrId = 0;
@@ -251,6 +457,24 @@ var Server = function () {
         }
     };
 
+    /*
+     * 參數
+     {metName,
+     metPhone,
+     metMinPrice,
+     metPicUrl,
+     metType}
+     */
+    this.addMerchantPromise = function (merchant) {
+        return new Promise((resolve, reject)=> {
+            merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
+
+            db.pushToJsonDb('MERCHANT', merchant);
+
+            resolve(merchant);
+
+        });
+    };
 
     this.userAuth = function (usrName, usrPwd, callback) {
         var isSuccess = false;
@@ -270,10 +494,15 @@ var Server = function () {
         }
 
         if (!isSuccess) {
-            callback({success: 0});
+            callback({success: false, err: '帳號密碼不匹配'});
         }
     };
 
+    //unjoined groups by user id
+    this.getUnjoinedGroups = function (usrId, callback) {
+        let joinedGroupIds = _.uniqBy(db.ORDER.find(ord=>ord.usrId === usrId), 'grpId').map(ord=>ord.grpId);
+        callback(db.GROUP.filter(grp=> !joinedGroupIds.find(grpId=>grpId === grp.grpId)));
+    };
 
     this.allGroup = function (callback) {
         let result = [];
@@ -292,9 +521,9 @@ var Server = function () {
         for (let _group of db.GROUP.filter(g=>g.grpStatus === 0 || g.grpStatus === 1)) {
             let group = this.createClassGroupByGroupId(_group.grpId);
             result.push(group);
-
         }
-        callback(result);
+
+        callback(_.sortBy(result, row=>-new Date(row.grpTime)));
     };
 
     this.getGroupById = function (id, callback) {
@@ -306,8 +535,7 @@ var Server = function () {
     this.allMerchant = function (callback) {
         var result = [];
         for (let _merchant of db.MERCHANT) {
-            let merchant = _.cloneDeep(_merchant);
-            merchant.menu = _.filter(db.DISH, (dish)=>dish.metId === merchant.metId);
+            let merchant = this.createClassMerchantById(_merchant.metId);
             result.push(
                 merchant
             );
@@ -317,9 +545,8 @@ var Server = function () {
 
 
     this.getMerchantById = function (id, callback) {
-        let result = db.MERCHANT.find(merchant=>merchant.metId === id);
-        result.menu = _.filter(db.DISH, (dish)=>dish.metId === id);
-        callback(result);
+        let merchant = this.createClassMerchantById(id);
+        callback(merchant);
     };
 
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, callback) {
@@ -331,7 +558,9 @@ var Server = function () {
             metId: metId,
             grpAddr: addr,
             grpTime: gorTime,
-            grpStatus: 0
+            grpStatus: 0,
+            grpCreateTime: new Date().getTime(),
+            grpAmount: 0
 
             //minAmount: minAmount
         });
@@ -351,24 +580,49 @@ var Server = function () {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
         return new Promise((resolve, reject)=> {
-            //拒绝用户对同一个group连续点两次餐点
-            if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
-                reject("重复加团!");
+            //拒絕用戶對同壹個group連續點兩次餐點
+            //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
+            //    reject("重復加團!");
+            //    return;
+            //}
+
+            //只有0,1状态的团可以团购
+            if (!_.includes([0, 1], db.GROUP.find(grp=>grp.grpId === grpId).grpStatus)) {
+                reject("團購已經截止!");
                 return;
             }
 
+            console.log('usrId, dishes, grpId', usrId, dishes, grpId);
+
+            let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
+            console.log('orderedDishIds', orderedDishIds);
+
+            let selectRowByDishId = dihId => row=>row.dihId === dihId;
             for (let {dihId,num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
                     continue;
                 }
+
+                if (_.includes(orderedDishIds, dihId)) {
+                    db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
+                            usrId,
+                            dihId
+                        })].ordNum);
+                    continue;
+                }
+
+
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
+
                 db.pushToJsonDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
                     dihId: dihId,
-                    ordNum: num
+                    ordNum: num,
+                    ordCreateTime: new Date().getTime()
                 });
+
 
             }
 
@@ -398,6 +652,8 @@ var Server = function () {
                     amount += total;
                 }
 
+                db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amount);
+
                 if (amount >= metMinPrice) {
                     g.grpStatus = 1;
                     db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
@@ -422,18 +678,19 @@ var Server = function () {
                 groupedOrders.push({group: group, orders: [order]});
             }
         }
-        return groupedOrders;
+        return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime));
     };
 
 
     this.getGroupedOrdersByUserId = function (usrId, callback) {
-        let orders = db.ORDER.filter(ord=>ord.usrId === usrId).map(ord=> {
+        let orders = _.sortBy(db.ORDER.filter(ord=>ord.usrId === usrId), obj=>-obj.ordCreateTime).map(ord=> {
             let newOrd = {
                 ordId: ord.ordId,
                 grpId: ord.grpId,
                 usrId: ord.usrId,
                 dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                ordNum: ord.ordNum
+                ordNum: ord.ordNum,
+                ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             };
             return newOrd;
         });
@@ -464,7 +721,8 @@ var Server = function () {
                     grpId: ord.grpId,
                     usrId: ord.usrId,
                     dish: db.DISH.find(d=>d.dihId === ord.dihId),
-                    ordNum: ord.ordNum
+                    ordNum: ord.ordNum,
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
                 };
                 return newOrd;
             });
@@ -478,7 +736,7 @@ var Server = function () {
                 groupedOrderSums = result;
             });
 
-            //处理空白团
+            //處理空白團
             let emptyGroups = db.GROUP.filter(grp=> grp.grpHostId === hostId && !db.ORDER.find(ord=>ord.grpId === grp.grpId));
             if (emptyGroups) {
                 emptyGroups.map(eptGroup=> {
@@ -488,7 +746,10 @@ var Server = function () {
                 });
             }
 
-            resolve({groupedOrders, groupedOrderSums});
+            resolve({
+                groupedOrders,
+                groupedOrderSums: _.sortBy(groupedOrderSums, obj=>-obj.group.grpCreateTime)
+            });
         });
     };
 
@@ -530,7 +791,7 @@ var Server = function () {
                     break;
                 case 3:
                     group.grpStatusCh = "已完成";
-                    group.btnChangeStatusName = "";
+                    group.btnChangeStatusName = "重新開團";
                     group.grpNextStatus = 4;
                     break;
                 case -1:
@@ -546,6 +807,12 @@ var Server = function () {
 
 
         callback(groupedOrderSums);
+    };
+
+    this.createClassMerchantById = function (metId) {
+        let result = _.cloneDeep(db.MERCHANT.find(merchant=>merchant.metId === metId));
+        result.menu = _.filter(db.DISH, (dish)=>dish.metId === metId);
+        return result;
     };
 
     this.createClassGroupByGroupId = function (grpId) {
@@ -565,29 +832,33 @@ var Server = function () {
             }) || [];
         grpDishes.map(grpDish=> {
 
-            //检查是否已经存在DISH的分类.
+            //檢查是否已經存在DISH的分類.
             let dihGroup = menu.find(dgp => dgp.dihType === grpDish.dish.dihType);
             if (dihGroup) {
-                //已经有了就加入一笔
+                //已經有了就加入壹筆
                 dihGroup.dishes.push(grpDish.dish);
             } else {
-                //如果没有加入新的分类,和一笔DISH
+                //如果沒有加入新的分類,和壹筆DISH
                 menu.push({dihType: grpDish.dish.dihType, dishes: [grpDish.dish]});
             }
         });
 
+        let merchant = db.MERCHANT.find(merchant => merchant.metId === group.metId);
+
         group = {
             grpId: group.grpId,
             grpAddr: group.grpAddr,
-            grpTime: group.grpTime,
+            grpTime: new Date(group.grpTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpHostName: (db.USER.find(user => user.usrId === group.grpHostId)).usrName,
-            merchant: db.MERCHANT.find(merchant => merchant.metId === group.metId),
+            merchant: merchant,
             grpOrder: _.filter(db.GROUP_ORDER, (grr)=> grr.grpId === group.grpId) || [],
             grpDishes: grpDishes,
             grpHost: that.createUserByUserId(group.grpHostId),
-
             grpStatus: group.grpStatus,
-            menu: menu
+            menu: menu,
+            grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+            grpAmount: group.grpAmount || 0,
+            grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice)
         };
 
         return group;
@@ -642,9 +913,9 @@ var Server = function () {
     };
 
 
-    ///////////////////后台
+    ///////////////////後臺
 
-    //给资料表新增一个row
+    //給資料表新增壹個row
     app.post('/:adminPwd/table/:tableName', function (req, res) {
         if (req.params.adminPwd !== 'fHfKJp3iSAfhvd9fjn23Z5KMA6Sd') {
             res.json({success: false});
@@ -666,8 +937,7 @@ var Server = function () {
     });
 
 
-};
+}
 
 
 module.exports = new Server();
-
