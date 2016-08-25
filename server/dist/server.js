@@ -859,13 +859,13 @@ var Server = function Server() {
                 }
             }
 
-            var grpAmountLimit = db.GROUP.find(function (grp) {
+            var grpAmountLimit = Number(db.GROUP.find(function (grp) {
                 return grp.grpId === grpId;
-            }).grpAmountLimit;
+            }).grpAmountLimit);
             var grpAmount = db.GROUP.find(function (grp) {
                 return grp.grpId === grpId;
             }).grpAmount;
-            if (amountThisTime + grpAmount > grpAmountLimit) {
+            if (grpAmountLimit !== 0 && amountThisTime + grpAmount > grpAmountLimit) {
                 //團購上限
                 reject('超過團購上限! 超出' + (amountThisTime + grpAmount - grpAmountLimit) + '元');
                 return;

@@ -651,9 +651,9 @@ var Server = function () {
             for (let dih of dishes) {
                 amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
             }
-            let grpAmountLimit = db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit;
+            let grpAmountLimit = Number(db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit);
             let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount;
-            if (amountThisTime + grpAmount > grpAmountLimit) {
+            if (grpAmountLimit!==0 && amountThisTime + grpAmount > grpAmountLimit) {
                 //團購上限
                 reject('超過團購上限! 超出' + (amountThisTime + grpAmount - grpAmountLimit) + '元');
                 return;
