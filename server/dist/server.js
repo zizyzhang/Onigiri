@@ -1066,7 +1066,44 @@ var Server = function Server() {
                     tOrder.orders.push(order);
                 } else {
                     var group = _this2.createClassGroupByGroupId(order.grpId);
-                    groupedOrders.push({ group: group, orders: [order] });
+
+                    //顯示給使用者的狀態
+                    var status = '';
+
+                    switch (group.grpStatus) {
+                        case 0:
+                        case 1:
+                            switch (order.ordStatus) {
+                                case -1:
+                                    status = '被團主拒絕';
+                                    break;
+                                case 0:
+                                    status = '等待團主審查';
+                                    break;
+                                case 1:
+                                    if (group.grpStatus === 0) {
+                                        status = '已確認, 未達到起送金額';
+                                    } else {
+                                        status = '等待商家配送';
+                                    }
+                                    break;
+                                case 2:
+                                    status = '付款完成';
+                                    break;
+                            }
+                            break;
+                        case 2:
+                            status = '已送達, 待付款';
+                            break;
+                        case 3:
+                            status = '已完成';
+                            break;
+                        case -1:
+                            status = '開團失敗';
+                            break;
+                    }
+
+                    groupedOrders.push({ group: group, orders: [order], status: status });
                 }
             };
 
@@ -1099,6 +1136,7 @@ var Server = function Server() {
         }), function (obj) {
             return -obj.ordCreateTime;
         }).map(function (ord) {
+
             var newOrd = {
                 ordId: ord.ordId,
                 grpId: ord.grpId,
@@ -1110,6 +1148,7 @@ var Server = function Server() {
                 ordNum: ord.ordNum,
                 ordStatus: ord.ordStatus, //07.03 add
                 ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
+
             };
             return newOrd;
         });
