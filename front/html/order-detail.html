@@ -4,7 +4,7 @@
         <div class="navbar-inner">
             <div class="left"><a href="home.html" class="back link icon-only"><i class="icon icon-back"></i></a>
             </div>
-            <div class="center">贩團</div>
+            <div class="center">販團</div>
             <div class="right"><a href="#" class="open-panel link icon-only"><i class="icon icon-bars"></i></a></div>
 
         </div>
@@ -16,14 +16,21 @@
             <div class="card-header">團購資訊</div>
             <div class="card-content">
                 <div class="card-content-inner">
-                    <p><span></span>截止時間:  {{grpTime}}</p>
+                    <p><span class="ficon" >Z</span>截止時間:  {{grpTime}}</p>
 
-                    <p><span class="ficon icon-user-8">L</span>  {{grpHostName}}</p>
+                    <p><span class="ficon icon-user-8">L</span>團主:  {{grpHostName}}</p>
 
-                    <p><span class="ficon ">M</span>  {{grpAddr}}</p></div>
+                    <p><span class="ficon ">M</span>領取地點:  {{grpAddr}}</p></div>
 
             </div>
 
+            <div class="card-footer">
+
+            <a href="#" class="link js-btn-contact-host"
+            data-grp-host-mobi="{{grpHost.usrMobi}}"
+            style="color:red"><span class="ficon">N</span> 聯繫團長</a>
+
+            </div>
         </div>
     </div>
 </div>

@@ -9,22 +9,30 @@ let Vue = require('vue');
 let _ = require('lodash');
 const cookies = require('js-cookie');
 
-//创建一个Map: {dihId : dihNum}
 
+//创建一个Map: {dihId : dihNum}
+let comments;
 class OrderPage {
     constructor(_myApp, _mainView) {
         myApp = _myApp;
         mainView = _mainView;
     }
-
+    
     bind() {
         let self = this;
         myApp.onPageBeforeInit('order', function (page) {
             console.log('before order init');
+            let usrId = cookies.getJSON('user').usrId;
+
+            let grpId = Number(cookies.get('selectedGroupId'));
+            //let comments = page.query.comments;
+
+
             let selectedGroupId = Number(cookies.get('selectedGroupId'));
             self.ordersMap = new Map();
 
             //tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(selectedGroupId), page, (group)=> {
+
 
             if (page.query.ajaxResult) {
                 window.orderAjaxResult = page.query.ajaxResult;
@@ -32,14 +40,18 @@ class OrderPage {
                 page.query.ajaxResult = window.orderAjaxResult;
             }
 
+                //console.log(group.grpHost.usrName);
+
+
             console.log('orderPage Query', page.query);
 
             let vuePage = new Vue({
                 el: '#order',
                 data:  page.query.ajaxResult,
                 computed:{
-                    isExtraOrder:()=>true
+                    isExtraOrder:()=>!!page.query.isExtraOrder
                 }
+
             });
 
 
@@ -47,6 +59,8 @@ class OrderPage {
             let group = page.query.ajaxResult;
 
             self.dishes = group.grpDishes.map(gdh=>gdh.dish);
+
+
 
 
             for (let groupDish of group.grpDishes) {
@@ -73,7 +87,7 @@ class OrderPage {
 
             $$('#btnJoinGroup').click(()=> {
                 let dishes = [];
-
+                comments=window.comments;
                 for (let [odrDishId,odrDishNum] of self.ordersMap.entries()) {
                     if (odrDishNum === 0) {
                         continue;
@@ -87,19 +101,27 @@ class OrderPage {
                 }
 
 
-                let grpId = Number(cookies.get('selectedGroupId')) || window.selectedGroupId;
 
-                let usrId = cookies.getJSON('user').usrId;
-                console.log(JSON.stringify({usrId, dishes, grpId}));
+                    console.log(JSON.stringify({usrId, dishes, grpId,comments}));
 
-                ajaxMethod.joinGroupPromise(usrId, dishes, grpId).then((data)=> {
-                    myApp.alert('加入成功', function () {
-                        tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
-                    });
-                }).catch(e=> myApp.alert(JSON.stringify(e) + '加入失敗!'));
+                    ajaxMethod.joinGroupPromise(usrId, dishes, grpId,comments).then((data)=> {
+                        myApp.alert('加購成功', function () {
+                            tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
+                        });
+                    }).catch(e=> myApp.alert(JSON.stringify(e)+'加購失敗!'));
 
 
-            });
+                    window.comments = "";
+
+
+                });
+
+                $$('#btnNote').on('click', function () {
+                    myApp.popup('.popup-message');
+                });
+
+
+
         });
 
 
@@ -133,7 +155,7 @@ class OrderPage {
     calcPrice() {
         let totalPrice = 0;
         for (let [odrDishId,odrDishNum] of this.ordersMap.entries()) {
-            console.log(odrDishId, odrDishNum);
+            //console.log(odrDishId, odrDishNum);
             totalPrice += odrDishNum * this.dishes.find(d=>d.dihId === odrDishId).dihPrice;
         }
 

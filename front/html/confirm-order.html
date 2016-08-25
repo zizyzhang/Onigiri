@@ -1,0 +1,66 @@
+<div data-page="confirm" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left" id="back"><a href="my-groups.html" class="link icon-only"><i
+                    class="icon icon-back"></i></a>
+            </div>
+            <div class="center">團主確認</div>
+            <!--<div class="right"><a id="selectAll" href="#" class="link ">全選</a></div>-->
+        </div>
+    </div>
+
+    <div class="page-content " id="confirmOrder">
+
+        <div class="content-block-title" v-for="groupOrder in GrpUsersOrders" id="">
+            <div>{{groupOrder.group.merchant.metName}}</div>
+
+            <div class="list-block accordion-list">
+                <ul>
+
+                    <li class="card accordion-item" v-for="usrOrder in groupOrder.usrOrders" id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
+                        <a href="#" class="item-content item-link">
+                            <div class="card-header item-title-row no-border item-inner ">
+                                <div class="item-title"><img style="border-radius: 50%;"
+                                                             src="./../assets/img/img-dish-01.png" width="36">
+                                </div>
+                                <div class="center">{{usrOrder.usrName}}</div>
+                                <div class="item-after">待審查</div>
+                            </div>
+                        </a>
+                        <div class="accordion-item-content item-title-row">
+                            <div class="item-title-row card-content-inner content-block item-inner"
+                                 v-for="usrDish in usrOrder.usrDishes">
+                                <div class="item-title ">{{usrDish.dihName}}</div>
+                                <div class="center">{{usrDish.ordNum}} 份</div>
+                                <div class="item-after">NT {{usrDish.dihPrice * usrDish.ordNum}}</div>
+                            </div>
+                            <div class="card-content-inner " v-if="usrOrder.usrComments.length!==0">
+                                <div class="" v-for="usrComment in usrOrder.usrComments">
+                                    <span class=" ficon" v-if="$index ===0">(</span>
+                                    <span class=" ficon" style="visibility:hidden" v-else>(</span>
+                                    <span >{{usrComment.comments}}</span>
+                                </div>
+                                    <!--<span class="item-title ficon">(</span>-->
+                                <!--<div v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</div>-->
+
+                                <!--<div class="center" style="white-space: pre-line;">-->
+                                    <!--<span style="margin-right: 10px" v-for="usrComment in usrOrder.usrComments">{{usrComment.comments}}</span>-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+
+                        <div class="card-footer no-border">
+                            <a href="#" class="link button-fill button color-red refuse" data-usr-id="{{usrOrder.usrId}}"
+                               data-grp-id="{{groupOrder.group.grpId}}">拒絕</a>
+                            <a href="#" class="link button-fill button color-green accept" data-usr-id="{{usrOrder.usrId}}"
+                               data-grp-id="{{groupOrder.group.grpId}}">接受</a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+</div>

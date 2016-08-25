@@ -29,28 +29,36 @@ class Home { //TODO first
                 page.query.ajaxResult = window.homeAjaxResult;
             }
 
-            console.log('page.query.ajaxResult', page.query.ajaxResult);
+             // console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
+             // console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
+
+            // console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
+            //console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
 
 
-            let vueGroups = new Vue({
+
+            window.vueGroups = new Vue({
                 el: '#tabGroups',
                 data: page.query.ajaxResult,
             });
 
 
-            let vueMyOrders = new Vue({
+            window.vueMyOrders = new Vue({
                 el: '#tabMyOrders',
                 data: page.query.ajaxResult,
-                methods:{
-                    extraOrder:function(grpId){
+                methods: {
+                    extraOrder: function (grpId) {
                         window.selectedGroupId = grpId;
-                        tool.loadPage({url:'order.html',query:{isExtraOrder:true}}, mainView, ajaxMethod.getGroupById(grpId));
+                        tool.loadPage({
+                            url: 'order.html',
+                            query: {isExtraOrder: true}
+                        }, mainView, ajaxMethod.getGroupById(grpId));
                     }
                 }
 
             });
 
-            let vuePopoverFilter = new Vue({
+            window.vuePopoverFilter = new Vue({
                 el: '#popoverFilter',
                 computed: {
                     merchantTypes: function () {
@@ -59,38 +67,40 @@ class Home { //TODO first
                 },
                 methods: {
                     filter: function (typeName) {
-                         vueGroups.groups = _.cloneDeep(vueGroups.groups).map(o=> _.assign({}, o, o.hidden = o.merchant.metType === typeName ? false : true));
+                        window.vueGroups.groups = _.cloneDeep(window.vueGroups.groups).map(o=> _.assign({}, o, o.hidden = o.merchant.metType === typeName ? false : true));
 
                     },
                     allTypes: function () {
-                        vueGroups.groups = _.cloneDeep(vueGroups.groups).map(o=> _.assign({}, o, o.hidden = false));
+                        window.vueGroups.groups = _.cloneDeep(window.vueGroups.groups).map(o=> _.assign({}, o, o.hidden = false));
                     }
                 }
 
 
             });
 
-            let vuePopoverOrder = new Vue({
+            window.vuePopoverOrder = new Vue({
                 el: "#popoverOrder",
                 methods: {
                     popNewGroup: function () {
-                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>-Number(new Date(row.grpCreateTime).getTime())));
+                        window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>-Number(new Date(row.grpCreateTime).getTime())));
                         myApp.closeModal(this.el);
                     },
                     popCloseDeadline: function () {
-                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpTime).getTime())));
+                        window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>Number(new Date(row.grpTime).getTime())));
                         myApp.closeModal(this.el);
                     },
                     popFarDeadline: function () {
-                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>-Number(new Date(row.grpTime).getTime())));
+                        window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>-Number(new Date(row.grpTime).getTime())));
                         myApp.closeModal(this.el);
                     },
                     popOldGroup: function () {
-                        vueGroups.$set('groups', _.sortBy(vueGroups.$data.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
+                        window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
                         myApp.closeModal(this.el);
-                    }
+                    }                },
+                ready: function () {
+                    console.log('vueMyOrders created', window.homeAjaxResult);
 
-                },
+                }
 
             });
 

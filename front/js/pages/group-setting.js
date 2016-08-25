@@ -127,6 +127,8 @@ class GroupSettingPage {
                 let metPhone = $$('#merchantMob').val();
                 let metMinPrice = $$('#minPrice').val();
                 let metType = $$('#metType').val();
+                let grpAmountLimit = Number ($$('#grpAmountLimitSimple').val());
+
 
                 let metPicUrl = 'http://i.imgur.com/SoiypRh.jpg';
                 let metId = -1;
@@ -166,16 +168,16 @@ class GroupSettingPage {
 
 
                 //新增商家
-                ajaxMethod.postMerchantPromise({metName, metPhone, metMinPrice, metPicUrl, metType}).then((result)=> {
+                ajaxMethod.postMerchantPromise({metName, metPhone, metMinPrice, metPicUrl, metType,grpAmountLimit}).then((result)=> {
                     //新增DISH
                     console.log(result);
                     metId = result.merchant.metId;
                     let dishes = products.filter(o=>!o.del).map(row=> {
-                            return {
-                                dihName: row.productName,
-                                dihPrice: row.productPrice,
-                                metId: metId,
-                            };
+                        return {
+                            dihName: row.productName,
+                            dihPrice: row.productPrice,
+                            metId: metId,
+                        };
                     });
 
 

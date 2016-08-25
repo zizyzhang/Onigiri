@@ -23,8 +23,15 @@ class OrderDetailPage { //TODO first
 
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
 
+                $$('.js-btn-contact-host').click(function () {
+                    console.log("1");
+                    window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
+                });
 
             });
+
+
+
 
         });
 

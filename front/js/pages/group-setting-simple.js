@@ -36,6 +36,8 @@ class GroupSettingSimple { //TODO first
                         let addr = $$('#grpAdrSimple').val();
                         let gorTime = $$('#grpTimeSimple').val();
                         let metId = cookies.get('selectedMerchantId');
+                        let grpAmountLimit = Number ($$('#grpAmountLimitSimple').val());
+
 
                         if (!(addr && gorTime )) {
                             myApp.alert('資料填寫不完整');
@@ -50,7 +52,7 @@ class GroupSettingSimple { //TODO first
                             return;
                         }
 
-                        ajaxMethod.postGroup(grpHostId, that.dishes, metId, addr, gorTime).then(()=> {
+                        ajaxMethod.postGroup(grpHostId, that.dishes, metId, addr, gorTime,grpAmountLimit).then(()=> {
                             //完成新增
                             myApp.alert('開團完成!', function () {
                                 tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
@@ -73,9 +75,12 @@ class GroupSettingSimple { //TODO first
             futureDaysArr[0].push( (futureDays.getYear() + 1900)+'年'+(futureDays.getMonth() + 1) + '月' + futureDays.getDate() + '日' );
             futureDaysArr[1].push(b);
             futureDays.setTime(futureDays.getTime() + 1000 * 3600 * 24);
-
         }
 
+        console.log('today'+today);
+        console.log('futureDays.getHours()'+futureDays.getHours());
+        let nhour = futureDays.getHours()==23 ? 1 : 0;
+        console.log('nhour'+nhour);
 
         var pickerInline = myApp.picker({
             input: '#grpTimeSimple',
@@ -83,7 +88,8 @@ class GroupSettingSimple { //TODO first
             //toolbar: false,
             rotateEffect: true,
 
-            value: [0, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
+            // value: [0, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
+            value: [nhour, today.getHours(), (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes())],
 
             onChange: function (picker, values, displayValues) {
                 //var daysInMonth = new Date(picker.value[2], picker.value[0] * 1 + 1, 0).getDate();

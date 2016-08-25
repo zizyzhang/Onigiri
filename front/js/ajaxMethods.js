@@ -7,10 +7,10 @@ var AjaxMethods = function () {
     'use strict';
 
 
-    this.addUserPromise = function (usrName, usrPwd,usrMobi,authCode) {
+    this.addUserPromise = function (usrName, usrPwd, usrMobi, authCode) {
         return new Promise((resolve, reject)=> {
-            let data = JSON.stringify({usrName, usrPwd,usrMobi,authCode});
-             $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
+            let data = JSON.stringify({usrName, usrPwd, usrMobi, authCode});
+            $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
                 if (JSON.parse(result).success) {
                     resolve(!!result);
                 } else {
@@ -37,9 +37,8 @@ var AjaxMethods = function () {
 
     };
 
-    this.userAuth = function (usrName,usrPwdSha) {
+    this.userAuth = function (usrName, usrPwdSha) {
         return new Promise(function (resolve, reject) {
-
 
 
             $$.post(SERVER_ADS + "/userAuth", {usrName: usrName, usrPwd: usrPwdSha}, function (result) {
@@ -64,7 +63,7 @@ var AjaxMethods = function () {
 
     this.getUnjoinedGroups = function (usrId) {
         return new Promise(function (resolve) {
-            $$.getJSON(SERVER_ADS + "/unjoinedGroups/"+usrId, function (data) {
+            $$.getJSON(SERVER_ADS + "/unjoinedGroups/" + usrId, function (data) {
                 resolve(data);
             });
         });
@@ -95,37 +94,37 @@ var AjaxMethods = function () {
                 resolve(data);
             });
         });
-     };
-
-    this.postMerchantPromise = function(merchant){
-      return new Promise((resolve,reject)=>{
-          $$.post(SERVER_ADS + "/merchant",{data:JSON.stringify(merchant)}, function (data) {
-              if(JSON.parse(data).msg){
-                  reject(JSON.parse(data).msg);
-              }else{
-                  resolve(JSON.parse(data));
-              }
-          });
-      });
     };
 
-    this.postDishPromise = function(dishes){
-
-        return new Promise((resolve,reject)=>{
-            $$.post(SERVER_ADS + "/dishes",{data:JSON.stringify(dishes)}, function (data) {
-                if(JSON.parse(data).msg){
+    this.postMerchantPromise = function (merchant) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/merchant", {data: JSON.stringify(merchant)}, function (data) {
+                if (JSON.parse(data).msg) {
                     reject(JSON.parse(data).msg);
-                }else{
+                } else {
                     resolve(JSON.parse(data));
                 }
             });
         });
     };
 
-    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime) {
-        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime);
+    this.postDishPromise = function (dishes) {
 
-        return new Promise((resolve,reject)=> {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/dishes", {data: JSON.stringify(dishes)}, function (data) {
+                if (JSON.parse(data).msg) {
+                    reject(JSON.parse(data).msg);
+                } else {
+                    resolve(JSON.parse(data));
+                }
+            });
+        });
+    };
+
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime,grpAmountLimit) {
+        console.log('ajax post Group ', grpHostId, dishes, metId, addr, gorTime,grpAmountLimit);
+
+        return new Promise((resolve, reject)=> {
 
             $$.post(SERVER_ADS + "/group", {
                 data: JSON.stringify({
@@ -133,25 +132,26 @@ var AjaxMethods = function () {
                     dishes,
                     metId,
                     addr,
-                    gorTime
+                    gorTime,
+                    grpAmountLimit
                 })
             }, function (data) {
                 data = JSON.parse(data);
                 console.log(data);
                 if (data.msg) {
                     reject(data.msg);
-                }else{
+                } else {
                     resolve(data);
                 }
             });
         });
     };
 
-    this.joinGroupPromise = function (usrId, dishes, grpId) {
+    this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/joinGroup",
                 {
-                    data: JSON.stringify({usrId, dishes, grpId})
+                    data: JSON.stringify({usrId, dishes, grpId, comments})
                 }, function (data) {
                     data = JSON.parse(data);
                     if (data.success === 1) {
@@ -194,6 +194,15 @@ var AjaxMethods = function () {
         });
     };
 
+    this.getconfirmOrderPromise = function (hostId) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/confirmOrder/" + hostId,
+                function (jsonData) {
+                    resolve(jsonData);
+                });
+        });
+    };
+
     this.updateGroupStatusPromise = function (grpId, grpStatus) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/groupStatus?date=" + new Date(), {data: JSON.stringify({grpId, grpStatus})},
@@ -202,6 +211,35 @@ var AjaxMethods = function () {
                 });
         });
     };
+
+    this.updateOrdStatusPromise = function (ordId, ordStatus) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/updateOrdStatus", {data: JSON.stringify({ordId, ordStatus})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+
+    this.getGrpUsersOrdersByHostIdPromise = function (hostId, from) {
+        console.log(hostId + ',' + from);
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/grpUsersOrdersByHostId/" + hostId + '?from=' + from,
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+
+    this.getComment = function (gmrId, comStatus) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({gmrId, comStatus})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+
 
 };
 

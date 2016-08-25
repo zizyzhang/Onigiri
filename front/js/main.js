@@ -18,7 +18,11 @@ let ajaxMethod = require('./ajaxMethods.js'),
     OrderDetailPage = require('./pages/order-detail.js'),
     SignUpPage = require('./pages/sign-up.js'),
     HowToCreate = require('./pages/how-to-create.js'),
-    GroupSettingSimple = require('./pages/group-setting-simple.js');
+    ProductDetailPage = require('./pages/product-detail.js'),
+    GroupSettingSimple = require('./pages/group-setting-simple.js'),
+    ConfirmPage = require('./pages/confirm-order.js');
+
+
     //Dom7 = require('dom7');
 
 // Initialize app
@@ -49,9 +53,14 @@ let mainView = myApp.addView('.view-main', {
         cookies.set('selectedGroupId', 1);
         myApp.closeModal();
 
+        //mainView.router.loadPage('home.html');//
+        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
+        // tool.loadPage('my-groups.html',mainView,ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(1));
+
 
         //mainView.router.loadPage('home.html');
-        //tool.loadPage('group-setting.html',mainView);
+        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
+
 
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});
         console.log('cheat');
@@ -73,6 +82,9 @@ let pageEventBind = function () {
     let signUpPage = new SignUpPage(myApp, mainView);
     let howToCreate = new HowToCreate(myApp,mainView);
     let groupSettingSimple = new GroupSettingSimple(myApp, mainView);
+    let productDetailPage=new ProductDetailPage(myApp, mainView);
+    let confirmPage=new ConfirmPage(myApp, mainView);
+
 
 
 
@@ -88,6 +100,10 @@ let pageEventBind = function () {
     signUpPage.bind();
     howToCreate.bind();
     groupSettingSimple.bind();
+    productDetailPage.bind();
+    confirmPage.bind();
+
+
 
 }();
 
@@ -101,7 +117,6 @@ $$(document).on('ajaxStart', function (e) {
     }
     myApp.showIndicator();
 });
-
 
 $$(document).on('ajaxComplete', function (e) {
     if (e.detail.xhr.requestUrl.indexOf('autocomplete-languages.json') >= 0) {

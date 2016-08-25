@@ -1,0 +1,102 @@
+<div data-page="proudct-detail" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="my-groups.html" class=" link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">付款明細</div>
+        </div>
+    </div>
+
+    <div class="page-content" id="grpOrd">
+        <!--<div class="card demo-card-header-pic" v-for="groupOrder in groupedOrders">-->
+
+        <div class="" v-for="groupOrder in GrpUsersOrders">
+            <div class="card-header item-title-row">
+                <div>{{groupOrder.group.merchant.metName}}</div>
+                <div class="status" style="color:green">{{groupOrder.group.grpStatusCh}}</div>
+            </div>
+
+            <div class="list-block media-list" style="margin-top: 0px;!important;">
+
+                <ul v-if="groupOrder.usrOrders.length !== 0">
+                    <li class=" swipeout " v-for="usrOrder in groupOrder.usrOrders">
+
+                        <div class="card swipeout">
+                            <div class="card-header ">
+                                <!--<div class=" item-media card-content item-title-row">-->
+                                <span class="ficon" style="display:none;"
+                                      id="icong{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">W</span>
+                                <img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36">
+                                <div class="center">{{usrOrder.usrName}}</div>
+                                <div class="item-after">總額:NT{{usrOrder.usrAmount}}</div>
+                                <span class="ficon">$</span>
+
+                                <!--</div>-->
+                                <div class="swipeout-actions-right">
+                                    <a href="#" class="bg-red paid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">確認已付款</a>
+                                    <a href="#" class="unPaid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">取消</a>
+                                </div>
+                                <div class="swipeout-actions-left">
+                                    <a href="#" class="bg-red paid" data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">確認已付款</a>
+                                    <a href="#" class="unPaid " data-usr-id="{{usrOrder.usrId}}"
+                                       data-grp-id="{{groupOrder.group.grpId}}">取消</a>
+
+                                </div>
+                            </div>
+                            <div class="" id="g{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">
+                                <ul>
+                                    <li class="item-title-row item-inner" style="line-height: 36px;"
+                                        v-for="usrDish in usrOrder.usrDishes">
+                                        <div class="item-title">{{usrDish.dihName}}</div>
+                                        <div class="center">{{usrDish.ordNum}}份</div>
+                                        <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}} <span></span>
+                                        </div>
+                                    </li>
+
+                                </ul>
+                            </div>
+                            <div class="card-footer item-inner " v-if="usrOrder.usrComments.length!==0">
+                                    <div class="" v-for="usrComment in usrOrder.usrComments">
+                                        <span class=" ficon" v-if="$index ===0">(</span>
+                                        <span class=" ficon" style="visibility:hidden" v-else>(</span>
+                                        <span >{{usrComment.comments}}</span>
+                                    </div>
+                            </div>
+
+                        </div>
+
+                    </li>
+                </ul>
+                <ul v-else>
+                    <li v-if="groupOrder.group.ordNotConfirm">
+                        <label class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="center">有人申請加入了,趕緊去確認吧~~</div>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    <li v-else>
+                        <label class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title-row" style="line-height: 36px;">
+                                    <div class="center">還沒有人加入此團購,快去邀請朋友加入吧~</div>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+

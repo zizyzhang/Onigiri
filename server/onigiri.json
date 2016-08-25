@@ -38,27 +38,7 @@
             }
         ],
         "ORDER": [
-            {
-                "ordId": 1,
-                "grpId": 1,
-                "usrId": 1,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 2,
-                "grpId": 1,
-                "usrId": 2,
-                "dihId": 1,
-                "ordNum": 1
-            },
-            {
-                "ordId": 3,
-                "grpId": 1,
-                "usrId": 3,
-                "dihId": 1,
-                "ordNum": 1
-            }
+
         ],
         "MERCHANT": [
             {
@@ -85,7 +65,7 @@
             },
             {
                 "metId": 2,
-                "metName": "麦当劳",
+                "metName": "麥當勞",
                 "metPhone": "234234234",
                 "menu": [
                     {
@@ -123,118 +103,14 @@
             }
         ],
         "GROUP": [
-            {
-                "grpId": 1,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00",
-                "grpStatus": 1
-            },
-            {
-                "grpId": 2,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00",
-                "grpStatus": 0
-            },
-            {
-                "grpId": 3,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00",
-                "grpStatus": 0
-            },
-            {
-                "grpId": 4,
-                "grpHostId": 1,
-                "metId": 1,
-                "grpAddr": "daor",
-                "grpTime": "00:00",
-                "grpStatus": 0
-            }
+
         ],
         "GROUP_MEMBER": [
-            {
-                "gmrId": 1,
-                "usrId": 1,
-                "grpId": 1
-            },
-            {
-                "gmrId": 2,
-                "usrId": 2,
-                "grpId": 1
-            },
-            {
-                "gmrId": 3,
-                "usrId": 3,
-                "grpId": 1
-            }
+
         ],
         "GROUP_ORDER": [],
         "GROUP_DISHES": [
-            {
-                "gdeId": 1,
-                "dihId": 1,
-                "grpId": 1
-            },
-            {
-                "gdeId": 2,
-                "dihId": 2,
-                "grpId": 1
-            },
-            {
-                "gdeId": 3,
-                "dihId": 3,
-                "grpId": 1
-            },
-            {
-                "gdeId": 4,
-                "dihId": 1,
-                "grpId": 2
-            },
-            {
-                "gdeId": 5,
-                "dihId": 2,
-                "grpId": 2
-            },
-            {
-                "gdeId": 6,
-                "dihId": 3,
-                "grpId": 2
-            },
-            {
-                "gdeId": 7,
-                "dihId": 1,
-                "grpId": 3
-            },
-            {
-                "gdeId": 8,
-                "dihId": 2,
-                "grpId": 3
-            },
-            {
-                "gdeId": 9,
-                "dihId": 3,
-                "grpId": 3
-            },
-            {
-                "gdeId": 10,
-                "dihId": 1,
-                "grpId": 4
-            },
-            {
-                "gdeId": 11,
-                "dihId": 2,
-                "grpId": 4
-            },
-            {
-                "gdeId": 12,
-                "dihId": 3,
-                "grpId": 4
-            }
+
         ]
     }
 }
