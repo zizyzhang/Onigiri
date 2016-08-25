@@ -32,7 +32,7 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
                         <a href="#tab1" class="button active color-black open-popover" data-popover=".js-popover-order">排序<span
                                 class="ficon">5</span></a>
                         <a href="#tab2" class="button color-black open-popover"
-                           data-popover=".js-popover-filter">筛选<span class="ficon">5</span></a>
+                           data-popover=".js-popover-filter">篩選<span class="ficon">5</span></a>
                     </div>
                 </div>
 
@@ -49,7 +49,7 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
 
                     <div class="card-content">
                         <div class="card-content-inner">
-                            <p class="color-gray">地点: {{group.grpAddr}}</p>
+                            <p class="color-gray">領取地點: {{group.grpAddr}}</p>
                             <p>
                                 截止時間: {{group.grpTime}}
                             </p>
@@ -76,6 +76,7 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
                             <div class="card-header item-title">
                                 <div>{{groupOrder.group.merchant.metName}}</div>
                                 <div style="color:green">已達起送金額</div>
+                                <!--<div style="color:green">{{groupOrder.group.grpStatusCh}}</div>-->
 
                             </div>
                             <ul>

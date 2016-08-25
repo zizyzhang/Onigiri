@@ -4,10 +4,21 @@
             <div class="left"><a href="home.html" class=" link icon-only"><i class="icon icon-back"></i></a>
             </div>
             <div class="center">我發起的團購</div>
+
+            <!--<div class="right"> <a href="#"  class="link btn-product-detail">團購詳情</a> </div>-->
+
+            <div class="right"><a href="#" class="link icon-only" id="ConfirmMsg"><i class="ficon">P</i></a></div>
+
+
         </div>
     </div>
+    <a href="#" class="floating-button color-pink btn-product-detail" style="margin-bottom: 30px">
+        <i class="ficon">#</i>
+    </a>
 
     <div class="page-content">
+
+
         {{#each groupedOrderSums}}
         <div class="content-block-title">發起時間: {{group.grpCreateTime}}</div>
         <!--<div class="content-block-title">截止時間: {{group.grpTime}}</div>-->
@@ -15,10 +26,11 @@
             <div class="list-block media-list" style="margin-top: 0px;!important;">
                 <div class="card-header item-title-row">
                     <div>{{group.merchant.metName}}</div>
-                    <div   class="status" style="color:green">{{group.grpStatusCh}}</div>
+                    <div class="status" style="color:green">{{group.grpStatusCh}}</div>
                 </div>
                 <ul>
                     {{#each orderSums}}
+
                     <li>
                         <label class="item-content">
                             <div class="item-media"><img style="border-radius: 50%;"
@@ -59,12 +71,26 @@
                 </ul>
             </div>
             <div class="card-footer">
-                <a href="#"  class="btn-contact-merchant link btn-join btn-join-in-group-page"
+                <a href="#" class="btn-contact-merchant link btn-join btn-join-in-group-page"
                    data-met-phone="{{group.merchant.metPhone}}"
                    style="color:red">聯繫商家</a>
-                <a href="#" class="link btn-group-detail" data-grp-id="{{group.grpId}}"
-                   data-grp-next-status="{{group.grpNextStatus}}"
-                   style="{{#if this.group.btnChangeStatusDisable}} color:gray;{{else}} color:red; {{/if}}"  >{{group.btnChangeStatusName}}</a>
+
+                <a href="#" class="link btn-share-friend" data-grp-id="{{group.grpId}}"
+                   title='分享給 LINE 好友'   style="color:red">分享至Line</a>
+
+                <!--<a href="#" class="link btn-group-detail" data-grp-id="{{group.grpId}}"-->
+                <!--data-grp-next-status="{{group.grpNextStatus}}"-->
+                <!--style="{{#if this.group.btnChangeStatusDisable}} color:gray;{{else}} color:red; {{/if}}">{{group.btnChangeStatusName}}</a>-->
+                <!-- -->
+
+                <!--<a href='javascript: void(window.open(&apos;http://line.naver.jp/R/msg/text/&apos; .concat(encodeURIComponent(location.href)) .concat(&apos; &apos;) .concat(&apos;(&apos;) .concat(encodeURIComponent(document.title)) .concat(&apos;)&apos;)));'-->
+                <!--title='分享給 LINE 好友'><img alt='share LINE to friends' title='分享給 LINE 好友'-->
+                <!--src='http://lh6.googleusercontent.com/-ZWvpN-VZaKU/VSahCWOSwYI/AAAAAAAAG7Q/UV2CQ3aEU4s/s168/linebutton.png'-->
+                <!--width='40px' height='40px'/></a>-->
+
+
+
+
             </div>
         </div>
         {{/each}}
