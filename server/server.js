@@ -258,7 +258,7 @@ var Server = function () {
             let metId = Number(req.body.metId);
             let addr = req.body.addr;
             let gorTime = req.body.gorTime;
-            let grpAmountLimit = Number(req.body.grpAmountLimit) || 0 ;
+            let grpAmountLimit = Number(req.body.grpAmountLimit) || 0;
 
             //TODO Check Time
             let deadLine = new Date(gorTime.replace(/(\d*)年(\d*)月(\d*)日\,/gi, '$1/$2/$3'));
@@ -277,7 +277,7 @@ var Server = function () {
             }
 
 
-            self.postGroup(grpHostId, dishes, metId, addr, gorTime,grpAmountLimit , function (result) {
+            self.postGroup(grpHostId, dishes, metId, addr, gorTime, grpAmountLimit, function (result) {
                 res.json(result);
             });
 
@@ -548,7 +548,7 @@ var Server = function () {
         let allUnjoinedGroups = db.GROUP.filter(grp=> !joinedGroupIds.find(grpId=>grpId === grp.grpId));
 
         //并不是标准类别
-        let unjoinedAndAvailable= allUnjoinedGroups.filter(g=>g.grpStatus === 0 || g.grpStatus === 1);
+        let unjoinedAndAvailable = allUnjoinedGroups.filter(g=>g.grpStatus === 0 || g.grpStatus === 1);
 
         let stdGroups = unjoinedAndAvailable.map(g=>that.createClassGroupByGroupId(g.grpId));
 
@@ -601,7 +601,7 @@ var Server = function () {
         callback(merchant);
     };
 
-    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime,grpAmountLimit , callback) {
+    this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, grpAmountLimit, callback) {
         let lastGroup = _.maxBy(db.GROUP, 'grpId');
         let grpId = lastGroup ? lastGroup.grpId + 1 : 1;
         db.pushToJsonDb('GROUP', {
@@ -613,7 +613,7 @@ var Server = function () {
             grpStatus: 0,
             grpCreateTime: new Date().getTime(),
             grpAmount: 0,
-            grpAmountLimit:grpAmountLimit||0
+            grpAmountLimit: grpAmountLimit || 0
 
             //minAmount: minAmount
         });
@@ -631,7 +631,6 @@ var Server = function () {
 
     this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
-
         return new Promise((resolve, reject)=> {
             //拒絕用戶對同壹個group連續點兩次餐點
             //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
@@ -649,18 +648,27 @@ var Server = function () {
             //是否超过最高上限
             let amountThisTime = 0;
             let funcFindDish = dih=> d=>d.dihId === dih.dihId;
-            for(let dih of dishes){
+            for (let dih of dishes) {
                 amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
             }
             let grpAmountLimit = db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit;
-            let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount ;
-            if(amountThisTime+grpAmount > grpAmountLimit){
-                reject('超過團購上限! 超出'+ (amountThisTime+grpAmount-grpAmountLimit)+'元');
+            let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount;
+            if (amountThisTime + grpAmount > grpAmountLimit) {
+                //團購上限
+                reject('超過團購上限! 超出' + (amountThisTime + grpAmount - grpAmountLimit) + '元');
                 return;
+            } else {
+                //最小外送金額
+                let g = db.GROUP.find(g=>g.grpId === grpId);
+                let metId = g.metId;
+                let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
+                db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amountThisTime + grpAmount);
+                if (amountThisTime + grpAmount >= metMinPrice) {
+                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                }
+
             }
 
-            console.log('grpAmountLimit ,grpAmount ', grpAmountLimit,grpAmount);
-            console.log('usrId, dishes, grpId', usrId, dishes, grpId);
 
             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
             console.log('orderedDishIds', orderedDishIds);
@@ -677,33 +685,20 @@ var Server = function () {
                 //加購
                 if (_.includes(orderedDishIds, dihId)) {
 
-                    // let o = db.ORDER.find(ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId).ordNum;
-
-                    let o = db.ORDER.find( function (ord) {
-                        if(ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId){
+                    let o = db.ORDER.find(function (ord) {
+                        if (ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId) {
                             return ord;
                         }
                     });
-                    console.log('o.ordNum ' , o.ordNum);
-                    console.log('dihId ' , dihId);
-                    console.log('usrId ' , usrId);
-                    console.log('grpId ' , grpId);
 
-                    db.setValueToJsonDb('ORDER', ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId, 'ordNum', num+o.ordNum );
-
-
-                    // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
-                    //         // usrId,
-                    //         dihId,
-                    //         grpId
-                    //     })].ordNum);
+                    db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum', num + o.ordNum);
 
                     continue;
                 }
 
 
+                //新的一笔
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
-
                 db.pushToJsonDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
@@ -733,34 +728,7 @@ var Server = function () {
                 comments: comments
             });
 
-            //最小外送金額
-            let g = db.GROUP.find(g=>g.grpId === grpId);
-            let metId = g.metId;
-            let hostId = g.grpHostId;
-            let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
-            let amount = 0;
-
-            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
-                // console.log("result.groupedOrderSums"+JSON.stringify(result.groupedOrderSums));
-                let groupOrderSum = result.groupedOrderSums.find(orderSum=>orderSum.group.grpId === grpId);
-                // console.log("groupOrderSum", groupOrderSum);
-
-                //TODO
-                if (groupOrderSum) {
-                    for (let orderSum of groupOrderSum.orderSums) {
-                        let price = orderSum.dish.dihPrice;
-                        let num = orderSum.ordNum;
-                        let total = price * num;
-                        amount += total;
-                    }
-                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amount);
-
-                    if (amount >= metMinPrice) {
-                        db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
-                    }
-                }
-                resolve({success: 1});
-            }).catch(e=>console.log(e));
+            resolve({success: 1});
 
         });
     };
@@ -1068,7 +1036,7 @@ var Server = function () {
             grpCreateTime: new Date(group.grpCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
             grpAmount: group.grpAmount || 0,
             grpReachRatePercent: 100 * ((group.grpAmount || 0) / merchant.metMinPrice > 1 ? 1 : (group.grpAmount || 0) / merchant.metMinPrice),
-            grpAmountLimit:group.grpAmountLimit,
+            grpAmountLimit: group.grpAmountLimit,
             grpComments: grpComments
         };
 
@@ -1108,8 +1076,8 @@ var Server = function () {
 
         this.allGroup(function (result) {
             //let timing = result[0].grpTime.replace(/月/,"/");
-            console.log(result[0].grpTime);
-            console.log(JSON.stringify(result));
+            //console.log(result[0].grpTime);
+            //console.log(JSON.stringify(result));
         });
 
 

@@ -175,7 +175,7 @@ var AjaxMethods = function () {
     this.getHomePageDataPromise = (usrId) => {
         let groups;
         return new Promise(resolve=> {
-            this.getUnjoinedGroups(usrId).then(_groups=> {
+            this.getAllGroup().then(_groups=> {
                 groups = _groups;
                 return this.getGroupedOrdersByUserId(usrId);
             }).then(groupedOrders=> {
