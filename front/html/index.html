@@ -9,7 +9,7 @@
     <!-- Color theme for statusbar -->
     <meta name="theme-color" content="#ff5722">
     <!-- Your app title -->
-    <title>販糰 - 校園雲端外賣團購APP</title>
+    <title>販團 - 校園雲端外賣團購APP</title>
     <!-- Path to Framework7 Library CSS, Material Theme -->
     <link rel="stylesheet" href="../../bower_components/Framework7/dist/css/framework7.material.min.css">
     <!-- Path to Framework7 color related styles, Material Theme -->
@@ -55,7 +55,7 @@
 
                 <a href="#" id="btnCreateGroup" class="close-panel item-link item-content">
                     <div class="item-inner">
-                        <div class="item-title">發起團購</div>
+                        <div class="item-title">創建團購</div>
                     </div>
                 </a>
             </li>
@@ -66,7 +66,23 @@
                     </div>
                 </a>
             </li>
-
+            <li>
+                <a href="#" id="btnConfirm" class="item-link item-content close-panel">
+                    <div class="item-inner">
+                        <div class="item-title">團主確認</div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <div class="content-block-title">設定</div>
+        <ul>
+            <li>
+                <a href="#" id="btnLogout" class="close-panel item-link item-content">
+                    <div class="item-inner">
+                        <div class="item-title">登出</div>
+                    </div>
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -101,7 +117,7 @@
                         <ul>
                             <li class="item-content">
                                 <div id="floatLabelName" class="item-inner">
-                                    <div class="item-title floating-label usrName ficon icon-usr-name">R</div>
+                                    <div class="item-title usrName floating-label ficon icon-usr-name">L 輸入帳號</div>
                                     <div class="item-input">
                                         <input type="text" class="usrName login-input" id="txtUsrName" name="usrName"
                                                placeholder="">
@@ -110,7 +126,7 @@
                             </li>
                             <li class="item-content" id="floatLabelPwd">
                                 <div class="item-inner ">
-                                    <div class="item-title floating-label usrPwd ficon icon-usr-pwd">S</div>
+                                    <div class="item-title floating-label usrPwd ficon icon-usr-name">S 輸入密碼</div>
                                     <div class="item-input">
                                         <input type="password" class="usrPwd login-input" id="txtUsrPwd" name="usrPwd"
                                                placeholder="">
@@ -122,18 +138,22 @@
                         </ul>
                     </div>
                     <div class="content-block">
-                        <a href="#" class="button button-fill color-green" id="btn-login">登錄</a>
+                        <a href="#" class="button button-fill color-green" id="btn-login">登入</a>
                     </div>
                     <div class="content-block">
-                        <a href="#" class="button button-fill color-blue" id="btn-sign-up">注冊</a>
+                        <a href="#" class="button button-fill color-blue" id="btn-sign-up">註冊</a>
                     </div>
                     <div class="content-block">
                         <div class="list-block-label"></div>
                     </div>
-                </form>
-            </div>
-        </div>
 
+
+                </form>
+                <div class="list left" style="margin-top: 15%; color:white">建議使用Google Chrome 版本40以上</div>
+
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -159,15 +179,57 @@
         <div class="content-block">
             <div class="list-block">
                 <ul>
-                    <li ><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
-                    <li ><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
-                    <li ><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
+                    <li><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
+                    <li><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
+                    <li><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
 
                     <!--<li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>-->
                 </ul>
             </div>
         </div>
     </div>
+</div>
+
+<div class="popup tablet-fullscreen popup-message">
+
+    <div data-page="message" class="page">
+        <div class="navbar">
+            <div class="navbar-inner">
+
+                <div class="left close-popup"><a href="#" class="link"><i class="icon  icon-back"></i></a>
+                </div>
+                <div class="center">備註留言板</div>
+                <!--<div class="right"><a href="#" class="link  "><i class=""></i></a></div>-->
+            </div>
+        </div>
+
+
+        <div class="toolbar toolbar-bottom">
+            <div class="toolbar-inner">
+
+
+                <a id="btnSend" href="#"
+                   class="button button-fill color-green close-popup  toolbar-button">
+                    確定
+                </a>
+
+            </div>
+        </div>
+
+        <!--<input type="text" id="comments" style="width: 100%;  border:solid 1px #dadada; padding:2px; height:100%; "/>-->
+        <div class="content-block" style="margin-top: 60px ;height: 100%; ">
+
+                            <textarea id="comments" placeholder="請輸入文字"
+                                      style="height: 100%;width: 100%;border: none;font-size: 14pt; resize: none;"></textarea>
+
+        </div>
+
+
+        <!--<div class="content-block-title">Data list, with icons</div>-->
+
+
+    </div>
+
 </div>
 
 
@@ -177,4 +239,5 @@
 <script type="text/javascript" src="../dist/js/bundle.js"></script>
 <!--<script type="text/javascript" src="../js/main.js"></script>-->
 </body>
+
 </html>
