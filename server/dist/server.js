@@ -825,26 +825,36 @@ var Server = function Server() {
                 reject("團購已經截止!");
                 return;
             }
+
+            // 加購情況(有舊訂單):
+            // ordStatus==-1(拒絕) --->(both)新增另一張訂單
+            // ordStatus==0 (待審查)-->(相同商品)直接修改
+            //                                      -->(不同商品)新增訂單
+            // ordStatus==1 (已接受)-->(both)需再次確認
+            var orders = db.ORDER.filter(function (ord) {
+                return ord.usrId === usrId && ord.grpId === grpId;
+            });
+
             var usrName = db.USER.find(function (usr) {
                 return usr.usrId === usrId;
             }).usrName;
-            // console.log('usrId, dishes, grpId', usrId, dishes, grpId);
-
             var orderedDishIds = _.chain(db.ORDER).filter(function (ord) {
                 return ord.usrId === usrId && ord.grpId === grpId;
             }).map(function (ord) {
                 return ord.dihId;
             }).value();
-            // console.log('orderedDishIds', orderedDishIds);
-
-            var selectRowByDishId = function selectRowByDishId(dihId) {
-                return function (row) {
-                    return row.dihId === dihId;
-                };
-            };
+            // let selectRowByDishId = dihId => row=>row.dihId === dihId;
             var snedornot = !db.GROUP_MEMBER.find(function (usr) {
                 return usr.usrId === usrId && usr.grpId === grpId;
+            }); //加購不通知
+
+            var g = db.GROUP.find(function (g) {
+                return g.grpId === grpId;
             });
+            var hostId = g.grpHostId;
+            var ordStatus = usrId === hostId ? 1 : 0; //團主訂單不需要經過確認
+
+            console.log(JSON.stringify(orderedDishIds));
 
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
@@ -860,31 +870,19 @@ var Server = function Server() {
                         return 'continue';
                     }
 
-                    //加購
+                    //TODO ordStatus = -1 訂單不能再修改 (idea)            //加購 (已經有訂單)
                     if (_.includes(orderedDishIds, dihId)) {
-
-                        // let o = db.ORDER.find(ord => ord.dihId===dihId && ord.usrId===usrId && ord.grpId===grpId).ordNum;
-
-                        var o = db.ORDER.find(function (ord) {
-                            if (ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId) {
-                                return ord;
-                            }
-                        });
-                        // console.log('o.ordNum ', o.ordNum);
-                        // console.log('dihId ', dihId);
-                        // console.log('usrId ', usrId);
-                        // console.log('grpId ', grpId);
-
                         db.setValueToJsonDb('ORDER', function (ord) {
                             return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
-                        }, 'ordNum', num + o.ordNum);
+                        }, 'ordNum', num + db.ORDER.find(function (ord) {
+                            return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                        }).ordNum);
 
                         // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
                         //         // usrId,
                         //         dihId,
                         //         grpId
                         //     })].ordNum);
-
                         return 'continue';
                     }
 
@@ -898,8 +896,8 @@ var Server = function Server() {
                         dihId: dihId,
                         ordNum: num,
                         ordCreateTime: new Date().getTime(),
-                        //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-                        ordStatus: 0
+                        // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                        ordStatus: ordStatus
                     });
                 };
 
@@ -935,16 +933,13 @@ var Server = function Server() {
                 usrId: usrId,
                 usrName: usrName, //07.03 add
                 grpId: grpId,
-                // comStatus: 0,
                 comments: comments
             });
 
             //最小外送金額
-            var g = db.GROUP.find(function (g) {
-                return g.grpId === grpId;
-            });
+            // let g = db.GROUP.find(g=>g.grpId === grpId);
             var metId = g.metId;
-            var hostId = g.grpHostId;
+            // let hostId = g.grpHostId;
             var m = db.MERCHANT.find(function (m) {
                 return m.metId === metId;
             });
@@ -1598,11 +1593,8 @@ var Server = function Server() {
                         self.confirmOrder(hostId).then(function (result) {
                             // TODO WHAT THE FUCK
                             // console.log('switch 0');
-                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
-                                //  TODO
-                                guo.usrOrders = guo.usrOrders.filter(function (uo) {
-                                    return uo.ordStatus === 0;
-                                });
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([0], result).GrpUsersOrders.filter(function (guo) {
+                                // guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                                 // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                                 return guo.usrOrders.length !== 0;
                             });
@@ -1615,7 +1607,7 @@ var Server = function Server() {
                     {
                         self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
                             // console.log('switch 1');
-                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([1, 2], result);
                             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve(GrpUsersOrders);
                         });
@@ -1625,7 +1617,7 @@ var Server = function Server() {
         });
     };
 
-    this.convertGroupedOrdersToGrpUsrOrders = function (result) {
+    this.convertGroupedOrdersToGrpUsrOrders = function (ordStatus, result) {
         var GrpUsersOrders = {
             GrpUsersOrders: []
         };
@@ -1639,7 +1631,6 @@ var Server = function Server() {
             for (var _iterator16 = result.groupedOrders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
                 var grpOrd = _step16.value;
 
-                var neGUO = {};
                 var uos = [];
                 var grpComments = grpOrd.group.grpComments;
 
@@ -1651,51 +1642,52 @@ var Server = function Server() {
                     var _loop6 = function _loop6() {
                         var order = _step17.value;
 
+                        // console.log(_.includes(ordStatus, order.ordStatus));
+                        if (_.includes(ordStatus, order.ordStatus)) {
 
-                        order.dish.ordNum = order.ordNum;
-                        order.ordNum = undefined;
-                        // console.log('order.dish:' + JSON.stringify(order.dish));
-                        // console.log('====order:' + JSON.stringify(order));
+                            order.dish.ordNum = order.ordNum;
+                            order.ordNum = undefined;
+                            // console.log('====order:' + JSON.stringify(order));
 
-                        var uosobj = uos.find(function (u) {
-                            return u.usrId === order.usrId;
-                        });
-
-                        if (!uosobj) {
-                            uos.push({
-                                usrId: order.usrId,
-                                usrName: order.usrName,
-                                usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                                ordStatus: order.ordStatus,
-                                usrDishes: [{
-                                    dihId: order.dish.dihId,
-                                    dihName: order.dish.dihName,
-                                    metId: order.dish.metId,
-                                    dihType: order.dish.dihType,
-                                    dihPrice: order.dish.dihPrice,
-                                    ordNum: order.dish.ordNum
-                                }],
-                                usrComments: _.filter(grpComments, function (com) {
-                                    return com.usrId === order.usrId;
-                                }),
-                                usrOrdIds: [{ ordId: order.ordId, ordStatus: order.ordStatus }]
-                                // 無法理解錯在哪裡
-                                // ,usrDishesWhy: [order.dish]
+                            var uosobj = uos.find(function (u) {
+                                return u.usrId === order.usrId;
                             });
-                            // console.log('====order.dish:' + JSON.stringify(order.dish));
-                        } else {
-                                uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                                // uosobj.usrDishes.push(order.dish);
-                                uosobj.usrDishes.push({
-                                    dihId: order.dish.dihId,
-                                    dihName: order.dish.dihName,
-                                    metId: order.dish.metId,
-                                    dihType: order.dish.dihType,
-                                    dihPrice: order.dish.dihPrice,
-                                    ordNum: order.dish.ordNum
+                            if (!uosobj) {
+                                uos.push({
+                                    usrId: order.usrId,
+                                    usrName: order.usrName,
+                                    usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                                    // ordStatus: order.ordStatus,
+                                    usrDishes: [{
+                                        dihId: order.dish.dihId,
+                                        dihName: order.dish.dihName,
+                                        metId: order.dish.metId,
+                                        dihType: order.dish.dihType,
+                                        dihPrice: order.dish.dihPrice,
+                                        ordNum: order.dish.ordNum
+                                    }],
+                                    usrComments: _.filter(grpComments, function (com) {
+                                        return com.usrId === order.usrId;
+                                    }),
+                                    usrOrds: [{ ordId: order.ordId, ordStatus: order.ordStatus }]
+                                    // 無法理解錯在哪裡
+                                    // ,usrDishesWhy: [order.dish]
                                 });
-                                uosobj.usrOrdIds.push({ ordId: order.ordId });
-                            }
+                                // console.log('====order.dish:' + JSON.stringify(order.dish));
+                            } else {
+                                    uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                                    // uosobj.usrDishes.push(order.dish);
+                                    uosobj.usrDishes.push({
+                                        dihId: order.dish.dihId,
+                                        dihName: order.dish.dihName,
+                                        metId: order.dish.metId,
+                                        dihType: order.dish.dihType,
+                                        dihPrice: order.dish.dihPrice,
+                                        ordNum: order.dish.ordNum
+                                    });
+                                    uosobj.usrOrds.push({ ordId: order.ordId, ordStatus: order.ordStatus });
+                                }
+                        }
                     };
 
                     for (var _iterator17 = grpOrd.orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
@@ -1716,11 +1708,10 @@ var Server = function Server() {
                     }
                 }
 
-                neGUO = {
+                GrpUsersOrders.GrpUsersOrders.push({
                     group: grpOrd.group,
                     usrOrders: uos
-                };
-                GrpUsersOrders.GrpUsersOrders.push(neGUO);
+                });
             }
 
             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
@@ -1819,11 +1810,8 @@ var Server = function Server() {
                 }).usrMail;
                 var subject = '販團 : 很不幸的 - 您的申請遭到拒絕';
                 var jointime = new Date(ordCreateTime);
-                // let detime = new Date(g.grpTime);
 
-                var html = '<p>申請時間: ' + (jointime.getMonth() + 1) + '/' + jointime.getDate() + ' ' + jointime.getHours() + ':' + (jointime.getMinutes() < 10 ? '0' + jointime.getMinutes() : jointime.getMinutes()) + '</p>' + '<p>申請團購: ' + metName + '</p>' + '<p>團主 : ' + hostName + '</p>' + '<br><p>訂購項目: </p><ul>' + dishes + '</ul>' +
-                // '<p>團購截止時間: ' + (detime.getMonth() + 1) + '/' + detime.getDate() + ' ' + detime.getHours() + ':' + (detime.getMinutes() < 10 ? '0' + detime.getMinutes() : detime.getMinutes()) + '</p>' +
-                '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
+                var html = '<p>申請時間: ' + (jointime.getMonth() + 1) + '/' + jointime.getDate() + ' ' + jointime.getHours() + ':' + (jointime.getMinutes() < 10 ? '0' + jointime.getMinutes() : jointime.getMinutes()) + '</p>' + '<p>申請團購: ' + metName + '</p>' + '<p>團主 : ' + hostName + '</p>' + '<br><p>訂購項目: </p><ul>' + dishes + '</ul>' + '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
 
                 console.log('usrMail , metName ', usrMail, metName);
 

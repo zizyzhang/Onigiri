@@ -48,11 +48,11 @@ class ConfirmPage { //TODO first
                     console.log("====g" + grpId + "u" + usrId);
                     $$('#g' + grpId + 'u' + usrId).attr('style', 'display:none;');
 
-                    let usrOrdIds =
-                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
-                    console.log(JSON.stringify(usrOrdIds));
+                    let usrOrds =
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrds;
+                    console.log(JSON.stringify(usrOrds));
 
-                    for (let ord of usrOrdIds) {
+                    for (let ord of usrOrds) {
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
@@ -68,11 +68,11 @@ class ConfirmPage { //TODO first
                     console.log("====g" + grpId + "u" + usrId);
                     $$('#g' + grpId + 'u' + usrId).attr('style', 'display:none;');
 
-                    let usrOrdIds =
-                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
-                    console.log(JSON.stringify(usrOrdIds));
+                    let usrOrds =
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrds;
+                    console.log(JSON.stringify(usrOrds));
                     
-                    for (let ord of usrOrdIds) {
+                    for (let ord of usrOrds) {
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
