@@ -811,6 +811,22 @@ var Server = function Server() {
     this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
+        this.addOrd = function (usrName, dihId, num, ordStatus) {
+            var lastOrder = _.maxBy(db.ORDER, 'ordId');
+
+            db.pushToJsonDb("ORDER", {
+                ordId: lastOrder ? lastOrder.ordId + 1 : 1,
+                grpId: grpId,
+                usrId: usrId,
+                usrName: usrName, //07.03 add
+                dihId: dihId,
+                ordNum: num,
+                ordCreateTime: new Date().getTime(),
+                // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                ordStatus: ordStatus
+            });
+        };
+
         return new Promise(function (resolve, reject) {
             //拒絕用戶對同壹個group連續點兩次餐點
             //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
@@ -825,15 +841,6 @@ var Server = function Server() {
                 reject("團購已經截止!");
                 return;
             }
-
-            // 加購情況(有舊訂單):
-            // ordStatus==-1(拒絕) --->(both)新增另一張訂單
-            // ordStatus==0 (待審查)-->(相同商品)直接修改
-            //                                      -->(不同商品)新增訂單
-            // ordStatus==1 (已接受)-->(both)需再次確認
-            var orders = db.ORDER.filter(function (ord) {
-                return ord.usrId === usrId && ord.grpId === grpId;
-            });
 
             var usrName = db.USER.find(function (usr) {
                 return usr.usrId === usrId;
@@ -854,7 +861,26 @@ var Server = function Server() {
             var hostId = g.grpHostId;
             var ordStatus = usrId === hostId ? 1 : 0; //團主訂單不需要經過確認
 
-            console.log(JSON.stringify(orderedDishIds));
+            // 加購情況(有舊訂單):
+            // ordStatus==-1(拒絕) --->(both)新增另一張訂單
+            // ordStatus==0 (待審查)-->(相同商品)直接修改
+            //                                      -->(不同商品)新增訂單
+            // ordStatus==1 (已接受)-->(相同商品)增加屬性、改狀態  (both)需再次確認
+            //                                     -->(不同商品)新增訂單
+            var orders = db.ORDER.filter(function (ord) {
+                return ord.usrId === usrId && ord.grpId === grpId && _.includes([0, 1], ord.ordStatus);
+            });
+
+            // let orders = db.ORDER.filter(ord=>ord.usrId === usrId && ord.grpId === grpId && ord.ordStatus===0 || ord.ordStatus===1);
+
+            // let orders = db.ORDER.filter(function (ord) {
+            //     if (ord.usrId === usrId && ord.grpId === grpId && (ord.ordStatus === 0 || ord.ordStatus === 1)) {
+            //         console.log('usrId grpId', usrId, grpId);
+            //         console.log('ord.usrId ord.grpId ord.ordStatus', ord.usrId, ord.grpId, ord.ordStatus);
+            //         return ord;
+            //     }
+            // });
+            console.log('joinGroupPromise====orders' + JSON.stringify(orders));
 
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
@@ -869,36 +895,46 @@ var Server = function Server() {
                     if (num === 0 || !_.isNumber(num)) {
                         return 'continue';
                     }
+                    // if (orders)
+                    console.log('dihId num', dihId, num);
+                    if (orders.length === 0) {
+                        //無舊訂單
+                        self.addOrd(usrName, dihId, num, ordStatus);
+                        console.log('無舊訂單 : ' + grpId, usrId, usrName, dihId, num, ordStatus);
+                    } else {
+                        //有舊訂單
 
-                    //TODO ordStatus = -1 訂單不能再修改 (idea)            //加購 (已經有訂單)
-                    if (_.includes(orderedDishIds, dihId)) {
-                        db.setValueToJsonDb('ORDER', function (ord) {
-                            return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
-                        }, 'ordNum', num + db.ORDER.find(function (ord) {
-                            return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
-                        }).ordNum);
-
-                        // db.setValueToJsonDb('ORDER', selectRowByDishId(dihId), 'ordNum', num + db.ORDER[_.findIndex(db.ORDER, {
-                        //         // usrId,
-                        //         dihId,
-                        //         grpId
-                        //     })].ordNum);
-                        return 'continue';
+                        var sameProduct = orders.find(function (ord) {
+                            return ord.dihId === dihId;
+                        });
+                        console.log('====sameProduct', JSON.stringify(sameProduct));
+                        if (sameProduct) {
+                            if (sameProduct.ordStatus === 0) {
+                                // ordStatus==0 (待審查)-->(相同商品)直接修改
+                                console.log('ordStatus==0 (待審查)-->(相同商品)直接修改');
+                                db.setValueToJsonDb('ORDER', function (ord) {
+                                    return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                                }, 'ordNum', num + db.ORDER.find(function (ord) {
+                                    return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                                }).ordNum);
+                            } else if (sameProduct.ordStatus === 1) {
+                                //  ordStatus==1 (已接受)-->(相同商品)需再次確認
+                                console.log('ordStatus==1 (已接受)-->(相同商品)需再次確認');
+                                db.setValueToJsonDb('ORDER', function (ord) {
+                                    return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                                }, 'updateOrdNum', num);
+                                db.setValueToJsonDb('ORDER', function (ord) {
+                                    return ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId;
+                                }, 'ordStatus', 3);
+                                //TODO ordStatus=3
+                            }
+                        } else {
+                                // ordStatus==0 (待審查)-->(不同商品)新增訂單
+                                //  ordStatus==1 (已接受)-->(不同商品)需再次確認
+                                console.log('ordStatus==0、1-->(不同商品)新增訂單');
+                                self.addOrd(usrName, dihId, num, ordStatus);
+                            }
                     }
-
-                    var lastOrder = _.maxBy(db.ORDER, 'ordId');
-
-                    db.pushToJsonDb("ORDER", {
-                        ordId: lastOrder ? lastOrder.ordId + 1 : 1,
-                        grpId: grpId,
-                        usrId: usrId,
-                        usrName: usrName, //07.03 add
-                        dihId: dihId,
-                        ordNum: num,
-                        ordCreateTime: new Date().getTime(),
-                        // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-                        ordStatus: ordStatus
-                    });
                 };
 
                 for (var _iterator9 = dishes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
@@ -906,6 +942,11 @@ var Server = function Server() {
 
                     if (_ret2 === 'continue') continue;
                 }
+
+                // if (!comments) {
+                //     // console.log("commentscomments=" + comments);
+                //     comments = "";
+                // }
             } catch (err) {
                 _didIteratorError9 = true;
                 _iteratorError9 = err;
@@ -921,20 +962,18 @@ var Server = function Server() {
                 }
             }
 
-            var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
-                return gmr.gmrId;
-            });
-            if (!comments) {
-                // console.log("commentscomments=" + comments);
-                comments = "";
+            if (comments) {
+                var lastGroupMember = _.maxBy(db.GROUP_MEMBER, function (gmr) {
+                    return gmr.gmrId;
+                });
+                db.pushToJsonDb("GROUP_MEMBER", {
+                    gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
+                    usrId: usrId,
+                    usrName: usrName, //07.03 add
+                    grpId: grpId,
+                    comments: comments
+                });
             }
-            db.pushToJsonDb("GROUP_MEMBER", {
-                gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
-                usrId: usrId,
-                usrName: usrName, //07.03 add
-                grpId: grpId,
-                comments: comments
-            });
 
             //最小外送金額
             // let g = db.GROUP.find(g=>g.grpId === grpId);
@@ -1027,6 +1066,7 @@ var Server = function Server() {
             var _loop3 = function _loop3() {
                 var order = _step11.value;
 
+
                 // if (order.ordStatus > 0) {
                 // console.log("ordStatus:" + order.ordStatus);
                 var tOrder = groupedOrders.find(function (gor) {
@@ -1042,6 +1082,8 @@ var Server = function Server() {
 
                     if (order.ordStatus === 0) {
                         group.ordNotConfirm = true;
+                        groupedOrders.push({ group: group, orders: [] });
+                    } else if (order.ordStatus === -1) {
                         groupedOrders.push({ group: group, orders: [] });
                     } else {
                         groupedOrders.push({ group: group, orders: [order] });
@@ -1084,6 +1126,7 @@ var Server = function Server() {
         try {
             var _loop4 = function _loop4() {
                 var order = _step12.value;
+
 
                 var tOrder = groupedOrders.find(function (gor) {
                     return gor.group.grpId === order.grpId;
@@ -1172,7 +1215,8 @@ var Server = function Server() {
                     }),
                     ordNum: ord.ordNum,
                     ordStatus: ord.ordStatus, //07.03 add
-                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+                    updateOrdNum: ord.updateOrdNum ? ord.updateOrdNum : undefined
                 };
 
                 return newOrd;
@@ -1245,7 +1289,8 @@ var Server = function Server() {
                     }),
                     ordNum: ord.ordNum,
                     ordStatus: ord.ordStatus, //07.03 add
-                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss')
+                    ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+                    updateOrdNum: ord.updateOrdNum ? ord.updateOrdNum : undefined
                 };
                 return newOrd;
             });
@@ -1342,14 +1387,12 @@ var Server = function Server() {
                         group.grpStatusCh = "未達外送金額";
                         group.btnChangeStatusName = "未開團";
                         group.grpNextStatus = 1;
-
                         group.btnChangeStatusDisable = true;
                         break;
                     case 1:
                         group.grpStatusCh = "已開團";
                         group.btnChangeStatusName = "確認已送達";
                         group.grpNextStatus = 2;
-
                         break;
                     case 2:
                         group.grpStatusCh = "已送達";
@@ -1573,10 +1616,30 @@ var Server = function Server() {
                 return ordId === s.ordId;
             });
 
+            if (order.ordStatus === 3 && ordStatus === -1) {
+                db.setValueToJsonDb('ORDER', function (row) {
+                    return row.ordId === order.ordId;
+                }, 'ordStatus', 1);
+                db.setValueToJsonDb('ORDER', function (row) {
+                    return row.ordId === order.ordId;
+                }, 'updateOrdNum', undefined);
+                return;
+            }
+
             if (order.ordStatus != -1) {
+                //TODO
                 db.setValueToJsonDb('ORDER', function (row) {
                     return row.ordId === order.ordId;
                 }, 'ordStatus', ordStatus);
+                if (order.updateOrdNum && order.updateOrdNum !== 0) {
+                    console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
+                    db.setValueToJsonDb('ORDER', function (row) {
+                        return row.ordId === order.ordId;
+                    }, 'ordNum', order.ordNum + order.updateOrdNum);
+                    db.setValueToJsonDb('ORDER', function (row) {
+                        return row.ordId === order.ordId;
+                    }, 'updateOrdNum', undefined);
+                }
                 resolve({ success: 1 });
             } else {
                 reject({ success: 0 });
@@ -1593,12 +1656,12 @@ var Server = function Server() {
                         self.confirmOrder(hostId).then(function (result) {
                             // TODO WHAT THE FUCK
                             // console.log('switch 0');
-                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([0], result).GrpUsersOrders.filter(function (guo) {
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([0, 3], result).GrpUsersOrders.filter(function (guo) {
                                 // guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                                 // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
-                                return guo.usrOrders.length !== 0;
+                                return guo.usrOrders.length !== 0 && guo.group.grpStatus !== -1;
                             });
-                            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                            console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve({ GrpUsersOrders: GrpUsersOrders });
                         });
                         break;
@@ -1607,7 +1670,7 @@ var Server = function Server() {
                     {
                         self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(function (result) {
                             // console.log('switch 1');
-                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([1, 2], result);
+                            var GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([1, 2, 3], result);
                             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve(GrpUsersOrders);
                         });
@@ -1664,7 +1727,8 @@ var Server = function Server() {
                                         metId: order.dish.metId,
                                         dihType: order.dish.dihType,
                                         dihPrice: order.dish.dihPrice,
-                                        ordNum: order.dish.ordNum
+                                        ordNum: order.dish.ordNum,
+                                        updateOrdNum: order.updateOrdNum ? order.updateOrdNum : undefined
                                     }],
                                     usrComments: _.filter(grpComments, function (com) {
                                         return com.usrId === order.usrId;
@@ -1683,7 +1747,8 @@ var Server = function Server() {
                                         metId: order.dish.metId,
                                         dihType: order.dish.dihType,
                                         dihPrice: order.dish.dihPrice,
-                                        ordNum: order.dish.ordNum
+                                        ordNum: order.dish.ordNum,
+                                        updateOrdNum: order.updateOrdNum ? order.updateOrdNum : undefined
                                     });
                                     uosobj.usrOrds.push({ ordId: order.ordId, ordStatus: order.ordStatus });
                                 }
