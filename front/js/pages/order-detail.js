@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let cookies = require('js-cookie');
 
 
 class OrderDetailPage { //TODO first
@@ -17,16 +18,28 @@ class OrderDetailPage { //TODO first
 
     bind() {
         myApp.onPageBeforeInit('order-detail', function (page) {//TODO second
-            this.grpId = page.query.grpId || this.grpId;
+            let grpId = page.query.grpId || this.grpId;
+            let usrId = cookies.getJSON('user').usrId;
 
-            console.log(this.grpId);
+            console.log(grpId);
 
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, ()=> {
+            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(grpId), page, ()=> {
 
                 $$('.js-btn-contact-host').click(function () {
                     console.log("1");
                     window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
                 });
+
+                $$('.js-btn-cancel-order').click(function () {
+                    ajaxMethod.cancelOrderPromise(grpId, usrId).then(()=>{
+                        myApp.alert('取消成功','販團',()=>{
+                            tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
+                        });
+
+                    }).catch(e=>{
+                        myApp.alert(e);
+                    });
+                 });
 
             });
 
