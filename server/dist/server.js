@@ -831,6 +831,8 @@ var Server = function Server() {
                 };
                 db.pushToJsonDb("GROUP_DISHES", gdh);
             }
+
+            //发送信息给follow的人
         } catch (err) {
             _didIteratorError8 = true;
             _iteratorError8 = err;
@@ -842,6 +844,39 @@ var Server = function Server() {
             } finally {
                 if (_didIteratorError8) {
                     throw _iteratorError8;
+                }
+            }
+        }
+
+        var usrIds = db.FOLLOW.filter(function (f) {
+            return f.hostId === grpHostId;
+        });
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+            for (var _iterator9 = db.USER.filter(function (u) {
+                return _.includes(usrIds, usr.usrId);
+            })[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                var _usr2 = _step9.value;
+
+                var usrMail = _usr2.usrMail;
+                self.sendMail(usrMail, '您關注的團主開團啦', '<p>您關注的團主開團啦,\n                <p>團主名稱為' + db.USER.find(function (u) {
+                    return u.usrId === grpHostId;
+                }).usrId + '</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>');
+            }
+        } catch (err) {
+            _didIteratorError9 = true;
+            _iteratorError9 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                    _iterator9.return();
+                }
+            } finally {
+                if (_didIteratorError9) {
+                    throw _iteratorError9;
                 }
             }
         }
@@ -874,27 +909,27 @@ var Server = function Server() {
                     return d.dihId === dih.dihId;
                 };
             };
-            var _iteratorNormalCompletion9 = true;
-            var _didIteratorError9 = false;
-            var _iteratorError9 = undefined;
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
 
             try {
-                for (var _iterator9 = dishes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-                    var dih = _step9.value;
+                for (var _iterator10 = dishes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                    var dih = _step10.value;
 
                     amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
                 }
             } catch (err) {
-                _didIteratorError9 = true;
-                _iteratorError9 = err;
+                _didIteratorError10 = true;
+                _iteratorError10 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion9 && _iterator9.return) {
-                        _iterator9.return();
+                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                        _iterator10.return();
                     }
                 } finally {
-                    if (_didIteratorError9) {
-                        throw _iteratorError9;
+                    if (_didIteratorError10) {
+                        throw _iteratorError10;
                     }
                 }
             }
@@ -986,15 +1021,15 @@ var Server = function Server() {
             // });
             console.log('joinGroupPromise====orders' + JSON.stringify(orders));
 
-            var _iteratorNormalCompletion10 = true;
-            var _didIteratorError10 = false;
-            var _iteratorError10 = undefined;
+            var _iteratorNormalCompletion11 = true;
+            var _didIteratorError11 = false;
+            var _iteratorError11 = undefined;
 
             try {
                 var _loop2 = function _loop2() {
-                    var _step10$value = _step10.value;
-                    var dihId = _step10$value.dihId;
-                    var num = _step10$value.num;
+                    var _step11$value = _step11.value;
+                    var dihId = _step11$value.dihId;
+                    var num = _step11$value.num;
 
                     if (num === 0 || !_.isNumber(num)) {
                         return 'continue';
@@ -1042,22 +1077,22 @@ var Server = function Server() {
                     }
                 };
 
-                for (var _iterator10 = dishes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                for (var _iterator11 = dishes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
                     var _ret3 = _loop2();
 
                     if (_ret3 === 'continue') continue;
                 }
             } catch (err) {
-                _didIteratorError10 = true;
-                _iteratorError10 = err;
+                _didIteratorError11 = true;
+                _iteratorError11 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
-                        _iterator10.return();
+                    if (!_iteratorNormalCompletion11 && _iterator11.return) {
+                        _iterator11.return();
                     }
                 } finally {
-                    if (_didIteratorError10) {
-                        throw _iteratorError10;
+                    if (_didIteratorError11) {
+                        throw _iteratorError11;
                     }
                 }
             }
@@ -1093,13 +1128,13 @@ var Server = function Server() {
                 // console.log("groupOrderSum", groupOrderSum);
 
                 if (groupOrderSum) {
-                    var _iteratorNormalCompletion11 = true;
-                    var _didIteratorError11 = false;
-                    var _iteratorError11 = undefined;
+                    var _iteratorNormalCompletion12 = true;
+                    var _didIteratorError12 = false;
+                    var _iteratorError12 = undefined;
 
                     try {
-                        for (var _iterator11 = groupOrderSum.orderSums[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-                            var orderSum = _step11.value;
+                        for (var _iterator12 = groupOrderSum.orderSums[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                            var orderSum = _step12.value;
 
                             var price = orderSum.dish.dihPrice;
                             var num = orderSum.ordNum;
@@ -1107,16 +1142,16 @@ var Server = function Server() {
                             amount += total;
                         }
                     } catch (err) {
-                        _didIteratorError11 = true;
-                        _iteratorError11 = err;
+                        _didIteratorError12 = true;
+                        _iteratorError12 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion11 && _iterator11.return) {
-                                _iterator11.return();
+                            if (!_iteratorNormalCompletion12 && _iterator12.return) {
+                                _iterator12.return();
                             }
                         } finally {
-                            if (_didIteratorError11) {
-                                throw _iteratorError11;
+                            if (_didIteratorError12) {
+                                throw _iteratorError12;
                             }
                         }
                     }
@@ -1158,13 +1193,13 @@ var Server = function Server() {
 
         var groupedOrders = [];
 
-        var _iteratorNormalCompletion12 = true;
-        var _didIteratorError12 = false;
-        var _iteratorError12 = undefined;
+        var _iteratorNormalCompletion13 = true;
+        var _didIteratorError13 = false;
+        var _iteratorError13 = undefined;
 
         try {
             var _loop3 = function _loop3() {
-                var order = _step12.value;
+                var order = _step13.value;
 
 
                 // if (order.ordStatus > 0) {
@@ -1192,20 +1227,20 @@ var Server = function Server() {
                 // }
             };
 
-            for (var _iterator12 = orders[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+            for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
                 _loop3();
             }
         } catch (err) {
-            _didIteratorError12 = true;
-            _iteratorError12 = err;
+            _didIteratorError13 = true;
+            _iteratorError13 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion12 && _iterator12.return) {
-                    _iterator12.return();
+                if (!_iteratorNormalCompletion13 && _iterator13.return) {
+                    _iterator13.return();
                 }
             } finally {
-                if (_didIteratorError12) {
-                    throw _iteratorError12;
+                if (_didIteratorError13) {
+                    throw _iteratorError13;
                 }
             }
         }
@@ -1219,13 +1254,13 @@ var Server = function Server() {
         var _this2 = this;
 
         var groupedOrders = [];
-        var _iteratorNormalCompletion13 = true;
-        var _didIteratorError13 = false;
-        var _iteratorError13 = undefined;
+        var _iteratorNormalCompletion14 = true;
+        var _didIteratorError14 = false;
+        var _iteratorError14 = undefined;
 
         try {
             var _loop4 = function _loop4() {
-                var order = _step13.value;
+                var order = _step14.value;
 
 
                 var tOrder = groupedOrders.find(function (gor) {
@@ -1279,20 +1314,20 @@ var Server = function Server() {
                 }
             };
 
-            for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+            for (var _iterator14 = orders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
                 _loop4();
             }
         } catch (err) {
-            _didIteratorError13 = true;
-            _iteratorError13 = err;
+            _didIteratorError14 = true;
+            _iteratorError14 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion13 && _iterator13.return) {
-                    _iterator13.return();
+                if (!_iteratorNormalCompletion14 && _iterator14.return) {
+                    _iterator14.return();
                 }
             } finally {
-                if (_didIteratorError13) {
-                    throw _iteratorError13;
+                if (_didIteratorError14) {
+                    throw _iteratorError14;
                 }
             }
         }
@@ -1468,31 +1503,31 @@ var Server = function Server() {
         //console.log('groups',db.GROUP);
         //console.log('groupedOrdersgroupedOrdersgroupedOrders:', JSON.stringify(groupedOrders));
 
-        var _iteratorNormalCompletion14 = true;
-        var _didIteratorError14 = false;
-        var _iteratorError14 = undefined;
+        var _iteratorNormalCompletion15 = true;
+        var _didIteratorError15 = false;
+        var _iteratorError15 = undefined;
 
         try {
-            for (var _iterator14 = groupedOrders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-                var _step14$value = _step14.value;
-                var group = _step14$value.group;
-                var orders = _step14$value.orders;
+            for (var _iterator15 = groupedOrders[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                var _step15$value = _step15.value;
+                var group = _step15$value.group;
+                var orders = _step15$value.orders;
 
                 var orderSums = [];
 
-                var _iteratorNormalCompletion15 = true;
-                var _didIteratorError15 = false;
-                var _iteratorError15 = undefined;
+                var _iteratorNormalCompletion16 = true;
+                var _didIteratorError16 = false;
+                var _iteratorError16 = undefined;
 
                 try {
                     var _loop5 = function _loop5() {
-                        var _step15$value = _step15.value;
-                        var ordId = _step15$value.ordId;
-                        var group = _step15$value.group;
-                        var usrId = _step15$value.usrId;
-                        var dish = _step15$value.dish;
-                        var ordNum = _step15$value.ordNum;
-                        var ordStatus = _step15$value.ordStatus;
+                        var _step16$value = _step16.value;
+                        var ordId = _step16$value.ordId;
+                        var group = _step16$value.group;
+                        var usrId = _step16$value.usrId;
+                        var dish = _step16$value.dish;
+                        var ordNum = _step16$value.ordNum;
+                        var ordStatus = _step16$value.ordStatus;
 
                         //如果存在直接加
                         var order = orderSums.find(function (orm) {
@@ -1506,20 +1541,20 @@ var Server = function Server() {
                         }
                     };
 
-                    for (var _iterator15 = orders[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                    for (var _iterator16 = orders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
                         _loop5();
                     }
                 } catch (err) {
-                    _didIteratorError15 = true;
-                    _iteratorError15 = err;
+                    _didIteratorError16 = true;
+                    _iteratorError16 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion15 && _iterator15.return) {
-                            _iterator15.return();
+                        if (!_iteratorNormalCompletion16 && _iterator16.return) {
+                            _iterator16.return();
                         }
                     } finally {
-                        if (_didIteratorError15) {
-                            throw _iteratorError15;
+                        if (_didIteratorError16) {
+                            throw _iteratorError16;
                         }
                     }
                 }
@@ -1557,16 +1592,16 @@ var Server = function Server() {
                 groupedOrderSums.push({ group: group, orderSums: orderSums });
             }
         } catch (err) {
-            _didIteratorError14 = true;
-            _iteratorError14 = err;
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion14 && _iterator14.return) {
-                    _iterator14.return();
+                if (!_iteratorNormalCompletion15 && _iterator15.return) {
+                    _iterator15.return();
                 }
             } finally {
-                if (_didIteratorError14) {
-                    throw _iteratorError14;
+                if (_didIteratorError15) {
+                    throw _iteratorError15;
                 }
             }
         }
@@ -1631,13 +1666,13 @@ var Server = function Server() {
             return g.grpId === grpId;
         });
 
-        var _iteratorNormalCompletion16 = true;
-        var _didIteratorError16 = false;
-        var _iteratorError16 = undefined;
+        var _iteratorNormalCompletion17 = true;
+        var _didIteratorError17 = false;
+        var _iteratorError17 = undefined;
 
         try {
-            for (var _iterator16 = grpCom[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-                var gc = _step16.value;
+            for (var _iterator17 = grpCom[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+                var gc = _step17.value;
 
                 if (gc.comments) {
                     grpComments.push({
@@ -1650,16 +1685,16 @@ var Server = function Server() {
                 }
             }
         } catch (err) {
-            _didIteratorError16 = true;
-            _iteratorError16 = err;
+            _didIteratorError17 = true;
+            _iteratorError17 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion16 && _iterator16.return) {
-                    _iterator16.return();
+                if (!_iteratorNormalCompletion17 && _iterator17.return) {
+                    _iterator17.return();
                 }
             } finally {
-                if (_didIteratorError16) {
-                    throw _iteratorError16;
+                if (_didIteratorError17) {
+                    throw _iteratorError17;
                 }
             }
         }
@@ -1829,24 +1864,24 @@ var Server = function Server() {
         };
         // console.log('====result:' + JSON.stringify(result.groupedOrders));
 
-        var _iteratorNormalCompletion17 = true;
-        var _didIteratorError17 = false;
-        var _iteratorError17 = undefined;
+        var _iteratorNormalCompletion18 = true;
+        var _didIteratorError18 = false;
+        var _iteratorError18 = undefined;
 
         try {
-            for (var _iterator17 = result.groupedOrders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                var grpOrd = _step17.value;
+            for (var _iterator18 = result.groupedOrders[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+                var grpOrd = _step18.value;
 
                 var uos = [];
                 var grpComments = grpOrd.group.grpComments;
 
-                var _iteratorNormalCompletion18 = true;
-                var _didIteratorError18 = false;
-                var _iteratorError18 = undefined;
+                var _iteratorNormalCompletion19 = true;
+                var _didIteratorError19 = false;
+                var _iteratorError19 = undefined;
 
                 try {
                     var _loop6 = function _loop6() {
-                        var order = _step18.value;
+                        var order = _step19.value;
 
                         // console.log(_.includes(ordStatus, order.ordStatus));
                         if (_.includes(ordStatus, order.ordStatus)) {
@@ -1898,20 +1933,20 @@ var Server = function Server() {
                         }
                     };
 
-                    for (var _iterator18 = grpOrd.orders[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+                    for (var _iterator19 = grpOrd.orders[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
                         _loop6();
                     }
                 } catch (err) {
-                    _didIteratorError18 = true;
-                    _iteratorError18 = err;
+                    _didIteratorError19 = true;
+                    _iteratorError19 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion18 && _iterator18.return) {
-                            _iterator18.return();
+                        if (!_iteratorNormalCompletion19 && _iterator19.return) {
+                            _iterator19.return();
                         }
                     } finally {
-                        if (_didIteratorError18) {
-                            throw _iteratorError18;
+                        if (_didIteratorError19) {
+                            throw _iteratorError19;
                         }
                     }
                 }
@@ -1924,16 +1959,16 @@ var Server = function Server() {
 
             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         } catch (err) {
-            _didIteratorError17 = true;
-            _iteratorError17 = err;
+            _didIteratorError18 = true;
+            _iteratorError18 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion17 && _iterator17.return) {
-                    _iterator17.return();
+                if (!_iteratorNormalCompletion18 && _iterator18.return) {
+                    _iterator18.return();
                 }
             } finally {
-                if (_didIteratorError17) {
-                    throw _iteratorError17;
+                if (_didIteratorError18) {
+                    throw _iteratorError18;
                 }
             }
         }
@@ -1965,13 +2000,13 @@ var Server = function Server() {
         if (orders) {
             (function () {
                 var dishes = '';
-                var _iteratorNormalCompletion19 = true;
-                var _didIteratorError19 = false;
-                var _iteratorError19 = undefined;
+                var _iteratorNormalCompletion20 = true;
+                var _didIteratorError20 = false;
+                var _iteratorError20 = undefined;
 
                 try {
                     var _loop7 = function _loop7() {
-                        var order = _step19.value;
+                        var order = _step20.value;
 
                         var dihName = db.DISH.find(function (dih) {
                             return dih.dihId === order.dihId;
@@ -1979,21 +2014,21 @@ var Server = function Server() {
                         dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>';
                     };
 
-                    for (var _iterator19 = orders[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+                    for (var _iterator20 = orders[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
                         _loop7();
                     }
                     // console.log(JSON.stringify(orders));
                 } catch (err) {
-                    _didIteratorError19 = true;
-                    _iteratorError19 = err;
+                    _didIteratorError20 = true;
+                    _iteratorError20 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion19 && _iterator19.return) {
-                            _iterator19.return();
+                        if (!_iteratorNormalCompletion20 && _iterator20.return) {
+                            _iterator20.return();
                         }
                     } finally {
-                        if (_didIteratorError19) {
-                            throw _iteratorError19;
+                        if (_didIteratorError20) {
+                            throw _iteratorError20;
                         }
                     }
                 }
@@ -2043,27 +2078,27 @@ var Server = function Server() {
         try {
             req.body = JSON.parse(req.body.data);
             var rows = req.body.rows;
-            var _iteratorNormalCompletion20 = true;
-            var _didIteratorError20 = false;
-            var _iteratorError20 = undefined;
+            var _iteratorNormalCompletion21 = true;
+            var _didIteratorError21 = false;
+            var _iteratorError21 = undefined;
 
             try {
-                for (var _iterator20 = rows[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-                    var row = _step20.value;
+                for (var _iterator21 = rows[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
+                    var row = _step21.value;
 
                     db.pushToJsonDb(req.params.tableName, row);
                 }
             } catch (err) {
-                _didIteratorError20 = true;
-                _iteratorError20 = err;
+                _didIteratorError21 = true;
+                _iteratorError21 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion20 && _iterator20.return) {
-                        _iterator20.return();
+                    if (!_iteratorNormalCompletion21 && _iterator21.return) {
+                        _iterator21.return();
                     }
                 } finally {
-                    if (_didIteratorError20) {
-                        throw _iteratorError20;
+                    if (_didIteratorError21) {
+                        throw _iteratorError21;
                     }
                 }
             }
