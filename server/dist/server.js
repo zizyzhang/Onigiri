@@ -924,7 +924,7 @@ var Server = function Server() {
                 var usrMail = _usr2.usrMail;
                 self.sendMail(usrMail, '您關注的團主開團啦', '<p>您關注的團主開團啦,\n                <p>團主名稱為' + db.USER.find(function (u) {
                     return u.usrId === grpHostId;
-                }).usrId + '</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>');
+                }).usrName + '</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>');
             }
         } catch (err) {
             _didIteratorError9 = true;

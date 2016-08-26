@@ -728,7 +728,7 @@ var Server = function () {
         for(let usr of db.USER.filter(u=>_.includes(usrIds,usr.usrId))) {
             let usrMail = usr.usrMail;
             self.sendMail(usrMail, '您關注的團主開團啦', `<p>您關注的團主開團啦,
-                <p>團主名稱為${db.USER.find(u=>u.usrId === grpHostId).usrId}</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
+                <p>團主名稱為${db.USER.find(u=>u.usrId === grpHostId).usrName}</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
         }
 
         callback({success: 1});
