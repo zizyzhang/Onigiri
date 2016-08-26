@@ -1,5 +1,5 @@
 {
-  "name": "icon",
+  "name": "",
   "css_prefix_text": "icon-",
   "css_use_suffix": false,
   "hinting": true,
@@ -51,13 +51,13 @@
     {
       "uid": "8b80d36d4ef43889db10bc1f0dc9a862",
       "css": "user-8",
-      "code": 76,
+      "code": 59392,
       "src": "fontawesome"
     },
     {
       "uid": "9bf7e14698cccdca37a6f1a02cf7d79e",
       "css": "female-2",
-      "code": 79,
+      "code": 59393,
       "src": "fontawesome"
     },
     {
@@ -395,6 +395,18 @@
       "css": "layout",
       "code": 96,
       "src": "entypo"
+    },
+    {
+      "uid": "d73eceadda1f594cec0536087539afbf",
+      "css": "heart-8",
+      "code": 76,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "f3dc2d6d8fe9cf9ebff84dc260888cdf",
+      "css": "heart-empty-4",
+      "code": 79,
+      "src": "fontawesome"
     }
   ]
 }

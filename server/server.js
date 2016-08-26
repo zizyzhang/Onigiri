@@ -45,6 +45,12 @@ db.pushToJsonDb = function (table, value) {
     //    db[table].push(value);
 };
 
+db.delFromJsonDb = function (table, condition) {
+    let index = db[table].findIndex(condition);
+
+    jsonDb.delete(`/db/${table}[${index}]`);
+};
+
 db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     let index = db[table].findIndex(condition);
     let oldObj = db[table].find(condition);
@@ -274,6 +280,8 @@ var Server = function () {
         }
     });
 
+
+
     app.post('/group', function (req, res) {
 
             //console.log(req.body);
@@ -383,6 +391,55 @@ var Server = function () {
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
     );
+
+    app.get('/follow/:usrId/:hostId', function (req, res) {
+        try{
+            let  usrId = req.params.usrId;
+            let  hostId = req.params.hostId ;
+
+            if(db.FOLLOW.find(f=>f.usrId===usrId&&f.hostId===hostId)) {
+                db.delFromJsonDb('FOLLOW', f=>f.usrId === usrId && f.hostId === hostId);
+                res.json({success: true});
+                return;
+            }
+
+            let fowId = db.FOLLOW.length===0?0:_.maxBy(db.FOLLOW, "fowId").fowId + 1;
+            db.pushToJsonDb('FOLLOW', {
+                fowId,usrId,hostId
+            });
+            res.json({success: true});
+
+        }catch (e){
+            console.log(e.toString());
+            res.json({success: false,err:e.toString()});
+
+        }
+
+
+
+    });
+
+
+    app.get('/followStatus/:usrId/:hostId', function (req, res) {
+        try{
+            let  usrId = req.params.usrId;
+            let  hostId = req.params.hostId ;
+
+            if(db.FOLLOW.find(f=>f.usrId===usrId&&f.hostId===hostId)) {
+                res.json({followed:true});
+            }else{
+                res.json({followed:false});
+            }
+
+
+
+        }catch (e){
+            console.log(e.toString());
+            res.json({err:e.toString()});
+
+        }
+
+    });
 
     app.post('/updateOrdStatus', function (req, res) {
         req.body = JSON.parse(req.body.data);
