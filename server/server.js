@@ -248,6 +248,24 @@ var Server = function () {
         });
     });
 
+    app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
+        let grpId = Number (req.params.grpId) ;
+        let usrId = Number(req.params.usrId);
+        let ordStatus =db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+
+        //例外判断, 只有待审查的订单可以被取消
+        if(ordStatus ===0){
+            db.setValueToJsonDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
+            res.json({success:true});
+        }else{
+            if(ordStatus ===-2){
+                res.json({success:false,err:'訂單已被取消'});
+            }else{
+                res.json({success:false,err:'訂單已被確認,無法取消'});
+            }
+        }
+    });
+
     app.post('/group', function (req, res) {
 
             //console.log(req.body);
@@ -651,9 +669,9 @@ var Server = function () {
             for (let dih of dishes) {
                 amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
             }
-            let grpAmountLimit = db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit;
+            let grpAmountLimit = Number(db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit);
             let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount;
-            if (amountThisTime + grpAmount > grpAmountLimit) {
+            if (grpAmountLimit!==0 && amountThisTime + grpAmount > grpAmountLimit) {
                 //團購上限
                 reject('超過團購上限! 超出' + (amountThisTime + grpAmount - grpAmountLimit) + '元');
                 return;
@@ -770,7 +788,49 @@ var Server = function () {
                 tOrder.orders.push(order);
             } else {
                 let group = this.createClassGroupByGroupId(order.grpId);
-                groupedOrders.push({group: group, orders: [order]});
+
+                //顯示給使用者的狀態
+                let status = '';
+
+                switch (group.grpStatus) {
+                    case 0:
+                    case 1:
+                        switch (order.ordStatus) {
+                            case -1:
+                                status = '被團主拒絕';
+                                break;
+                            case -2:
+                                status = '已取消';
+                                break;
+                            case 0:
+                                status = '等待團主審查';
+                                break;
+                            case 1:
+                                if(group.grpStatus===0){
+                                    status = '已確認, 未達到起送金額';
+                                }else{
+                                    status = '等待商家配送';
+                                }
+                                break;
+                            case 2:
+                                status = '付款完成';
+                                break;
+                        }
+                        break;
+                    case 2:
+                        status = '已送達, 待付款';
+                        break;
+                    case 3:
+                        status = '已完成';
+                        break;
+                    case -1:
+                        status = '開團失敗';
+                        break;
+                }
+
+
+
+                groupedOrders.push({group: group, orders: [order],status:status});
             }
         }
         return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime));
@@ -779,6 +839,7 @@ var Server = function () {
 
     this.getGroupedOrdersByUserId = function (usrId, callback) {
         let orders = _.sortBy(db.ORDER.filter(ord=>ord.usrId === usrId), obj=>-obj.ordCreateTime).map(ord=> {
+
             let newOrd = {
                 ordId: ord.ordId,
                 grpId: ord.grpId,
@@ -788,6 +849,7 @@ var Server = function () {
                 ordNum: ord.ordNum,
                 ordStatus: ord.ordStatus,    //07.03 add
                 ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+
             };
             return newOrd;
         });

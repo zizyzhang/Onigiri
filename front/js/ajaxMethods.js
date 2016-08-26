@@ -231,6 +231,21 @@ var AjaxMethods = function () {
         });
     };
 
+    this.cancelOrderPromise = function (grpId,usrId) {
+         return new Promise((resolve, reject)=> {
+            $$.getJSON(SERVER_ADS + "/cancelOrder/" + grpId + '/'+usrId,
+                function (result) {
+                    if(result.success) {
+                        resolve(result);
+                    }else{
+                        reject(result.err);
+                    }
+                });
+        });
+    };
+
+
+
     this.getComment = function (gmrId, comStatus) {
         return new Promise((resolve, reject)=> {
             $$.post(SERVER_ADS + "/getGrpMember", {data: JSON.stringify({gmrId, comStatus})},
