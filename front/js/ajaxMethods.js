@@ -7,9 +7,9 @@ var AjaxMethods = function () {
     'use strict';
 
 
-    this.addUserPromise = function (usrName, usrPwd, usrMobi, authCode) {
+    this.addUserPromise = function (usrName, usrPwd, usrMail, usrMobi, authCode) {
         return new Promise((resolve, reject)=> {
-            let data = JSON.stringify({usrName, usrPwd, usrMobi, authCode});
+            let data = JSON.stringify({usrName, usrPwd, usrMail, usrMobi, authCode});
             $$.post(SERVER_ADS + "/addUser", {data}, function (result) {
                 if (JSON.parse(result).success) {
                     resolve(!!result);
@@ -255,6 +255,14 @@ var AjaxMethods = function () {
         });
     };
 
+    this.alertMailFromRefuseOrder = function (usrId, grpId) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + "/refuseOrder", {data: JSON.stringify({usrId, grpId})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
 
 };
 

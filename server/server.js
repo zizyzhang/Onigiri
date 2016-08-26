@@ -19,6 +19,7 @@ let JsonDB = require('node-json-db');
 let jsonDb = new JsonDB("./onigiri", true, true);
 let db = jsonDb.getData('/db');
 require('./time.js');
+require('./nodemailer.js');
 
 //console.log(__dirname);
 
@@ -30,8 +31,15 @@ let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c
 
 let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
-//let commemtArrary = [];
-//let commentId;
+var nodemailer = require('nodemailer');
+
+var mailTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'o.grpbuy@gmail.com',
+        pass: 'asd1q2w3e'
+    }
+});
 
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
@@ -111,6 +119,7 @@ var Server = function () {
 
             let usrName = req.body.usrName;
             let usrPwd = req.body.usrPwd;
+            let usrMail = req.body.usrMail;
             let usrMobi = req.body.usrMobi;
             let authCode = req.body.authCode;
 
@@ -138,7 +147,7 @@ var Server = function () {
 
 
             //console.log(JSON.stringify(req.body));
-            self.addUser(usrName, usrPwd, usrMobi, function (result) {
+            self.addUser(usrName, usrPwd, usrMail, usrMobi, function (result) {
                 res.json(result);
             });
         }
@@ -201,8 +210,8 @@ var Server = function () {
     );
 
     app.post('/userAuth', function (req, res) {
-            var usrName = req.body.usrName;
-            var usrPwd = req.body.usrPwd;
+            let usrName = req.body.usrName;
+            let usrPwd = req.body.usrPwd;
 
             if (!(usrName && usrPwd)) {
                 res.json({success: false, msg: '資料不完整'});
@@ -414,6 +423,17 @@ var Server = function () {
 
     });
 
+    app.post('/refuseOrder', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let usrId = Number(req.body.usrId);
+        let grpId = Number(req.body.grpId);
+        console.log('usrId , grpId', usrId, grpId);
+
+        self.refuseOrder(usrId, grpId, result=> {
+            res.json(result);
+        });
+    });
+
 
     app.listen(8080, function () {
         console.log('' +
@@ -486,7 +506,7 @@ var Server = function () {
         });
     };
 
-    this.addUser = function (usrName, usrPwd, usrMobi, callback) {
+    this.addUser = function (usrName, usrPwd, usrMail, usrMobi, callback) {
         var usrId = 0;
 
         for (let user of db.USER) {
@@ -502,6 +522,7 @@ var Server = function () {
             usrId: usrId,
             usrName: usrName,
             usrPwd: usrPwd,
+            usrMail: usrMail,
             usrCreateTime: usrCreateTime,
             usrMobi: usrMobi
         };
@@ -649,7 +670,9 @@ var Server = function () {
 
     this.joinGroupPromise = function (usrId, dishes, grpId, comments) {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
-        return new Promise((resolve, reject)=> {
+
+
+         return new Promise((resolve, reject)=> {
             //拒絕用戶對同壹個group連續點兩次餐點
             //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
             //    reject("重復加團!");
@@ -661,7 +684,6 @@ var Server = function () {
                 reject("團購已經截止!");
                 return;
             }
-            let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
 
             //是否超过最高上限
             let amountThisTime = 0;
@@ -687,75 +709,159 @@ var Server = function () {
 
             }
 
+             let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
+             let addOrd = function (usrName, dihId, num, ordStatus) {
+                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
 
-            let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
-            console.log('orderedDishIds', orderedDishIds);
+                 db.pushToJsonDb("ORDER", {
+                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
+                     grpId: grpId,
+                     usrId: usrId,
+                     usrName: usrName,  //07.03 add
+                     dihId: dihId,
+                     ordNum: num,
+                     ordCreateTime: new Date().getTime(),
+                     // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                     ordStatus: ordStatus
+                 });
+             };
 
-            let selectRowByDishId = dihId => row=>row.dihId === dihId;
+             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
+            // let selectRowByDishId = dihId => row=>row.dihId === dihId;
+            let snedornot = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
 
+            let g = db.GROUP.find(g=>g.grpId === grpId);
+            let hostId = g.grpHostId;
+            let ordStatus = usrId === hostId ? 1 : 0; //團主訂單不需要經過確認
+
+            // 加購情況(有舊訂單):
+            // ordStatus==-1(拒絕) --->(both)新增另一張訂單
+            // ordStatus==0 (待審查)-->(相同商品)直接修改
+            //                                      -->(不同商品)新增訂單
+            // ordStatus==1 (已接受)-->(相同商品)增加屬性、改狀態  (both)需再次確認
+            //                                     -->(不同商品)新增訂單
+            let orders = db.ORDER.filter(ord=>ord.usrId === usrId && ord.grpId === grpId && _.includes([0, 1], ord.ordStatus));
+
+            // let orders = db.ORDER.filter(ord=>ord.usrId === usrId && ord.grpId === grpId && ord.ordStatus===0 || ord.ordStatus===1);
+
+            // let orders = db.ORDER.filter(function (ord) {
+            //     if (ord.usrId === usrId && ord.grpId === grpId && (ord.ordStatus === 0 || ord.ordStatus === 1)) {
+            //         console.log('usrId grpId', usrId, grpId);
+            //         console.log('ord.usrId ord.grpId ord.ordStatus', ord.usrId, ord.grpId, ord.ordStatus);
+            //         return ord;
+            //     }
+            // });
+            console.log('joinGroupPromise====orders' + JSON.stringify(orders));
 
             for (let {dihId, num} of dishes) {
                 if (num === 0 || !_.isNumber(num)) {
                     continue;
                 }
 
+                // if (orders)
+                console.log('dihId num', dihId, num);
+                if (orders.length === 0) {  //無舊訂單
+                    addOrd(usrName, dihId, num, ordStatus);
+                    console.log('無舊訂單 : ' + grpId, usrId, usrName, dihId, num, ordStatus);
 
-                //加購
-                if (_.includes(orderedDishIds, dihId)) {
+                } else { //有舊訂單
 
-                    let o = db.ORDER.find(function (ord) {
-                        if (ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId) {
-                            return ord;
+                    let sameProduct = orders.find(ord=>ord.dihId === dihId);
+                    console.log('====sameProduct', JSON.stringify(sameProduct));
+                    if (sameProduct) {
+                        if (sameProduct.ordStatus === 0) {
+                            // ordStatus==0 (待審查)-->(相同商品)直接修改
+                            console.log('ordStatus==0 (待審查)-->(相同商品)直接修改');
+                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum',
+                                num + db.ORDER.find(ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId).ordNum);
+                        } else if (sameProduct.ordStatus === 1) {
+                            //  ordStatus==1 (已接受)-->(相同商品)需再次確認
+                            console.log('ordStatus==1 (已接受)-->(相同商品)需再次確認');
+                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'updateOrdNum', num);
+                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordStatus', 3);
+                            //TODO ordStatus=3
                         }
-                    });
 
-                    db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum', num + o.ordNum);
+                    } else {
+                        // ordStatus==0 (待審查)-->(不同商品)新增訂單
+                        //  ordStatus==1 (已接受)-->(不同商品)需再次確認
+                        console.log('ordStatus==0、1-->(不同商品)新增訂單');
+                        addOrd(usrName, dihId, num, ordStatus);
+                    }
 
-                    continue;
+
                 }
+            }
 
 
-                //新的一笔
-                let lastOrder = _.maxBy(db.ORDER, 'ordId');
-                db.pushToJsonDb("ORDER", {
-                    ordId: lastOrder ? lastOrder.ordId + 1 : 1,
-                    grpId: grpId,
-                    usrId: usrId,
+            if (comments) {
+                let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
+                db.pushToJsonDb("GROUP_MEMBER", {
+                    gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
+                     usrId: usrId,
                     usrName: usrName,  //07.03 add
-                    dihId: dihId,
-                    ordNum: num,
-                    ordCreateTime: new Date().getTime(),
-                    //TODO ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-                    ordStatus: 0
+                    grpId: grpId,
+                    comments: comments
                 });
-
-
             }
 
-            let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
-            if (!comments) {
-                // console.log("commentscomments=" + comments);
-                comments = "";
-            }
-            db.pushToJsonDb("GROUP_MEMBER", {
-                gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
-                usrId: usrId,
-                usrName: usrName,  //07.03 add
-                grpId: grpId,
-                // comStatus: 0,
-                comments: comments
-            });
 
-            resolve({success: 1});
+            //最小外送金額
+            // let g = db.GROUP.find(g=>g.grpId === grpId);
+            let metId = g.metId;
+            // let hostId = g.grpHostId;
+            let m = db.MERCHANT.find(m=>m.metId === metId);
+            let metMinPrice = m.metMinPrice;
+            let amount = 0;
+
+            self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
+                // console.log("result.groupedOrderSums"+JSON.stringify(result.groupedOrderSums));
+                let groupOrderSum = result.groupedOrderSums.find(orderSum=>orderSum.group.grpId === grpId);
+                // console.log("groupOrderSum", groupOrderSum);
+
+                if (groupOrderSum) {
+                    for (let orderSum of groupOrderSum.orderSums) {
+                        let price = orderSum.dish.dihPrice;
+                        let num = orderSum.ordNum;
+                        let total = price * num;
+                        amount += total;
+                    }
+                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amount);
+
+                    if (amount >= metMinPrice) {
+                        db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                    }
+                }
+                resolve({success: 1});
+            }).catch(e=>console.log(e));
+
+
+            // console.log('snedornot'+snedornot);
+            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入、團員加購
+            if (usrId !== hostId && snedornot) {
+                let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
+                let metName = m.metName;
+                let subject = '販團 : ' + metName + ' - 有新成員加入!';
+                let now = new Date();
+                let detime = new Date(g.grpTime);
+
+                let html = '<p>申請時間: ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes()) + '</p>' +
+                    '<p>申請人: ' + usrName + '</p>' +
+                    '<p>申請團購: ' + metName + '</p>' +
+                    '<p>團購截止時間: ' + (detime.getMonth() + 1) + '/' + detime.getDate() + ' ' + detime.getHours() + ':' + (detime.getMinutes() < 10 ? '0' + detime.getMinutes() : detime.getMinutes()) + '</p>' +
+                    '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
+                self.sendMail(hostMail, subject, html);
+            }
 
         });
+
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
         let groupedOrders = [];
 
-
         for (let order of orders) {
+
             // if (order.ordStatus > 0) {
             // console.log("ordStatus:" + order.ordStatus);
             let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
@@ -770,6 +876,8 @@ var Server = function () {
                 if (order.ordStatus === 0) {
                     group.ordNotConfirm = true;
                     groupedOrders.push({group: group, orders: []});
+                } else if (order.ordStatus === -1) {
+                    groupedOrders.push({group: group, orders: []});
                 } else {
                     groupedOrders.push({group: group, orders: [order]});
                 }
@@ -783,6 +891,7 @@ var Server = function () {
     this.convertOrdersToGroupedOrdersUsr = function (orders) {
         let groupedOrders = [];
         for (let order of orders) {
+
             let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
             if (tOrder) {
                 tOrder.orders.push(order);
@@ -883,6 +992,7 @@ var Server = function () {
                     ordNum: ord.ordNum,
                     ordStatus: ord.ordStatus,    //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+                    updateOrdNum: ord.updateOrdNum ? ord.updateOrdNum : undefined,
                 };
 
                 return newOrd;
@@ -944,6 +1054,7 @@ var Server = function () {
                     ordNum: ord.ordNum,
                     ordStatus: ord.ordStatus,    //07.03 add
                     ordCreateTime: new Date(ord.ordCreateTime).pattern('yyyy/MM/dd hh:mm:ss'),
+                    updateOrdNum: ord.updateOrdNum ? ord.updateOrdNum : undefined,
                 };
                 return newOrd;
             });
@@ -995,14 +1106,12 @@ var Server = function () {
                     group.grpStatusCh = "未達外送金額";
                     group.btnChangeStatusName = "未開團";
                     group.grpNextStatus = 1;
-
                     group.btnChangeStatusDisable = true;
                     break;
                 case 1:
                     group.grpStatusCh = "已開團";
                     group.btnChangeStatusName = "確認已送達";
                     group.grpNextStatus = 2;
-
                     break;
                 case 2:
                     group.grpStatusCh = "已送達";
@@ -1166,13 +1275,22 @@ var Server = function () {
         return new Promise((resolve, reject)=> {
             let order = db.ORDER.find(s=>ordId === s.ordId);
 
-            if (order.ordStatus != -1) {
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
-                //group.grpStatus = grpStatus;
-                resolve({success: 1});
-
+            if (order.ordStatus === 3 && ordStatus === -1) {
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
+                return;
             }
-            else {
+
+            if (order.ordStatus != -1) {
+                //TODO
+                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
+                if (order.updateOrdNum && order.updateOrdNum !== 0) {
+                    console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
+                    db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordNum', order.ordNum + order.updateOrdNum);
+                    db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
+                }
+                resolve({success: 1});
+            } else {
                 reject({success: 0});
             }
         });
@@ -1186,13 +1304,13 @@ var Server = function () {
                 {
                     self.confirmOrder(hostId).then(result=> {
                         // TODO WHAT THE FUCK
-                        console.log('switch 0');
-                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result).GrpUsersOrders.filter(function (guo) {
-                            guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
+                        // console.log('switch 0');
+                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([0, 3], result).GrpUsersOrders.filter(function (guo) {
+                            // guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                             // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
-                            return guo.usrOrders.length !== 0;
+                            return guo.usrOrders.length !== 0 && guo.group.grpStatus !== -1;
                         });
-                        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve({GrpUsersOrders: GrpUsersOrders});
                     });
                     break;
@@ -1200,8 +1318,8 @@ var Server = function () {
                 case 1:
                 {
                     self.getGroupedOrdersAndSumsByHostIdPromise(hostId).then(result=> {
-                        console.log('switch 1');
-                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders(result);
+                        // console.log('switch 1');
+                        let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([1, 2, 3], result);
                         // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve(GrpUsersOrders);
                     });
@@ -1211,70 +1329,127 @@ var Server = function () {
         });
     };
 
-    this.convertGroupedOrdersToGrpUsrOrders = function (result) {
+    this.convertGroupedOrdersToGrpUsrOrders = function (ordStatus, result) {
         let GrpUsersOrders = {
             GrpUsersOrders: []
         };
         // console.log('====result:' + JSON.stringify(result.groupedOrders));
 
         for (let grpOrd of result.groupedOrders) {
-            let neGUO = {};
             let uos = [];
             let grpComments = grpOrd.group.grpComments;
 
             for (let order of grpOrd.orders) {
+                // console.log(_.includes(ordStatus, order.ordStatus));
+                if (_.includes(ordStatus, order.ordStatus)) {
 
-                order.dish.ordNum = order.ordNum;
-                order.ordNum = undefined;
-                // console.log('order.dish:' + JSON.stringify(order.dish));
-                // console.log('====order:' + JSON.stringify(order));
+                    order.dish.ordNum = order.ordNum;
+                    order.ordNum = undefined;
+                    // console.log('====order:' + JSON.stringify(order));
 
-                let uosobj = uos.find(u=>u.usrId === order.usrId);
+                    let uosobj = uos.find(u=>u.usrId === order.usrId);
+                    if (!uosobj) {
+                        uos.push({
+                            usrId: order.usrId,
+                            usrName: order.usrName,
+                            usrAmount: order.dish.ordNum * order.dish.dihPrice,
+                            // ordStatus: order.ordStatus,
+                            usrDishes: [{
+                                dihId: order.dish.dihId,
+                                dihName: order.dish.dihName,
+                                metId: order.dish.metId,
+                                dihType: order.dish.dihType,
+                                dihPrice: order.dish.dihPrice,
+                                ordNum: order.dish.ordNum,
+                                updateOrdNum: order.updateOrdNum ? order.updateOrdNum : undefined,
+                            }],
+                            usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
+                            usrOrds: [{ordId: order.ordId, ordStatus: order.ordStatus}]
+                            // 無法理解錯在哪裡
+                            // ,usrDishesWhy: [order.dish]
+                        });
+                        // console.log('====order.dish:' + JSON.stringify(order.dish));
 
-                if (!uosobj) {
-                    uos.push({
-                        usrId: order.usrId,
-                        usrName: order.usrName,
-                        usrAmount: order.dish.ordNum * order.dish.dihPrice,
-                        ordStatus: order.ordStatus,
-                        usrDishes: [{
+                    } else {
+                        uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
+                        // uosobj.usrDishes.push(order.dish);
+                        uosobj.usrDishes.push({
                             dihId: order.dish.dihId,
                             dihName: order.dish.dihName,
                             metId: order.dish.metId,
                             dihType: order.dish.dihType,
                             dihPrice: order.dish.dihPrice,
-                            ordNum: order.dish.ordNum
-                        }],
-                        usrComments: _.filter(grpComments, (com) => com.usrId === order.usrId),
-                        usrOrdIds: [{ordId: order.ordId}]
-                        // 無法理解錯在哪裡
-                        // ,usrDishesWhy: [order.dish]
-                    });
-                    // console.log('====order.dish:' + JSON.stringify(order.dish));
-
-                } else {
-                    uosobj.usrAmount = uosobj.usrAmount + order.dish.ordNum * order.dish.dihPrice;
-                    // uosobj.usrDishes.push(order.dish);
-                    uosobj.usrDishes.push({
-                        dihId: order.dish.dihId,
-                        dihName: order.dish.dihName,
-                        metId: order.dish.metId,
-                        dihType: order.dish.dihType,
-                        dihPrice: order.dish.dihPrice,
-                        ordNum: order.dish.ordNum
-                    });
-                    uosobj.usrOrdIds.push({ordId: order.ordId});
+                            ordNum: order.dish.ordNum,
+                            updateOrdNum: order.updateOrdNum ? order.updateOrdNum : undefined,
+                        });
+                        uosobj.usrOrds.push({ordId: order.ordId, ordStatus: order.ordStatus});
+                    }
                 }
             }
-            neGUO = {
+            GrpUsersOrders.GrpUsersOrders.push({
                 group: grpOrd.group,
                 usrOrders: uos
-            };
-            GrpUsersOrders.GrpUsersOrders.push(neGUO);
+            });
         }
 
         // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         return GrpUsersOrders;
+    };
+
+    this.sendMail = function (usrMail, subject, html) {
+
+        if (usrMail && subject && html) {
+            mailTransport.sendMail({
+                from: 'o.grpbuy@gmail.com',
+                to: usrMail,
+                subject: subject,
+                html: html
+            }, function (err) {
+                if (err) {
+                    console.log('Unable to send email: ' + err);
+                }
+            });
+        }
+    };
+
+    this.refuseOrder = function (usrId, grpId, callback) {
+        let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
+
+        if (orders) {
+            let dishes = '';
+            for (let order of orders) {
+                let dihName = db.DISH.find(dih=>dih.dihId === order.dihId).dihName;
+                dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>'
+            }
+            // console.log(JSON.stringify(orders));
+            console.log(dishes);
+
+            let g = db.GROUP.find(g=>g.grpId === grpId);
+            let metId = g.metId;
+            let metName = db.MERCHANT.find(m=>m.metId === metId).metName;
+            let ordCreateTime = orders[0].ordCreateTime;
+            let hostName = db.USER.find(usr=>usr.usrId === g.grpHostId).usrName;
+
+            // 通知團員訂單被拒絕
+            let usrMail = db.USER.find(usr=>usr.usrId === usrId).usrMail;
+            let subject = '販團 : 很不幸的 - 您的申請遭到拒絕';
+            let jointime = new Date(ordCreateTime);
+
+            let html = '<p>申請時間: ' + (jointime.getMonth() + 1) + '/' + jointime.getDate() + ' ' + jointime.getHours() + ':' + (jointime.getMinutes() < 10 ? '0' + jointime.getMinutes() : jointime.getMinutes()) + '</p>' +
+                '<p>申請團購: ' + metName + '</p>' +
+                '<p>團主 : ' + hostName + '</p>' +
+                '<br><p>訂購項目: </p><ul>' + dishes + '</ul>' +
+                '<br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>';
+
+            console.log('usrMail , metName ', usrMail, metName);
+
+            self.sendMail(usrMail, subject, html);
+
+            callback({success: 1});
+        }
+        else {
+            callback({success: 0});
+        }
     };
 
     ///////////////////後臺

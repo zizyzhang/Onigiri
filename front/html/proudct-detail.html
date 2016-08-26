@@ -28,7 +28,7 @@
                                       id="icong{{groupOrder.group.grpId}}u{{usrOrder.usrId}}">W</span>
                                 <img style="border-radius: 50%;" src="./../assets/img/img-dish-01.png" width="36">
                                 <div class="center">{{usrOrder.usrName}}</div>
-                                <div class="item-after">總額:NT{{usrOrder.usrAmount}}</div>
+                                <div class="item-after">總額:NT {{usrOrder.usrAmount}}</div>
                                 <span class="ficon">$</span>
 
                                 <!--</div>-->
@@ -52,7 +52,7 @@
                                         v-for="usrDish in usrOrder.usrDishes">
                                         <div class="item-title">{{usrDish.dihName}}</div>
                                         <div class="center">{{usrDish.ordNum}}份</div>
-                                        <div class="item-after">NT{{usrDish.ordNum*usrDish.dihPrice}} <span></span>
+                                        <div class="item-after">NT {{usrDish.ordNum*usrDish.dihPrice}}<span></span>
                                         </div>
                                     </li>
 
