@@ -35,11 +35,12 @@ class SignUpPage { //TODO first
                 }
 
 
-                ajaxMethod.addUserPromise($$('#signUsrName').val(), SHA256($$('#signUsrPwd').val()).toString(), $$('#signUsrMobi').val(),$$('#signTwilio').val()).then(result=> {
+                ajaxMethod.addUserPromise($$('#signUsrName').val(), SHA256($$('#signUsrPwd').val()).toString(), $$('#signUsrMail').val(), $$('#signUsrMobi').val(),$$('#signTwilio').val()).then(result=> {
                     myApp.alert('註冊成功', function () {
                         $$('#signUsrName').val("");
                         $$('#signUsrPwd').val("");
                         $$('#signUsrPwdConfirm').val("");
+                        $$('#signUsrMail').val("");
                         $$('#signUsrMobi').val("");
                         $$('#signTwilio').val("");
                         mainView.router.refreshPage();

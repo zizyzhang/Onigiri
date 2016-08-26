@@ -43,11 +43,11 @@ class ProductDetailPage { //TODO first
                     item.attr('style', 'text-decoration:line-through; color:DarkGray;');
                     $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:inline;');
 
-                    let usrOrdIds =
-                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
-                    console.log(JSON.stringify(usrOrdIds));
+                    let usrOrds =
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrds;
+                    console.log(JSON.stringify(usrOrds));
 
-                    for (let ord of usrOrdIds) {
+                    for (let ord of usrOrds) {
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
@@ -65,12 +65,12 @@ class ProductDetailPage { //TODO first
                     item.removeClass('completed');
                     item.removeAttr('style');
                     $$('#icong' + grpId + 'u' + usrId).attr('style', 'color:green; display:none;');
-                    
-                    let usrOrdIds =
-                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrdIds;
-                    console.log(JSON.stringify(usrOrdIds));
 
-                    for (let ord of usrOrdIds) {
+                    let usrOrds =
+                        result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrds;
+                    console.log(JSON.stringify(usrOrds));
+
+                    for (let ord of usrOrds) {
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
