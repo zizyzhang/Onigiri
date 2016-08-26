@@ -255,6 +255,30 @@ var AjaxMethods = function () {
         });
     };
 
+    this.follow = function (usrId,hostId) {
+        return new Promise(function (resolve,reject) {
+            $$.getJSON(`${SERVER_ADS}/follow/${usrId}/${hostId}`, function (data) {
+                if(data.success) {
+                    resolve(data);
+                }else{
+                    reject(data.err);
+                }
+            });
+        });
+    };
+
+    this.getFollowStatus = function (usrId,hostId) {
+        return new Promise(function (resolve,reject) {
+            $$.getJSON(`${SERVER_ADS}/followStatus/${usrId}/${hostId}`, function (data) {
+                if(data.err) {
+                    reject(data.err);
+                }else{
+                    resolve(data.followed);
+                }
+            });
+        });
+    };
+
 
 };
 

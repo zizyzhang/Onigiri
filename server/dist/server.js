@@ -4,6 +4,8 @@
  * Created by User on 2016/3/24.
  */
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 require('source-map-support').install();
 
 var isDebug = true;
@@ -36,6 +38,12 @@ var authCodes = []; //{phone  : String , authCode: String , endTime : Number , t
 db.pushToJsonDb = function (table, value) {
     jsonDb.push('/db/' + table + '[]', value);
     //    db[table].push(value);
+};
+
+db.delFromJsonDb = function (table, condition) {
+    var index = db[table].findIndex(condition);
+
+    jsonDb.delete('/db/' + table + '[' + index + ']');
 };
 
 db.setValueToJsonDb = function (table, condition, setKey, newValue) {
@@ -414,6 +422,58 @@ var Server = function Server() {
         self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(function (result) {
             return res.json(result);
         });
+    });
+
+    app.get('/follow/:usrId/:hostId', function (req, res) {
+        try {
+            var _ret2 = function () {
+                var usrId = req.params.usrId;
+                var hostId = req.params.hostId;
+
+                if (db.FOLLOW.find(function (f) {
+                    return f.usrId === usrId && f.hostId === hostId;
+                })) {
+                    db.delFromJsonDb('FOLLOW', function (f) {
+                        return f.usrId === usrId && f.hostId === hostId;
+                    });
+                    res.json({ success: true });
+                    return {
+                        v: void 0
+                    };
+                }
+
+                var fowId = db.FOLLOW.length === 0 ? 0 : _.maxBy(db.FOLLOW, "fowId").fowId + 1;
+                db.pushToJsonDb('FOLLOW', {
+                    fowId: fowId, usrId: usrId, hostId: hostId
+                });
+                res.json({ success: true });
+            }();
+
+            if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+        } catch (e) {
+            console.log(e.toString());
+            res.json({ success: false, err: e.toString() });
+        }
+    });
+
+    app.get('/followStatus/:usrId/:hostId', function (req, res) {
+        try {
+            (function () {
+                var usrId = req.params.usrId;
+                var hostId = req.params.hostId;
+
+                if (db.FOLLOW.find(function (f) {
+                    return f.usrId === usrId && f.hostId === hostId;
+                })) {
+                    res.json({ followed: true });
+                } else {
+                    res.json({ followed: false });
+                }
+            })();
+        } catch (e) {
+            console.log(e.toString());
+            res.json({ err: e.toString() });
+        }
     });
 
     app.post('/updateOrdStatus', function (req, res) {
@@ -971,9 +1031,9 @@ var Server = function Server() {
                 };
 
                 for (var _iterator10 = dishes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-                    var _ret3 = _loop2();
+                    var _ret5 = _loop2();
 
-                    if (_ret3 === 'continue') continue;
+                    if (_ret5 === 'continue') continue;
                 }
             } catch (err) {
                 _didIteratorError10 = true;
