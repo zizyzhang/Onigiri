@@ -19,6 +19,7 @@ let JsonDB = require('node-json-db');
 let jsonDb = new JsonDB("./onigiri", true, true);
 let db = jsonDb.getData('/db');
 require('./time.js');
+require('./nodemailer.js');
 
 //console.log(__dirname);
 
