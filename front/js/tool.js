@@ -58,22 +58,22 @@ class Tool {
     loadPage(target, mainView, ajaxPromise) {
         let loadFunc = function (data) {
             if (typeof target === 'string') {
-                mainView.router.load({url:target,query:{ajaxResult:data}});
+                mainView.router.load({url: target, query: {ajaxResult: data}});
             } else {
 
-                if(!target.query){
-                    target.query={};
+                if (!target.query) {
+                    target.query = {};
                 }
 
-                target.query.ajaxResult=data;
+                target.query.ajaxResult = data;
 
                 mainView.router.load(target);
             }
-         };
+        };
 
         if (ajaxPromise) {
             ajaxPromise.then((data)=> {
-                console.log('ajaxPromise in toll.js',data);
+                console.log('ajaxPromise in toll.js', data);
                 loadFunc(data);
 
             });
@@ -82,6 +82,7 @@ class Tool {
         }
 
     }
+
 
 
 }
