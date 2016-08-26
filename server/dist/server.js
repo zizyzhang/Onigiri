@@ -297,6 +297,28 @@ var Server = function Server() {
         });
     });
 
+    app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
+        var grpId = Number(req.params.grpId);
+        var usrId = Number(req.params.usrId);
+        var ordStatus = db.ORDER.find(function (o) {
+            return o.grpId === grpId && o.usrId === usrId;
+        }).ordStatus;
+
+        //例外判断, 只有待审查的订单可以被取消
+        if (ordStatus === 0) {
+            db.setValueToJsonDb('ORDER', function (o) {
+                return o.grpId === grpId && o.usrId === usrId;
+            }, 'ordStatus', -2);
+            res.json({ success: true });
+        } else {
+            if (ordStatus === -2) {
+                res.json({ success: false, err: '訂單已被取消' });
+            } else {
+                res.json({ success: false, err: '訂單已被確認,無法取消' });
+            }
+        }
+    });
+
     app.post('/group', function (req, res) {
 
         //console.log(req.body);
@@ -1076,6 +1098,9 @@ var Server = function Server() {
                             switch (order.ordStatus) {
                                 case -1:
                                     status = '被團主拒絕';
+                                    break;
+                                case -2:
+                                    status = '已取消';
                                     break;
                                 case 0:
                                     status = '等待團主審查';
