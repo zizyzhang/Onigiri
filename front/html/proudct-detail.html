@@ -10,7 +10,7 @@
     <div class="page-content" id="grpOrd">
         <!--<div class="card demo-card-header-pic" v-for="groupOrder in groupedOrders">-->
 
-        <div class="" v-for="groupOrder in GrpUsersOrders">
+        <div class="card" v-for="groupOrder in GrpUsersOrders">
             <div class="card-header item-title-row">
                 <div>{{groupOrder.group.merchant.metName}}</div>
                 <div class="status" style="color:green">{{groupOrder.group.grpStatusCh}}</div>
@@ -21,7 +21,7 @@
                 <ul v-if="groupOrder.usrOrders.length !== 0">
                     <li class=" swipeout " v-for="usrOrder in groupOrder.usrOrders">
 
-                        <div class="card swipeout">
+                        <div class="  swipeout">
                             <div class="card-header ">
                                 <!--<div class=" item-media card-content item-title-row">-->
                                 <span class="ficon" style="display:none;"
