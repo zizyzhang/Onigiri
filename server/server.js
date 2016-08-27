@@ -263,23 +263,22 @@ var Server = function () {
     });
 
     app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
-        let grpId = Number (req.params.grpId) ;
+        let grpId = Number(req.params.grpId);
         let usrId = Number(req.params.usrId);
-        let ordStatus =db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+        let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
 
         //例外判断, 只有待审查的订单可以被取消
-        if(ordStatus ===0){
+        if (ordStatus === 0) {
             db.setValueToJsonDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
-            res.json({success:true});
-        }else{
-            if(ordStatus ===-2){
-                res.json({success:false,err:'訂單已被取消'});
-            }else{
-                res.json({success:false,err:'訂單已被確認,無法取消'});
+            res.json({success: true});
+        } else {
+            if (ordStatus === -2) {
+                res.json({success: false, err: '訂單已被取消'});
+            } else {
+                res.json({success: false, err: '訂單已被確認,無法取消'});
             }
         }
     });
-
 
 
     app.post('/group', function (req, res) {
@@ -393,49 +392,49 @@ var Server = function () {
     );
 
     app.get('/follow/:usrId/:hostId', function (req, res) {
-        try{
-            let  usrId = req.params.usrId;
-            let  hostId = req.params.hostId ;
+        try {
+            let usrId = Number(req.params.usrId);
+            let hostId = Number(req.params.hostId);
 
-            if(db.FOLLOW.find(f=>f.usrId===usrId&&f.hostId===hostId)) {
+            if (db.FOLLOW.find(f=>f.usrId === usrId && f.hostId === hostId)) {
                 db.delFromJsonDb('FOLLOW', f=>f.usrId === usrId && f.hostId === hostId);
                 res.json({success: true});
                 return;
             }
 
-            let fowId = db.FOLLOW.length===0?0:_.maxBy(db.FOLLOW, "fowId").fowId + 1;
+            let fowId = db.FOLLOW.length === 0 ? 0 : _.maxBy(db.FOLLOW, "fowId").fowId + 1;
             db.pushToJsonDb('FOLLOW', {
-                fowId,usrId,hostId
+                fowId,
+                usrId: usrId,
+                hostId: hostId
             });
             res.json({success: true});
 
-        }catch (e){
+        } catch (e) {
             console.log(e.toString());
-            res.json({success: false,err:e.toString()});
+            res.json({success: false, err: e.toString()});
 
         }
-
 
 
     });
 
 
     app.get('/followStatus/:usrId/:hostId', function (req, res) {
-        try{
-            let  usrId = req.params.usrId;
-            let  hostId = req.params.hostId ;
+        try {
+            let usrId = req.params.usrId;
+            let hostId = req.params.hostId;
 
-            if(db.FOLLOW.find(f=>f.usrId===usrId&&f.hostId===hostId)) {
-                res.json({followed:true});
-            }else{
-                res.json({followed:false});
+            if (db.FOLLOW.find(f=>f.usrId === usrId && f.hostId === hostId)) {
+                res.json({followed: true});
+            } else {
+                res.json({followed: false});
             }
 
 
-
-        }catch (e){
+        } catch (e) {
             console.log(e.toString());
-            res.json({err:e.toString()});
+            res.json({err: e.toString()});
 
         }
 
@@ -483,9 +482,10 @@ var Server = function () {
         req.body = JSON.parse(req.body.data);
         let usrId = Number(req.body.usrId);
         let grpId = Number(req.body.grpId);
+        let usrOrds = req.body.usrOrds;
         console.log('usrId , grpId', usrId, grpId);
 
-        self.refuseOrder(usrId, grpId, result=> {
+        self.refuseOrder(usrId, grpId, usrOrds, result=> {
             res.json(result);
         });
     });
@@ -725,11 +725,21 @@ var Server = function () {
 
         //发送信息给follow的人
         let usrIds = db.FOLLOW.filter(f=>f.hostId === grpHostId);
-        for(let usr of db.USER.filter(u=>_.includes(usrIds,usr.usrId))) {
-            let usrMail = usr.usrMail;
-            self.sendMail(usrMail, '您關注的團主開團啦', `<p>您關注的團主開團啦,
-                <p>團主名稱為${db.USER.find(u=>u.usrId === grpHostId).usrName}</p><br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
+        console.log('usrIds grpHostId', JSON.stringify(usrIds), grpHostId);
+        if (usrIds.length !== 0) {
+            // for (let usr of db.USER.filter(u=>_.includes(usrIds, u.usrId))) {
+            for (let usr of usrIds) {
+                let usrMail = db.USER.find(u=>u.usrId===usr.usrId).usrMail;
+                let time = new Date(gorTime);
+                self.sendMail(usrMail, '您關注的團主開團啦', `<p>您關注的團主開團啦,
+                <p>團主名稱為: ${db.USER.find(u=>u.usrId === grpHostId).usrName}</p>
+                <p>店家: ${db.MERCHANT.find(m=>m.metId === metId).metName}</p>
+                <p>截止時間: ${(time.getMonth() + 1)}/${time.getDate()} ${time.getHours()}:${(time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes())}</p>
+                <p>領取地點: ${addr}</p>
+                <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
+            }
         }
+
 
         callback({success: 1});
     };
@@ -738,7 +748,7 @@ var Server = function () {
         //console.log(JSON.stringify({usrId, dishes, grpId}));
 
 
-         return new Promise((resolve, reject)=> {
+        return new Promise((resolve, reject)=> {
             //拒絕用戶對同壹個group連續點兩次餐點
             //if (db.ORDER.find(ord=>ord.usrId === usrId && ord.grpId === grpId)) {
             //    reject("重復加團!");
@@ -759,7 +769,7 @@ var Server = function () {
             }
             let grpAmountLimit = Number(db.GROUP.find(grp=>grp.grpId === grpId).grpAmountLimit);
             let grpAmount = db.GROUP.find(grp=>grp.grpId === grpId).grpAmount;
-            if (grpAmountLimit!==0 && amountThisTime + grpAmount > grpAmountLimit) {
+            if (grpAmountLimit !== 0 && amountThisTime + grpAmount > grpAmountLimit) {
                 //團購上限
                 reject('超過團購上限! 超出' + (amountThisTime + grpAmount - grpAmountLimit) + '元');
                 return;
@@ -775,26 +785,26 @@ var Server = function () {
 
             }
 
-             let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
-             let addOrd = function (usrName, dihId, num, ordStatus) {
-                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
+            let usrName = db.USER.find(usr=>usr.usrId === usrId).usrName;
+            let addOrd = function (usrName, dihId, num, ordStatus) {
+                let lastOrder = _.maxBy(db.ORDER, 'ordId');
 
-                 db.pushToJsonDb("ORDER", {
-                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
-                     grpId: grpId,
-                     usrId: usrId,
-                     usrName: usrName,  //07.03 add
-                     dihId: dihId,
-                     ordNum: num,
-                     ordCreateTime: new Date().getTime(),
-                     // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
-                     ordStatus: ordStatus
-                 });
-             };
+                db.pushToJsonDb("ORDER", {
+                    ordId: lastOrder ? lastOrder.ordId + 1 : 1,
+                    grpId: grpId,
+                    usrId: usrId,
+                    usrName: usrName,  //07.03 add
+                    dihId: dihId,
+                    ordNum: num,
+                    ordCreateTime: new Date().getTime(),
+                    // ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
+                    ordStatus: ordStatus
+                });
+            };
 
-             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
+            let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
             // let selectRowByDishId = dihId => row=>row.dihId === dihId;
-            let snedornot = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
+            let isSend = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
 
             let g = db.GROUP.find(g=>g.grpId === grpId);
             let hostId = g.grpHostId;
@@ -845,7 +855,7 @@ var Server = function () {
                             console.log('ordStatus==1 (已接受)-->(相同商品)需再次確認');
                             db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'updateOrdNum', num);
                             db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordStatus', 3);
-                            //TODO ordStatus=3
+                            //ordStatus=3 加購中
                         }
 
                     } else {
@@ -864,7 +874,7 @@ var Server = function () {
                 let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
                 db.pushToJsonDb("GROUP_MEMBER", {
                     gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
-                     usrId: usrId,
+                    usrId: usrId,
                     usrName: usrName,  //07.03 add
                     grpId: grpId,
                     comments: comments
@@ -904,7 +914,7 @@ var Server = function () {
 
             // console.log('snedornot'+snedornot);
             // 通知團主 : 有新成員加入  ;  不通知 : 團主加入、團員加購
-            if (usrId !== hostId && snedornot) {
+            if (usrId !== hostId && isSend) {
                 let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
                 let metName = m.metName;
                 let subject = '販團 : ' + metName + ' - 有新成員加入!';
@@ -981,9 +991,9 @@ var Server = function () {
                                 status = '等待團主審查';
                                 break;
                             case 1:
-                                if(group.grpStatus===0){
+                                if (group.grpStatus === 0) {
                                     status = '已確認, 未達到起送金額';
-                                }else{
+                                } else {
                                     status = '等待商家配送';
                                 }
                                 break;
@@ -1004,8 +1014,7 @@ var Server = function () {
                 }
 
 
-
-                groupedOrders.push({group: group, orders: [order],status:status});
+                groupedOrders.push({group: group, orders: [order], status: status});
             }
         }
         return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime));
@@ -1348,10 +1357,9 @@ var Server = function () {
             }
 
             if (order.ordStatus != -1) {
-                //TODO
                 db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
                 if (order.updateOrdNum && order.updateOrdNum !== 0) {
-                    console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
+                    // console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
                     db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordNum', order.ordNum + order.updateOrdNum);
                     db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
                 }
@@ -1369,14 +1377,14 @@ var Server = function () {
                 case 0:
                 {
                     self.confirmOrder(hostId).then(result=> {
-                        // TODO WHAT THE FUCK
+                        //  WHAT THE FUCK
                         // console.log('switch 0');
                         let GrpUsersOrders = self.convertGroupedOrdersToGrpUsrOrders([0, 3], result).GrpUsersOrders.filter(function (guo) {
                             // guo.usrOrders = guo.usrOrders.filter(uo=>uo.ordStatus === 0);
                             // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                             return guo.usrOrders.length !== 0 && guo.group.grpStatus !== -1;
                         });
-                        console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                        // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                         resolve({GrpUsersOrders: GrpUsersOrders});
                     });
                     break;
@@ -1478,9 +1486,10 @@ var Server = function () {
         }
     };
 
-    this.refuseOrder = function (usrId, grpId, callback) {
+    this.refuseOrder = function (usrId, grpId, usrOrds, callback) {
+        //TODO  use ordId 、usrOrds
         let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
-
+        console.log('====usrOrds', JSON.stringify(usrOrds));
         if (orders) {
             let dishes = '';
             for (let order of orders) {
@@ -1488,7 +1497,7 @@ var Server = function () {
                 dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>'
             }
             // console.log(JSON.stringify(orders));
-            console.log(dishes);
+            console.log('====dishes', dishes);
 
             let g = db.GROUP.find(g=>g.grpId === grpId);
             let metId = g.metId;

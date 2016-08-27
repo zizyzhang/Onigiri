@@ -36,15 +36,15 @@ class ConfirmPage { //TODO first
                     el: '#confirmOrder',
                     data: result
                 });
-                
+
                 $$('.accept').click(function () {
-                    let dataset =$$(this).dataset();
+                    let dataset = $$(this).dataset();
                     let grpId = dataset.grpId;
                     let usrId = dataset.usrId;
-                    
+
                     //ordStatus為訂單狀態(-1:拒絕,0:待審查,1:已確認=未付款,2:已付款)
                     let ordStatus = 1;
-                    
+
                     console.log("====g" + grpId + "u" + usrId);
                     $$('#g' + grpId + 'u' + usrId).attr('style', 'display:none;');
 
@@ -58,9 +58,9 @@ class ConfirmPage { //TODO first
                     }
                     // mainView.router.refreshPage();
                 });
-                
+
                 $$('.refuse').click(function () {
-                    let dataset =$$(this).dataset();
+                    let dataset = $$(this).dataset();
                     let grpId = dataset.grpId;
                     let usrId = dataset.usrId;
                     let ordStatus = -1;
@@ -71,16 +71,16 @@ class ConfirmPage { //TODO first
                     let usrOrds =
                         result.GrpUsersOrders.find(group => group.group.grpId === grpId).usrOrders.find(o=>o.usrId === usrId).usrOrds;
                     console.log(JSON.stringify(usrOrds));
-                    
+
                     for (let ord of usrOrds) {
                         let ordId = ord.ordId;
                         ajaxMethod.updateOrdStatusPromise(ordId, ordStatus);
                     }
 
-                    ajaxMethod.alertMailFromRefuseOrder(usrId, grpId);
+                    ajaxMethod.alertMailFromRefuseOrder(usrId, grpId, usrOrds);
                     // mainView.router.refreshPage();
                 });
-                
+
             });
 
             // tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getconfirmOrderPromise(hostId), page, function (result) {

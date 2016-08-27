@@ -26,24 +26,27 @@ class GroupDetailPage {
             console.log('group-detail onPageBeforeInit');
 
             tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(this.grpId), page, (group)=> {
+                console.log('group',JSON.stringify(group));
                 $$('#btnJoin').on('click', function () {
 
                     tool.loadPage('order.html', mainView, ajaxMethod.getGroupById(that .grpId));
                 });
 
                 $$('.js-btn-host').on('click',function(){
-                    ajaxMethod.getFollowStatus(usrId, group.grpId).then((followed)=> {
+                    // ajaxMethod.getFollowStatus(usrId, group.grpId).then((followed)=> {
+                    console.log('group.grpHost.usrId',group.grpHost.usrId);
+                    ajaxMethod.getFollowStatus(usrId, group.grpHost.usrId).then((followed)=> {
                         let buttons1 = [
                             {
-                                text: '關注或取消關注此團主 (關注后,該團主再次開團您將會收到通知)',
+                                text: '關注或取消關注此團主 (關注後,該團主再次開團您將會收到通知)',
                                 label: true,
-
                             },
                             {
-                                text: followed?'取消關注':'關注并接收通知',
+                                text: followed?'取消關注':'關注並接收通知',
                                 onClick: function () {
-                                    let grpId = group.grpId;
-                                    ajaxMethod.follow(usrId, grpId).then(()=>{
+                                    // let grpId = group.grpId;
+                                    let grpHostId = group.grpHost.usrId;
+                                    ajaxMethod.follow(usrId, grpHostId).then(()=>{
                                         myApp.alert('已關注');
                                     }).catch(e=>{
                                         myApp.alert(e.toString());
