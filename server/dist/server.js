@@ -916,7 +916,6 @@ var Server = function Server() {
         });
         console.log('usrIds grpHostId', JSON.stringify(usrIds), grpHostId);
         if (usrIds.length !== 0) {
-            // console.log('db.USER.filter(u=>_.includes(usrIds, u.usrId))', JSON.stringify(db.USER.filter(u=>_.includes([{fowId:0,usrId:11,hostId:12}], u.usrId))));
             // for (let usr of db.USER.filter(u=>_.includes(usrIds, u.usrId))) {
             var _iteratorNormalCompletion9 = true;
             var _didIteratorError9 = false;
@@ -930,7 +929,6 @@ var Server = function Server() {
                         return u.usrId === usr.usrId;
                     }).usrMail;
                     var time = new Date(gorTime);
-                    console.log('usrMail', usrMail);
                     self.sendMail(usrMail, '您關注的團主開團啦', '<p>您關注的團主開團啦,\n                <p>團主名稱為: ' + db.USER.find(function (u) {
                         return u.usrId === grpHostId;
                     }).usrName + '</p>\n                <p>店家: ' + db.MERCHANT.find(function (m) {
@@ -1885,7 +1883,7 @@ var Server = function Server() {
                     return row.ordId === order.ordId;
                 }, 'ordStatus', ordStatus);
                 if (order.updateOrdNum && order.updateOrdNum !== 0) {
-                    console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
+                    // console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
                     db.setValueToJsonDb('ORDER', function (row) {
                         return row.ordId === order.ordId;
                     }, 'ordNum', order.ordNum + order.updateOrdNum);
@@ -1914,7 +1912,7 @@ var Server = function Server() {
                                 // console.log('====guo.usrOrders:' + JSON.stringify(guo.usrOrders));
                                 return guo.usrOrders.length !== 0 && guo.group.grpStatus !== -1;
                             });
-                            console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
+                            // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
                             resolve({ GrpUsersOrders: GrpUsersOrders });
                         });
                         break;
