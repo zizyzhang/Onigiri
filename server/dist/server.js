@@ -19,7 +19,8 @@ var JsonDB = require('node-json-db');
 
 //debugger;
 var jsonDb = new JsonDB("./onigiri", true, true);
-var db = jsonDb.getData('/db');
+//let db = jsonDb.getData('/db');
+var db = {};
 require('./time.js');
 
 //console.log(__dirname);
@@ -42,23 +43,74 @@ var mailTransport = nodemailer.createTransport({
     }
 });
 
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('chai').assert;
+
+// Connection URL
+var url = 'mongodb://localhost:27017/onigiri';
+var mongoDb = null;
+
+MongoClient.connect(url).then(function (_db) {
+    mongoDb = _db;
+
+    mongoDb.collection('DISH').find({}).toArray().then(function (r) {
+        return db.DISH = r;
+    });
+    mongoDb.collection('FOLLOW').find({}).toArray().then(function (r) {
+        return db.FOLLOW = r;
+    });
+    mongoDb.collection('GROUP').find({}).toArray().then(function (r) {
+        return db.GROUP = r;
+    });
+    mongoDb.collection('GROUP_DISHES').find({}).toArray().then(function (r) {
+        return db.GROUP_DISHES = r;
+    });
+    mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(function (r) {
+        return db.GROUP_MEMBER = r;
+    });
+    mongoDb.collection('GROUP_ORDER').find({}).toArray().then(function (r) {
+        return db.GROUP_ORDER = r;
+    });
+    mongoDb.collection('MERCHANT').find({}).toArray().then(function (r) {
+        return db.MERCHANT = r;
+    });
+    mongoDb.collection('ORDER').find({}).toArray().then(function (r) {
+        return db.ORDER = r;
+    });
+    mongoDb.collection('USER').find({}).toArray().then(function (r) {
+        return db.USER = r;
+    });
+
+    console.log('connect db successful');
+});
+
 db.pushToJsonDb = function (table, value) {
-    jsonDb.push('/db/' + table + '[]', value);
-    //    db[table].push(value);
+
+    //jsonDb.push('/db/' + table + '[]', value);
+    mongoDb.collection(table).insertOne(value).then(function (r) {
+        value._id = r.insertedId;
+        db[table].push(value);
+    });
 };
 
 db.delFromJsonDb = function (table, condition) {
     var index = db[table].findIndex(condition);
+    db[table].splice(index, 1);
+    mongoDb.collection(table).deleteOne({ _id: db[table][index]._id });
 
-    jsonDb.delete('/db/' + table + '[' + index + ']');
+    //jsonDb.delete(`/db/${table}[${index}]`);
 };
 
 db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     var index = db[table].findIndex(condition);
-    var oldObj = db[table].find(condition);
-    oldObj[setKey] = newValue;
+    var oldObj = db[table][index][setKey] = newValue;
+    var set = {};
+    set[setKey] = newValue;
+    mongoDb.collection(table).updateOne({ _id: db[table][index]._id }, { $set: set }).catch(function (e) {
+        return console.log(e);
+    });
 
-    jsonDb.push('/db/' + table + ('[' + index + ']'), oldObj);
+    //jsonDb.push('/db/' + table + `[${index}]`, oldObj);
     //    db[table].push(value);
 };
 
@@ -198,7 +250,7 @@ var Server = function Server() {
         var metPicUrl = req.body.metPicUrl || '';
         var metType = req.body.metType || '其他';
 
-        if (!(metName && metPhone && metMinPrice && metMinPrice >= 0)) {
+        if (!(metName && metPhone && metMinPrice !== null && metMinPrice >= 0)) {
             res.json({ success: false, msg: '資料輸入錯誤' });
             return;
         }
@@ -226,7 +278,7 @@ var Server = function Server() {
 
                 dish.dihPrice = Number(dish.dihPrice);
 
-                if (!(dish.dihName && dish.dihPrice && dish.metId)) {
+                if (!(dish.dihName && dish.dihPrice !== null && dish.metId !== null)) {
                     res.json({ success: false, msg: '資料不完整' });
                     return;
                 }
@@ -356,8 +408,9 @@ var Server = function Server() {
             return;
         }
 
-        if (!(grpHostId && dishes && metId && addr && gorTime)) {
+        if (!(grpHostId !== null && dishes && metId && addr && gorTime)) {
             res.json({ success: false, msg: '資料不完整' });
+            console.log({ grpHostId: grpHostId, dishes: dishes, metId: metId, addr: addr, gorTime: gorTime });
             return;
         }
 
@@ -373,7 +426,7 @@ var Server = function Server() {
         var grpId = req.body.grpId;
         var comments = req.body.comments;
 
-        if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
+        if (!(usrId !== null && dishes && dishes.length !== 0 && grpId)) {
             res.json({ success: false, msg: '資料不完整' });
             return;
         }
@@ -390,7 +443,7 @@ var Server = function Server() {
         req.body = JSON.parse(req.body.data);
         var grpId = Number(req.body.grpId);
         var grpStatus = Number(req.body.grpStatus);
-        if (!(grpId && grpStatus)) {
+        if (!(grpId !== null && grpStatus !== null)) {
             res.json({ success: false, msg: '資料不完整' });
             return;
         }
