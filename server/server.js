@@ -17,7 +17,8 @@ let JsonDB = require('node-json-db');
 
 //debugger;
 let jsonDb = new JsonDB("./onigiri", true, true);
-let db = jsonDb.getData('/db');
+//let db = jsonDb.getData('/db');
+let db = {};
 require('./time.js');
 
 //console.log(__dirname);
@@ -40,23 +41,55 @@ var mailTransport = nodemailer.createTransport({
     }
 });
 
+let MongoClient = require('mongodb').MongoClient;
+const assert = require('chai').assert;
+
+// Connection URL
+let url = 'mongodb://localhost:27017/onigiri';
+let mongoDb = null;
+
+MongoClient.connect(url).then(_db=> {
+    mongoDb = _db;
+
+    mongoDb.collection('DISH').find({}).toArray().then(r=>db.DISH = r);
+    mongoDb.collection('FOLLOW').find({}).toArray().then(r=>db.FOLLOW = r);
+    mongoDb.collection('GROUP').find({}).toArray().then(r=>db.GROUP = r);
+    mongoDb.collection('GROUP_DISHES').find({}).toArray().then(r=>db.GROUP_DISHES = r);
+    mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(r=>db.GROUP_MEMBER = r);
+    mongoDb.collection('GROUP_ORDER').find({}).toArray().then(r=>db.GROUP_ORDER = r);
+    mongoDb.collection('MERCHANT').find({}).toArray().then(r=>db.MERCHANT = r);
+    mongoDb.collection('ORDER').find({}).toArray().then(r=>db.ORDER = r);
+    mongoDb.collection('USER').find({}).toArray().then(r=>db.USER = r);
+
+    console.log('connect db successful');
+});
+
+
 db.pushToJsonDb = function (table, value) {
-    jsonDb.push('/db/' + table + '[]', value);
-    //    db[table].push(value);
+
+    //jsonDb.push('/db/' + table + '[]', value);
+    mongoDb.collection(table).insertOne(value).then(r=> {
+        value._id = r.insertedId;
+        db[table].push(value);
+    });
 };
 
 db.delFromJsonDb = function (table, condition) {
     let index = db[table].findIndex(condition);
+    db[table].splice(index, 1);
+    mongoDb.collection(table).deleteOne({_id: db[table]._id});
 
-    jsonDb.delete(`/db/${table}[${index}]`);
+    //jsonDb.delete(`/db/${table}[${index}]`);
 };
 
 db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     let index = db[table].findIndex(condition);
-    let oldObj = db[table].find(condition);
-    oldObj[setKey] = newValue;
+    let oldObj = db[table][index][setKey] = newValue;
+    let set = {};
+    set[setKey] = newValue;
+    mongoDb.collection(table).updateOne({_id: db[index]._id}, {$set: set}).catch(e=>console.log(e));
 
-    jsonDb.push('/db/' + table + `[${index}]`, oldObj);
+    //jsonDb.push('/db/' + table + `[${index}]`, oldObj);
     //    db[table].push(value);
 };
 
@@ -169,7 +202,7 @@ var Server = function () {
             let metType = req.body.metType || '其他';
 
 
-            if (!(metName && metPhone && metMinPrice && metMinPrice >= 0)) {
+            if (!(metName && metPhone && metMinPrice!==null && metMinPrice >= 0)) {
                 res.json({success: false, msg: '資料輸入錯誤'});
                 return;
             }
@@ -190,7 +223,7 @@ var Server = function () {
             for (let dish of req.body) {
                 dish.dihPrice = Number(dish.dihPrice);
 
-                if (!(dish.dihName && dish.dihPrice && dish.metId)) {
+                if (!(dish.dihName && dish.dihPrice!==null && dish.metId!==null)) {
                     res.json({success: false, msg: '資料不完整'});
                     return;
                 }
@@ -303,8 +336,9 @@ var Server = function () {
             }
 
 
-            if (!( grpHostId && dishes && metId && addr && gorTime)) {
+            if (!( grpHostId!==null && dishes && metId && addr && gorTime)) {
                 res.json({success: false, msg: '資料不完整'});
+                console.log({grpHostId , dishes , metId , addr , gorTime})
                 return;
 
             }
@@ -324,7 +358,7 @@ var Server = function () {
             let grpId = req.body.grpId;
             let comments = req.body.comments;
 
-            if (!(usrId && dishes && dishes.length !== 0 && grpId)) {
+            if (!(usrId!==null && dishes && dishes.length !== 0 && grpId)) {
                 res.json({success: false, msg: '資料不完整'});
                 return;
             }
@@ -344,7 +378,7 @@ var Server = function () {
             req.body = JSON.parse(req.body.data);
             let grpId = Number(req.body.grpId);
             let grpStatus = Number(req.body.grpStatus);
-            if (!(grpId && grpStatus)) {
+            if (!(grpId!==null && grpStatus!==null)) {
                 res.json({success: false, msg: '資料不完整'});
                 return;
             }
@@ -729,7 +763,7 @@ var Server = function () {
         if (usrIds.length !== 0) {
             // for (let usr of db.USER.filter(u=>_.includes(usrIds, u.usrId))) {
             for (let usr of usrIds) {
-                let usrMail = db.USER.find(u=>u.usrId===usr.usrId).usrMail;
+                let usrMail = db.USER.find(u=>u.usrId === usr.usrId).usrMail;
                 let time = new Date(gorTime);
                 self.sendMail(usrMail, '您關注的團主開團啦', `<p>您關注的團主開團啦,
                 <p>團主名稱為: ${db.USER.find(u=>u.usrId === grpHostId).usrName}</p>
