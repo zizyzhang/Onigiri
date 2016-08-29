@@ -1,60 +1,87 @@
-///**
-// * Created by User on 2016/3/24.
-// */
-//var util = require('util');
-//
-//var sqlite3 = require("sqlite3").verbose();
-//
-//var db = undefined;
-//
-//exports.connect = function (callback) {
-//    //�s����Ʈw"./db/simpleTodo.sqlite"
-//    db = new sqlite3.Database("./db/Onigiri.sqlite", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
-//        function (err) {
-//            if (err) {
-//                util.log('FAIL on connect database ' + err);
-//                callback(err);
-//            } else {
-//                callback(null);
-//                console.log('connect to onigiri.sqlite success');
-//                //callback(null);
-//                //loadMemoryCache();
-//            }
-//        });
-//};
-//
-//exports.addUser = function (id, usrName, usrPwd, usrMobi, calback) {
-//    //新增使用者
-//    var usrCreateTime;
-//
-//
-//};
-//
-//exports.userAuth = function (usrName, usrPwd, calback) {
-//    //使用者登入
-//};
-//
-//exports.allGroup = function (calback) {
-//    //取得所有團購資訊
-//
-//};
-//
-//exports.allMerchant = function (calback) {
-//    //取得所有店家資訊
-//
-//};
-//
-//exports.getMerchantById = function (id, calback) {
-//    //用ID尋找指定店家
-//
-//};
-//
-//exports.group = function (grpHostId, dishes, metId, addr, gorTime, minAmount, calback) {
-//    //創建團
-//
-//};
-//
-//exports.joinGroup = function (grpHostId, dishes, grpId, calback) {
-//    //加入團
-//
-//};
+'use strict';
+
+class Database {
+    static db = {};
+    static mongoDb = null;
+    static debug = false;
+
+    //option : {debug:如果为true,不会存储到mongodb}
+    constructor(_mongoDb, option) {
+
+        Database.mongoDb = _mongoDb;
+        Database.debug = !!option.debug;
+    }
+
+    pushToDb(table, value) {
+
+        //jsonDb.push('/db/' + table + '[]', value);
+        console.log(Database.mongoDb);
+
+        !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(r=> {
+            value._id = r.insertedId;
+            Database.db[table].push(value);
+        });
+    }
+
+    delFromJsonDb(table, condition) {
+        let index = Database.db[table].findIndex(condition);
+        Database.db[table].splice(index, 1);
+        !Database.debug && Database.mongoDb.collection(table).deleteOne({_id: Database.db[table]._id});
+
+        //jsonDb.delete(`/Database.db/${table}[${index}]`);
+    }
+
+    setValueToDb(table, condition, setKey, newValue) {
+        let index = Database.db[table].findIndex(condition);
+        let oldObj = Database.db[table][index][setKey] = newValue;
+        let set = {};
+        set[setKey] = newValue;
+        !Database.debug && Database.mongoDb.collection(table).updateOne({_id: Database.db[index]._id}, {$set: set}).catch(e=>console.log(e));
+
+        //jsonDb.push('/db/' + table + `[${index}]`, oldObj);
+        //    db[table].push(value);
+    }
+
+
+    pushToDbPromise(table, value) {
+        return new Promise((resolve, reject)=> {
+            !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(r=> {
+                value._id = r.insertedId;
+                Database.db[table].push(value);
+                resolve();
+            }).catch(e=>reject(e));
+        });
+
+    }
+
+    delFromJsonDbPromise(table, condition) {
+        return new Promise((resolve, reject)=> {
+
+            let index = Database.db[table].findIndex(condition);
+            Database.db[table].splice(index, 1);
+            !Database.debug && Database.mongoDb.collection(table).deleteOne({_id: Database.db[table]._id}).then(r=> {
+                resolve();
+            }).catch(e=>reject(e));
+
+        });
+    }
+
+    setValueToDbPromise(table, condition, setKey, newValue) {
+
+        return new Promise((resolve, reject)=> {
+
+            let index = Database.db[table].findIndex(condition);
+            let oldObj = Database.db[table][index][setKey] = newValue;
+            let set = {};
+            set[setKey] = newValue;
+            !Database.debug && Database.mongoDb.collection(table).updateOne({_id: Database.db[index]._id}, {$set: set}).catch(e=>console.log(e)).then(r=>{
+                resolve();
+            }).catch(e=>reject(e));
+        });
+    }
+
+
+}
+
+module.exports = Database;
+

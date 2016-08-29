@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "cd server && mocha ",
-    "start": "cd server/dist && node server.js & mongod --dbpath ./database",
-    "dev":"cd server/dist && node server.js & mongod --dbpath ./database & gulp",
+    "start": "cd server/dist && node server.js",
+    "db": " mongod --dbpath ./database",
+    "stop": " mongod  --dbpath ./database",
     "config": ""
   },
   "repository": {
@@ -31,7 +32,6 @@
     "framework7": "^1.4.2",
     "jquery.scrollto": "^2.1.2",
     "js-cookie": "^2.1.0",
-    "node-json-db": "^0.7.2",
     "nodemailer": "^2.5.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",

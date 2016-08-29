@@ -1,7 +1,9 @@
 'use strict';
 
 const assert = require('chai').assert;
-const server = require('./../dist/server');
+const Server = require('./../dist/server');
+let server = new Server({debug: true});
+debugger;
 let db = server.db;
 const _ = require('lodash');
 require('source-map-support').install();
@@ -9,7 +11,6 @@ require('source-map-support').install();
 describe('Server', function () {
     //console.log(__dirname(require.main.filename));
 
-    server.testMode();
 
     describe('#addUser()', function () {
         it('should insert an user : Jack,qqq,02-1231212 ', function (done) {

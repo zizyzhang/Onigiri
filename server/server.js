@@ -5,35 +5,25 @@
  */
 
 require('source-map-support').install();
+require('babel-polyfill');
 
 const isDebug = true;
 const fakeAuthCode = true;
 
 const _ = require('lodash');
-//let db = require('./mock-db');
 const path = require('path');
 
-let JsonDB = require('node-json-db');
 
-//debugger;
-let jsonDb = new JsonDB("./onigiri", true, true);
-//let db = jsonDb.getData('/db');
-let db = {};
 require('./time.js');
 
-//console.log(__dirname);
 
-//let twilio = require('twilio');
-//const twilio = require("./twilio/lib");
-//let client = new twilio.RestClient(accountSid, authToken);
-
-let client = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c1f28236cb262e6b32ba8ab");
+let twilioClient = require('twilio')("AC7161db8bee36103cc7d6c29fe33404ec", "1c76b95b0c1f28236cb262e6b32ba8ab");
 
 let authCodes = []; //{phone  : String , authCode: String , endTime : Number , triedTimes:Numbers}
 
-var nodemailer = require('nodemailer');
+let nodemailer = require('nodemailer');
 
-var mailTransport = nodemailer.createTransport({
+let mailTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
         user: 'o.grpbuy@gmail.com',
@@ -42,59 +32,36 @@ var mailTransport = nodemailer.createTransport({
 });
 
 let MongoClient = require('mongodb').MongoClient;
-const assert = require('chai').assert;
 
 // Connection URL
-let url = 'mongodb://localhost:27017/onigiri';
+let mongoUrl = 'mongodb://localhost:27017/onigiri';
 let mongoDb = null;
+let InMemoryDatabase = require('./database.js');
+let db = null;
 
-MongoClient.connect(url).then(_db=> {
-    mongoDb = _db;
+let Server = async function (option) {
 
-    mongoDb.collection('DISH').find({}).toArray().then(r=>db.DISH = r);
-    mongoDb.collection('FOLLOW').find({}).toArray().then(r=>db.FOLLOW = r);
-    mongoDb.collection('GROUP').find({}).toArray().then(r=>db.GROUP = r);
-    mongoDb.collection('GROUP_DISHES').find({}).toArray().then(r=>db.GROUP_DISHES = r);
-    mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(r=>db.GROUP_MEMBER = r);
-    mongoDb.collection('GROUP_ORDER').find({}).toArray().then(r=>db.GROUP_ORDER = r);
-    mongoDb.collection('MERCHANT').find({}).toArray().then(r=>db.MERCHANT = r);
-    mongoDb.collection('ORDER').find({}).toArray().then(r=>db.ORDER = r);
-    mongoDb.collection('USER').find({}).toArray().then(r=>db.USER = r);
+    await MongoClient.connect(mongoUrl).then(_db=> {
+        mongoDb = _db;
 
-    console.log('connect db successful');
-});
+        mongoDb.collection('DISH').find({}).toArray().then(r=>db.DISH = r);
+        mongoDb.collection('FOLLOW').find({}).toArray().then(r=>db.FOLLOW = r);
+        mongoDb.collection('GROUP').find({}).toArray().then(r=>db.GROUP = r);
+        mongoDb.collection('GROUP_DISHES').find({}).toArray().then(r=>db.GROUP_DISHES = r);
+        mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(r=>db.GROUP_MEMBER = r);
+        mongoDb.collection('GROUP_ORDER').find({}).toArray().then(r=>db.GROUP_ORDER = r);
+        mongoDb.collection('MERCHANT').find({}).toArray().then(r=>db.MERCHANT = r);
+        mongoDb.collection('ORDER').find({}).toArray().then(r=>db.ORDER = r);
+        mongoDb.collection('USER').find({}).toArray().then(r=>db.USER = r);
+        db = new InMemoryDatabase(mongoDb, option);//不能提前赋值,因为js传递引用的副本
 
-
-db.pushToJsonDb = function (table, value) {
-
-    //jsonDb.push('/db/' + table + '[]', value);
-    mongoDb.collection(table).insertOne(value).then(r=> {
-        value._id = r.insertedId;
-        db[table].push(value);
+        console.log('database connected!');
+    }).catch(e=> {
+        console.log(e);
+        progress.exit(1);
     });
-};
 
-db.delFromJsonDb = function (table, condition) {
-    let index = db[table].findIndex(condition);
-    db[table].splice(index, 1);
-    mongoDb.collection(table).deleteOne({_id: db[table]._id});
-
-    //jsonDb.delete(`/db/${table}[${index}]`);
-};
-
-db.setValueToJsonDb = function (table, condition, setKey, newValue) {
-    let index = db[table].findIndex(condition);
-    let oldObj = db[table][index][setKey] = newValue;
-    let set = {};
-    set[setKey] = newValue;
-    mongoDb.collection(table).updateOne({_id: db[index]._id}, {$set: set}).catch(e=>console.log(e));
-
-    //jsonDb.push('/db/' + table + `[${index}]`, oldObj);
-    //    db[table].push(value);
-};
-
-//CLEAN GROUP 刪掉超時的
-(()=> {
+    //清空空白团
     setInterval(()=> {
         //得到所有沒過期的團
         let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
@@ -102,41 +69,35 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
         for (let g of availableGroups) {
             let deadLine = new Date(g.grpTime);
             if (deadLine.getTime() - new Date().getTime() < 0) {
-                db.setValueToJsonDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
+                db.setValueToDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
             }
         }
     }, 5000);
 
-})();
 
-var Server = function () {
+    let express = require('express');
+    let bodyParser = require('body-parser');
 
-    this.testMode = function () {
-        if (isDebug) {
-            db.pushToJsonDb = function (table, value) {
-                db[table].push(value);
-            };
-        }
+    let app = express();
+
+
+    let self = this;
+
+    //this.db = isDebug ? db : undefined;??????????????????????????????????????????????????
+
+    this.getDb = function(){
+        return db;
     };
 
-    var express = require('express');
-    var bodyParser = require('body-parser');
-//var db = require('/batabase.js');
 
-    var app = express();
-
-
-    var self = this;
-
-    this.db = isDebug ? db : undefined;
-
-
-    var allowCrossDomain = function (req, res, next) {
+    let allowCrossDomain = function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
         res.header('Access-Control-Allow-Headers', 'Content-Type');
         next();
     };
+
+
 
 
     app.use(allowCrossDomain);//CORS middleware
@@ -202,7 +163,7 @@ var Server = function () {
             let metType = req.body.metType || '其他';
 
 
-            if (!(metName && metPhone && metMinPrice!==null && metMinPrice >= 0)) {
+            if (!(metName && metPhone && metMinPrice !== null && metMinPrice >= 0)) {
                 res.json({success: false, msg: '資料輸入錯誤'});
                 return;
             }
@@ -223,7 +184,7 @@ var Server = function () {
             for (let dish of req.body) {
                 dish.dihPrice = Number(dish.dihPrice);
 
-                if (!(dish.dihName && dish.dihPrice!==null && dish.metId!==null)) {
+                if (!(dish.dihName && dish.dihPrice !== null && dish.metId !== null)) {
                     res.json({success: false, msg: '資料不完整'});
                     return;
                 }
@@ -302,7 +263,7 @@ var Server = function () {
 
         //例外判断, 只有待审查的订单可以被取消
         if (ordStatus === 0) {
-            db.setValueToJsonDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
+            db.setValueToDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
             res.json({success: true});
         } else {
             if (ordStatus === -2) {
@@ -336,9 +297,9 @@ var Server = function () {
             }
 
 
-            if (!( grpHostId!==null && dishes && metId && addr && gorTime)) {
+            if (!( grpHostId !== null && dishes && metId && addr && gorTime)) {
                 res.json({success: false, msg: '資料不完整'});
-                console.log({grpHostId , dishes , metId , addr , gorTime})
+                console.log({grpHostId, dishes, metId, addr, gorTime})
                 return;
 
             }
@@ -358,7 +319,7 @@ var Server = function () {
             let grpId = req.body.grpId;
             let comments = req.body.comments;
 
-            if (!(usrId!==null && dishes && dishes.length !== 0 && grpId)) {
+            if (!(usrId !== null && dishes && dishes.length !== 0 && grpId)) {
                 res.json({success: false, msg: '資料不完整'});
                 return;
             }
@@ -378,7 +339,7 @@ var Server = function () {
             req.body = JSON.parse(req.body.data);
             let grpId = Number(req.body.grpId);
             let grpStatus = Number(req.body.grpStatus);
-            if (!(grpId!==null && grpStatus!==null)) {
+            if (!(grpId !== null && grpStatus !== null)) {
                 res.json({success: false, msg: '資料不完整'});
                 return;
             }
@@ -410,7 +371,7 @@ var Server = function () {
 
 
     app.get('/groupedOrdersByUserId/:id', function (req, res) {
-            var usrId = Number(req.params.id);
+            let usrId = Number(req.params.id);
             self.getGroupedOrdersByUserId(usrId, result=> {
                 //console.log(result);
                 res.json(result);
@@ -419,7 +380,7 @@ var Server = function () {
     );
 
     app.get('/groupedOrdersAndSumsByHostId/:id', function (req, res) {
-            var usrId = Number(req.params.id);
+            let usrId = Number(req.params.id);
 
             self.getGroupedOrdersAndSumsByHostIdPromise(usrId).then(result=>res.json(result));
         }
@@ -437,12 +398,12 @@ var Server = function () {
             }
 
             let fowId = db.FOLLOW.length === 0 ? 0 : _.maxBy(db.FOLLOW, "fowId").fowId + 1;
-            db.pushToJsonDb('FOLLOW', {
+            db.pushToDbPromise('FOLLOW', {
                 fowId,
                 usrId: usrId,
                 hostId: hostId
-            });
-            res.json({success: true});
+            }).then(()=> res.json({success: true})
+            ).catch(e=> res.json({err: e.toString()}));
 
         } catch (e) {
             console.log(e.toString());
@@ -530,12 +491,12 @@ var Server = function () {
             'app listening on port 8080!');
     });
 
-    this.addDishPromise = function (dishes) {
+    this.addDishPromise = function  (dishes) {
 
         return new Promise((resolve, reject)=> {
             for (let dish of dishes) {
                 dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
-                db.pushToJsonDb('DISH', dish);
+                db.pushToDb('DISH', dish);
             }
             resolve(dishes);
         });
@@ -543,9 +504,9 @@ var Server = function () {
 
     this.getTwilioCode = function (userMobi) {
         return new Promise(function (resolve, reject) {
-            var min = 100;
-            var max = 999;
-            var randomAuth = Math.floor(Math.random() * (max - min + 1) + min) + '';
+            let min = 100;
+            let max = 999;
+            let randomAuth = Math.floor(Math.random() * (max - min + 1) + min) + '';
             if (fakeAuthCode) {
                 randomAuth = '123';
                 resolve('123');
@@ -565,7 +526,7 @@ var Server = function () {
                 return;
             }
 
-            client.messages.create({
+            twilioClient.messages.create({
                 body: '您的販團驗證碼是' + randomAuth,
                 to: '+886' + userMobi,  // Text this number
                 from: '+13342030485' // From a valid Twilio number
@@ -597,7 +558,7 @@ var Server = function () {
     };
 
     this.addUser = function (usrName, usrPwd, usrMail, usrMobi, callback) {
-        var usrId = 0;
+        let usrId = 0;
 
         for (let user of db.USER) {
             if (user.usrId > usrId) {
@@ -607,8 +568,8 @@ var Server = function () {
         }
 
 
-        var usrCreateTime = new Date().toString();
-        var newUser = {
+        let usrCreateTime = new Date().toString();
+        let newUser = {
             usrId: usrId,
             usrName: usrName,
             usrPwd: usrPwd,
@@ -619,7 +580,7 @@ var Server = function () {
 
 
         if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
-            db.pushToJsonDb('USER', newUser);
+            db.pushToDb('USER', newUser);
             callback({success: true});
         } else {
             callback({success: false});
@@ -639,7 +600,7 @@ var Server = function () {
         return new Promise((resolve, reject)=> {
             merchant.metId = _.maxBy(db.MERCHANT, 'metId').metId + 1;
 
-            db.pushToJsonDb('MERCHANT', merchant);
+            db.pushToDb('MERCHANT', merchant);
 
             resolve(merchant);
 
@@ -647,8 +608,8 @@ var Server = function () {
     };
 
     this.userAuth = function (usrName, usrPwd, callback) {
-        var isSuccess = false;
-        for (var index in db.USER) {
+        let isSuccess = false;
+        for (let index in db.USER) {
             if (db.USER[index].usrName == usrName && db.USER[index].usrPwd == usrPwd) {
                 callback({
                     success: 1,
@@ -714,7 +675,7 @@ var Server = function () {
 
 
     this.allMerchant = function (callback) {
-        var result = [];
+        let result = [];
         for (let _merchant of db.MERCHANT) {
             let merchant = this.createClassMerchantById(_merchant.metId);
             result.push(
@@ -733,7 +694,7 @@ var Server = function () {
     this.postGroup = function (grpHostId, dishes, metId, addr, gorTime, grpAmountLimit, callback) {
         let lastGroup = _.maxBy(db.GROUP, 'grpId');
         let grpId = lastGroup ? lastGroup.grpId + 1 : 1;
-        db.pushToJsonDb('GROUP', {
+        db.pushToDb('GROUP', {
             grpId,
             grpHostId: grpHostId,
             metId: metId,
@@ -753,7 +714,7 @@ var Server = function () {
                 dihId: Number(dihId),
                 grpId
             };
-            db.pushToJsonDb("GROUP_DISHES", gdh);
+            db.pushToDb("GROUP_DISHES", gdh);
         }
 
 
@@ -812,9 +773,9 @@ var Server = function () {
                 let g = db.GROUP.find(g=>g.grpId === grpId);
                 let metId = g.metId;
                 let metMinPrice = db.MERCHANT.find(m=>m.metId === metId).metMinPrice;
-                db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amountThisTime + grpAmount);
+                db.setValueToDb("GROUP", row=>row.grpId === grpId, "grpAmount", amountThisTime + grpAmount);
                 if (amountThisTime + grpAmount >= metMinPrice) {
-                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                    db.setValueToDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
                 }
 
             }
@@ -823,7 +784,7 @@ var Server = function () {
             let addOrd = function (usrName, dihId, num, ordStatus) {
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
 
-                db.pushToJsonDb("ORDER", {
+                db.pushToDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,
@@ -882,13 +843,13 @@ var Server = function () {
                         if (sameProduct.ordStatus === 0) {
                             // ordStatus==0 (待審查)-->(相同商品)直接修改
                             console.log('ordStatus==0 (待審查)-->(相同商品)直接修改');
-                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum',
+                            db.setValueToDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordNum',
                                 num + db.ORDER.find(ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId).ordNum);
                         } else if (sameProduct.ordStatus === 1) {
                             //  ordStatus==1 (已接受)-->(相同商品)需再次確認
                             console.log('ordStatus==1 (已接受)-->(相同商品)需再次確認');
-                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'updateOrdNum', num);
-                            db.setValueToJsonDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordStatus', 3);
+                            db.setValueToDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'updateOrdNum', num);
+                            db.setValueToDb('ORDER', ord => ord.dihId === dihId && ord.usrId === usrId && ord.grpId === grpId, 'ordStatus', 3);
                             //ordStatus=3 加購中
                         }
 
@@ -906,7 +867,7 @@ var Server = function () {
 
             if (comments) {
                 let lastGroupMember = _.maxBy(db.GROUP_MEMBER, gmr=>gmr.gmrId);
-                db.pushToJsonDb("GROUP_MEMBER", {
+                db.pushToDb("GROUP_MEMBER", {
                     gmrId: lastGroupMember ? lastGroupMember.gmrId + 1 : 1,
                     usrId: usrId,
                     usrName: usrName,  //07.03 add
@@ -936,10 +897,10 @@ var Server = function () {
                         let total = price * num;
                         amount += total;
                     }
-                    db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpAmount", amount);
+                    db.setValueToDb("GROUP", row=>row.grpId === grpId, "grpAmount", amount);
 
                     if (amount >= metMinPrice) {
-                        db.setValueToJsonDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
+                        db.setValueToDb("GROUP", row=>row.grpId === grpId, "grpStatus", 1);
                     }
                 }
                 resolve({success: 1});
@@ -1339,7 +1300,7 @@ var Server = function () {
             let group = db.GROUP.find(s=>grpId === s.grpId);
 
             if (group.grpStatus >= 0 && group.grpStatus <= 2) {
-                db.setValueToJsonDb('GROUP', row=>row.grpId === group.grpId, 'grpStatus', grpStatus);
+                db.setValueToDb('GROUP', row=>row.grpId === group.grpId, 'grpStatus', grpStatus);
                 //group.grpStatus = grpStatus;
 
                 resolve({success: 1});
@@ -1385,17 +1346,17 @@ var Server = function () {
             let order = db.ORDER.find(s=>ordId === s.ordId);
 
             if (order.ordStatus === 3 && ordStatus === -1) {
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
+                db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+                db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
                 return;
             }
 
             if (order.ordStatus != -1) {
-                db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
+                db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', ordStatus);
                 if (order.updateOrdNum && order.updateOrdNum !== 0) {
                     // console.log('updateOrdStatusPromise====order.updateOrdNum', order.updateOrdNum);
-                    db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'ordNum', order.ordNum + order.updateOrdNum);
-                    db.setValueToJsonDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
+                    db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'ordNum', order.ordNum + order.updateOrdNum);
+                    db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
                 }
                 resolve({success: 1});
             } else {
@@ -1573,7 +1534,7 @@ var Server = function () {
             req.body = JSON.parse(req.body.data);
             let rows = req.body.rows;
             for (let row of rows) {
-                db.pushToJsonDb(req.params.tableName, row);
+                db.pushToDb(req.params.tableName, row);
             }
             res.json({success: true});
         } catch (e) {
@@ -1588,4 +1549,4 @@ var Server = function () {
 }
 
 
-module.exports = new Server();
+module.exports = Server;
