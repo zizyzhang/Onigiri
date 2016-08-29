@@ -96,7 +96,7 @@ db.pushToJsonDb = function (table, value) {
 db.delFromJsonDb = function (table, condition) {
     var index = db[table].findIndex(condition);
     db[table].splice(index, 1);
-    mongoDb.collection(table).deleteOne({ _id: db[table][index]._id });
+    mongoDb.collection(table).deleteOne({ _id: db[table]._id });
 
     //jsonDb.delete(`/db/${table}[${index}]`);
 };
@@ -106,7 +106,7 @@ db.setValueToJsonDb = function (table, condition, setKey, newValue) {
     var oldObj = db[table][index][setKey] = newValue;
     var set = {};
     set[setKey] = newValue;
-    mongoDb.collection(table).updateOne({ _id: db[table][index]._id }, { $set: set }).catch(function (e) {
+    mongoDb.collection(table).updateOne({ _id: db[index]._id }, { $set: set }).catch(function (e) {
         return console.log(e);
     });
 
