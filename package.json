@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "cd server && mocha ",
-    "start": "cd server/dist && node server.js"
+    "start": "cd server/dist && node server.js & mongod --dbpath ./database",
+    "dev":"cd server/dist && node server.js & mongod --dbpath ./database & gulp",
+    "config": ""
   },
   "repository": {
     "type": "git",
