@@ -40,20 +40,12 @@ let InMemoryDatabase = require('./database.js');
 let db = null;
 
 let Server = async function (option) {
+    console.log('database connecting!');
 
     await MongoClient.connect(mongoUrl).then(_db=> {
         mongoDb = _db;
 
-        mongoDb.collection('DISH').find({}).toArray().then(r=>db.DISH = r);
-        mongoDb.collection('FOLLOW').find({}).toArray().then(r=>db.FOLLOW = r);
-        mongoDb.collection('GROUP').find({}).toArray().then(r=>db.GROUP = r);
-        mongoDb.collection('GROUP_DISHES').find({}).toArray().then(r=>db.GROUP_DISHES = r);
-        mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(r=>db.GROUP_MEMBER = r);
-        mongoDb.collection('GROUP_ORDER').find({}).toArray().then(r=>db.GROUP_ORDER = r);
-        mongoDb.collection('MERCHANT').find({}).toArray().then(r=>db.MERCHANT = r);
-        mongoDb.collection('ORDER').find({}).toArray().then(r=>db.ORDER = r);
-        mongoDb.collection('USER').find({}).toArray().then(r=>db.USER = r);
-        db = new InMemoryDatabase(mongoDb, option);//不能提前赋值,因为js传递引用的副本
+        db = new InMemoryDatabase(mongoDb, option||{});//不能提前赋值,因为js传递引用的副本
 
         console.log('database connected!');
     }).catch(e=> {
@@ -1546,7 +1538,6 @@ let Server = async function (option) {
     });
 
 
-}
-
-
+};
+let server = new Server();
 module.exports = Server;

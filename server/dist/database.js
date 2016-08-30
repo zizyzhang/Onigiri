@@ -13,6 +13,34 @@ var Database = function () {
 
         Database.mongoDb = _mongoDb;
         Database.debug = !!option.debug;
+
+        Database.mongoDb.collection('DISH').find({}).toArray().then(function (r) {
+            return Database.db.DISH = r;
+        });
+        Database.mongoDb.collection('FOLLOW').find({}).toArray().then(function (r) {
+            return Database.db.FOLLOW = r;
+        });
+        Database.mongoDb.collection('GROUP').find({}).toArray().then(function (r) {
+            return Database.db.GROUP = r;
+        });
+        Database.mongoDb.collection('GROUP_DISHES').find({}).toArray().then(function (r) {
+            return Database.db.GROUP_DISHES = r;
+        });
+        Database.mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(function (r) {
+            return Database.db.GROUP_MEMBER = r;
+        });
+        Database.mongoDb.collection('GROUP_ORDER').find({}).toArray().then(function (r) {
+            return Database.db.GROUP_ORDER = r;
+        });
+        Database.mongoDb.collection('MERCHANT').find({}).toArray().then(function (r) {
+            return Database.db.MERCHANT = r;
+        });
+        Database.mongoDb.collection('ORDER').find({}).toArray().then(function (r) {
+            return Database.db.ORDER = r;
+        });
+        Database.mongoDb.collection('USER').find({}).toArray().then(function (r) {
+            return Database.db.USER = r;
+        });
     }
 
     _createClass(Database, [{
@@ -39,6 +67,7 @@ var Database = function () {
     }, {
         key: 'setValueToDb',
         value: function setValueToDb(table, condition, setKey, newValue) {
+            console.log(Database.db[table]);
             var index = Database.db[table].findIndex(condition);
             var oldObj = Database.db[table][index][setKey] = newValue;
             var set = {};

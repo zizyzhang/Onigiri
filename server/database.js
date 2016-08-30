@@ -10,6 +10,16 @@ class Database {
 
         Database.mongoDb = _mongoDb;
         Database.debug = !!option.debug;
+
+        Database.mongoDb.collection('DISH').find({}).toArray().then(r=>Database.db.DISH = r);
+        Database.mongoDb.collection('FOLLOW').find({}).toArray().then(r=>Database.db.FOLLOW = r);
+        Database.mongoDb.collection('GROUP').find({}).toArray().then(r=>Database.db.GROUP = r);
+        Database.mongoDb.collection('GROUP_DISHES').find({}).toArray().then(r=>Database.db.GROUP_DISHES = r);
+        Database.mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(r=>Database.db.GROUP_MEMBER = r);
+        Database.mongoDb.collection('GROUP_ORDER').find({}).toArray().then(r=>Database.db.GROUP_ORDER = r);
+        Database.mongoDb.collection('MERCHANT').find({}).toArray().then(r=>Database.db.MERCHANT = r);
+        Database.mongoDb.collection('ORDER').find({}).toArray().then(r=>Database.db.ORDER = r);
+        Database.mongoDb.collection('USER').find({}).toArray().then(r=>Database.db.USER = r);
     }
 
     pushToDb(table, value) {
@@ -32,6 +42,7 @@ class Database {
     }
 
     setValueToDb(table, condition, setKey, newValue) {
+        console.log(Database.db[table]);
         let index = Database.db[table].findIndex(condition);
         let oldObj = Database.db[table][index][setKey] = newValue;
         let set = {};

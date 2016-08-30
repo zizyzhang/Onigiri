@@ -48,38 +48,13 @@ var Server = function () {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        _context.next = 2;
+                        console.log('database connecting!');
+
+                        _context.next = 3;
                         return MongoClient.connect(mongoUrl).then(function (_db) {
                             mongoDb = _db;
 
-                            mongoDb.collection('DISH').find({}).toArray().then(function (r) {
-                                return db.DISH = r;
-                            });
-                            mongoDb.collection('FOLLOW').find({}).toArray().then(function (r) {
-                                return db.FOLLOW = r;
-                            });
-                            mongoDb.collection('GROUP').find({}).toArray().then(function (r) {
-                                return db.GROUP = r;
-                            });
-                            mongoDb.collection('GROUP_DISHES').find({}).toArray().then(function (r) {
-                                return db.GROUP_DISHES = r;
-                            });
-                            mongoDb.collection('GROUP_MEMBER').find({}).toArray().then(function (r) {
-                                return db.GROUP_MEMBER = r;
-                            });
-                            mongoDb.collection('GROUP_ORDER').find({}).toArray().then(function (r) {
-                                return db.GROUP_ORDER = r;
-                            });
-                            mongoDb.collection('MERCHANT').find({}).toArray().then(function (r) {
-                                return db.MERCHANT = r;
-                            });
-                            mongoDb.collection('ORDER').find({}).toArray().then(function (r) {
-                                return db.ORDER = r;
-                            });
-                            mongoDb.collection('USER').find({}).toArray().then(function (r) {
-                                return db.USER = r;
-                            });
-                            db = new InMemoryDatabase(mongoDb, option); //不能提前赋值,因为js传递引用的副本
+                            db = new InMemoryDatabase(mongoDb, option || {}); //不能提前赋值,因为js传递引用的副本
 
                             console.log('database connected!');
                         }).catch(function (e) {
@@ -87,7 +62,7 @@ var Server = function () {
                             progress.exit(1);
                         });
 
-                    case 2:
+                    case 3:
 
                         //清空空白团
                         setInterval(function () {
@@ -2204,7 +2179,7 @@ var Server = function () {
                             }
                         });
 
-                    case 70:
+                    case 71:
                     case 'end':
                         return _context.stop();
                 }
@@ -2216,6 +2191,6 @@ var Server = function () {
         return ref.apply(this, arguments);
     };
 }();
-
+var server = new Server();
 module.exports = Server;
 //# sourceMappingURL=server.js.map
