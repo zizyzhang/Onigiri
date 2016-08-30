@@ -36,35 +36,51 @@ let MongoClient = require('mongodb').MongoClient;
 // Connection URL
 let mongoUrl = 'mongodb://localhost:27017/onigiri';
 let mongoDb = null;
-let InMemoryDatabase = require('./database.js');
+let Database = require('./database.js');
 let db = null;
 
-let Server = async function (option) {
-    console.log('database connecting!');
 
-    await MongoClient.connect(mongoUrl).then(_db=> {
-        mongoDb = _db;
+let connectMongo = function (){
 
-        db = new InMemoryDatabase(mongoDb, option||{});//不能提前赋值,因为js传递引用的副本
-
-        console.log('database connected!');
-    }).catch(e=> {
-        console.log(e);
-        progress.exit(1);
-    });
-
-    //清空空白团
-    setInterval(()=> {
-        //得到所有沒過期的團
-        let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
-
-        for (let g of availableGroups) {
-            let deadLine = new Date(g.grpTime);
-            if (deadLine.getTime() - new Date().getTime() < 0) {
-                db.setValueToDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
-            }
+    return new Promise( resolve=>{
+        if (mongoDb) {
+            resolve(mongoDb) ;
+            return;
         }
-    }, 5000);
+        MongoClient.connect(mongoUrl).then(async _db=> {
+            mongoDb = _db;
+
+            let myDb=  new Database(mongoDb);//不能提前赋值,因为js传递引用的副本
+            console.log('database connecting!');
+
+            await myDb.toMemory().then(r=>db=r).catch(e=>console.log(e.stack));
+
+             console.log('database connected!');
+
+            //清空空白团
+            setInterval(()=> {
+                //得到所有沒過期的團
+                let availableGroups = _.filter(db.GROUP, grp=>grp.grpStatus === 0 || grp.grpStatus === 1);
+
+                for (let g of availableGroups) {
+                    let deadLine = new Date(g.grpTime);
+                    if (deadLine.getTime() - new Date().getTime() < 0) {
+                        db.setValueToDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
+                    }
+                }
+            }, 5000);
+
+            resolve(mongoDb);
+
+        }).catch(e=> {
+            console.log(e);
+            progress.exit(1);
+        })
+    });
+};
+
+let Server =   function () {
+
 
 
     let express = require('express');
@@ -77,10 +93,6 @@ let Server = async function (option) {
 
     //this.db = isDebug ? db : undefined;??????????????????????????????????????????????????
 
-    this.getDb = function(){
-        return db;
-    };
-
 
     let allowCrossDomain = function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -88,8 +100,6 @@ let Server = async function (option) {
         res.header('Access-Control-Allow-Headers', 'Content-Type');
         next();
     };
-
-
 
 
     app.use(allowCrossDomain);//CORS middleware
@@ -483,7 +493,7 @@ let Server = async function (option) {
             'app listening on port 8080!');
     });
 
-    this.addDishPromise = function  (dishes) {
+    this.addDishPromise = function (dishes) {
 
         return new Promise((resolve, reject)=> {
             for (let dish of dishes) {
@@ -1539,5 +1549,10 @@ let Server = async function (option) {
 
 
 };
-let server = new Server();
-module.exports = Server;
+
+module.exports = {Server,connectMongo};
+
+(async  function(){
+    await connectMongo();
+    new Server();
+})();
