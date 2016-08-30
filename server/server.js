@@ -36,24 +36,26 @@ let MongoClient = require('mongodb').MongoClient;
 // Connection URL
 let mongoUrl = 'mongodb://localhost:27017/onigiri';
 let mongoDb = null;
-let InMemoryDatabase = require('./database.js');
+let Database = require('./database.js');
 let db = null;
 
 
 let connectMongo = function (){
-    console.log('database connecting!');
 
-    return new Promise(resolve=>{
+    return new Promise( resolve=>{
         if (mongoDb) {
             resolve(mongoDb) ;
             return;
         }
-        MongoClient.connect(mongoUrl).then(_db=> {
+        MongoClient.connect(mongoUrl).then(async _db=> {
             mongoDb = _db;
 
-            db = new InMemoryDatabase(mongoDb);//不能提前赋值,因为js传递引用的副本
-            resolve(mongoDb);
-            console.log('database connected!');
+            let myDb=  new Database(mongoDb);//不能提前赋值,因为js传递引用的副本
+            console.log('database connecting!');
+
+            await myDb.toMemory().then(r=>db=r).catch(e=>console.log(e.stack));
+
+             console.log('database connected!');
 
             //清空空白团
             setInterval(()=> {
@@ -67,6 +69,8 @@ let connectMongo = function (){
                     }
                 }
             }, 5000);
+
+            resolve(mongoDb);
 
         }).catch(e=> {
             console.log(e);

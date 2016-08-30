@@ -38,66 +38,97 @@ var MongoClient = require('mongodb').MongoClient;
 // Connection URL
 var mongoUrl = 'mongodb://localhost:27017/onigiri';
 var mongoDb = null;
-var InMemoryDatabase = require('./database.js');
+var Database = require('./database.js');
 var db = null;
 
 var connectMongo = function connectMongo() {
-    console.log('database connecting!');
+    var _this = this;
 
     return new Promise(function (resolve) {
         if (mongoDb) {
             resolve(mongoDb);
             return;
         }
-        MongoClient.connect(mongoUrl).then(function (_db) {
-            mongoDb = _db;
+        MongoClient.connect(mongoUrl).then(function () {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
+                var myDb;
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                mongoDb = _db;
 
-            db = new InMemoryDatabase(mongoDb); //不能提前赋值,因为js传递引用的副本
-            resolve(mongoDb);
-            console.log('database connected!');
+                                myDb = new Database(mongoDb); //不能提前赋值,因为js传递引用的副本
 
-            //清空空白团
-            setInterval(function () {
-                //得到所有沒過期的團
-                var availableGroups = _.filter(db.GROUP, function (grp) {
-                    return grp.grpStatus === 0 || grp.grpStatus === 1;
-                });
+                                console.log('database connecting!');
 
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                                _context.next = 5;
+                                return myDb.toMemory().then(function (r) {
+                                    return db = r;
+                                }).catch(function (e) {
+                                    return console.log(e.stack);
+                                });
 
-                try {
-                    var _loop = function _loop() {
-                        var g = _step.value;
+                            case 5:
 
-                        var deadLine = new Date(g.grpTime);
-                        if (deadLine.getTime() - new Date().getTime() < 0) {
-                            db.setValueToDb('GROUP', function (row) {
-                                return row.grpId === g.grpId;
-                            }, 'grpStatus', -1);
+                                console.log('database connected!');
+
+                                //清空空白团
+                                setInterval(function () {
+                                    //得到所有沒過期的團
+                                    var availableGroups = _.filter(db.GROUP, function (grp) {
+                                        return grp.grpStatus === 0 || grp.grpStatus === 1;
+                                    });
+
+                                    var _iteratorNormalCompletion = true;
+                                    var _didIteratorError = false;
+                                    var _iteratorError = undefined;
+
+                                    try {
+                                        var _loop = function _loop() {
+                                            var g = _step.value;
+
+                                            var deadLine = new Date(g.grpTime);
+                                            if (deadLine.getTime() - new Date().getTime() < 0) {
+                                                db.setValueToDb('GROUP', function (row) {
+                                                    return row.grpId === g.grpId;
+                                                }, 'grpStatus', -1);
+                                            }
+                                        };
+
+                                        for (var _iterator = availableGroups[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                            _loop();
+                                        }
+                                    } catch (err) {
+                                        _didIteratorError = true;
+                                        _iteratorError = err;
+                                    } finally {
+                                        try {
+                                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                                _iterator.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError) {
+                                                throw _iteratorError;
+                                            }
+                                        }
+                                    }
+                                }, 5000);
+
+                                resolve(mongoDb);
+
+                            case 8:
+                            case 'end':
+                                return _context.stop();
                         }
-                    };
-
-                    for (var _iterator = availableGroups[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        _loop();
                     }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            }, 5000);
-        }).catch(function (e) {
+                }, _callee, _this);
+            }));
+
+            return function (_x) {
+                return ref.apply(this, arguments);
+            };
+        }()).catch(function (e) {
             console.log(e);
             progress.exit(1);
         });
@@ -1256,7 +1287,7 @@ var Server = function Server() {
     };
 
     this.convertOrdersToGroupedOrders = function (orders) {
-        var _this = this;
+        var _this2 = this;
 
         var groupedOrders = [];
 
@@ -1280,7 +1311,7 @@ var Server = function Server() {
                         tOrder.orders.push(order);
                     }
                 } else {
-                    var group = _this.createClassGroupByGroupId(order.grpId);
+                    var group = _this2.createClassGroupByGroupId(order.grpId);
 
                     if (order.ordStatus === 0) {
                         group.ordNotConfirm = true;
@@ -1318,7 +1349,7 @@ var Server = function Server() {
     };
 
     this.convertOrdersToGroupedOrdersUsr = function (orders) {
-        var _this2 = this;
+        var _this3 = this;
 
         var groupedOrders = [];
         var _iteratorNormalCompletion14 = true;
@@ -1336,7 +1367,7 @@ var Server = function Server() {
                 if (tOrder) {
                     tOrder.orders.push(order);
                 } else {
-                    var group = _this2.createClassGroupByGroupId(order.grpId);
+                    var group = _this3.createClassGroupByGroupId(order.grpId);
 
                     //顯示給使用者的狀態
                     var status = '';
@@ -2180,12 +2211,12 @@ var Server = function Server() {
 
 module.exports = { Server: Server, connectMongo: connectMongo };
 
-_asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+_asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
                 case 0:
-                    _context.next = 2;
+                    _context2.next = 2;
                     return connectMongo();
 
                 case 2:
@@ -2193,9 +2224,9 @@ _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
 
                 case 3:
                 case 'end':
-                    return _context.stop();
+                    return _context2.stop();
             }
         }
-    }, _callee, this);
+    }, _callee2, this);
 }))();
 //# sourceMappingURL=server.js.map
