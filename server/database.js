@@ -6,10 +6,9 @@ class Database {
     static debug = false;
 
     //option : {debug:如果为true,不会存储到mongodb}
-    constructor(_mongoDb, option) {
+    constructor (_mongoDb) {
 
         Database.mongoDb = _mongoDb;
-        Database.debug = !!option.debug;
 
         Database.mongoDb.collection('DISH').find({}).toArray().then(r=>Database.db.DISH = r);
         Database.mongoDb.collection('FOLLOW').find({}).toArray().then(r=>Database.db.FOLLOW = r);
@@ -90,6 +89,10 @@ class Database {
             }).catch(e=>reject(e));
         });
     }
+
+    debug(isDebug){
+        debug = isDebug;
+     }
 
 
 }

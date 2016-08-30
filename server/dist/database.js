@@ -8,11 +8,10 @@ var Database = function () {
 
     //option : {debug:如果为true,不会存储到mongodb}
 
-    function Database(_mongoDb, option) {
+    function Database(_mongoDb) {
         _classCallCheck(this, Database);
 
         Database.mongoDb = _mongoDb;
-        Database.debug = !!option.debug;
 
         Database.mongoDb.collection('DISH').find({}).toArray().then(function (r) {
             return Database.db.DISH = r;
@@ -125,6 +124,21 @@ var Database = function () {
                 });
             });
         }
+    }, {
+        key: 'debug',
+        value: function (_debug) {
+            function debug(_x) {
+                return _debug.apply(this, arguments);
+            }
+
+            debug.toString = function () {
+                return _debug.toString();
+            };
+
+            return debug;
+        }(function (isDebug) {
+            debug = isDebug;
+        })
     }]);
 
     return Database;
