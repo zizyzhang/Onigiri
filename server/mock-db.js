@@ -2,9 +2,8 @@
  * Created by Zizy on 3/26/16.
  */
 
-var MockDb = function () {
-
-    this.USER = [
+var MockDb = function (db) {
+    db.USER = [
         {
             usrId: 1,
             usrName: 'firstUser',
@@ -28,29 +27,32 @@ var MockDb = function () {
 
     ];
 
-    this.ORDER = [
+    db.ORDER = [
         {
             ordId: 1,
             grpId: 1,
             usrId: 1,
             dihId: 1,
-            ordNum: 1
+            ordNum: 1,
+            ordStatus: 1
         },{
             ordId: 2,
             grpId: 1,
             usrId: 2,
             dihId: 1,
-            ordNum: 1
+            ordNum: 1,
+            ordStatus: 1
         },{
             ordId: 3,
             grpId: 1,
             usrId: 1,
             dihId: 2,
-            ordNum: 1
+            ordNum: 1,
+            ordStatus: 1
         }
     ];
 
-    this.MERCHANT = [
+    db.MERCHANT = [
         {
             metId: 1,
             metName: '韩国纸上烤肉',
@@ -62,7 +64,7 @@ var MockDb = function () {
         }
     ];
 
-    this.DISH = [
+    db.DISH = [
         {
             dihId: 1,//自動編號ID
             dihName: '炸鸡腿',//食物名字
@@ -85,7 +87,7 @@ var MockDb = function () {
         }
     ];
 
-    this.GROUP = [
+    db.GROUP = [
         {
             grpId: 1,//团的Id
             grpHostId: 1,//團長
@@ -94,7 +96,8 @@ var MockDb = function () {
             grpAddr: 'road',//取餐地点
             grpTime: "13:33",//取餐时间
             //minAmount: '9999'
-            status : 0
+            grpStatus: 0,
+
         },
         {
             grpId: 2,//团的Id
@@ -104,12 +107,13 @@ var MockDb = function () {
             grpAddr: 'road',//取餐地点
             grpTime: "13:33",//取餐时间
             //minAmount: '9999'
-            status : 1
+            grpStatus: 0,
+
         }
 
     ];
 
-    this.GROUP_MEMBER = [
+    db.GROUP_MEMBER = [
         {
             gmrId: 1,//自動編號ID
             grpId: 1,//团号
@@ -122,7 +126,7 @@ var MockDb = function () {
         }
     ];
 
-    this.GROUP_ORDER = [//团购中某个餐点的份数
+    db.GROUP_ORDER = [//团购中某个餐点的份数
         {
             gorId: 0,
             grpId: 1,//团号
@@ -139,7 +143,7 @@ var MockDb = function () {
 
     ];
 
-    this.GROUP_DISHES = [//允许选择的餐点
+    db.GROUP_DISHES = [//允许选择的餐点
         {
 
             gdeId: 1,//自動編號ID
@@ -155,5 +159,5 @@ var MockDb = function () {
 
 };
 
-module.exports = new MockDb();
+module.exports =  MockDb;
 

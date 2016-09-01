@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cd server && mocha ",
-    "start": "cd server/dist && node server.js",
+    "start": "cd server/dist && node main.js",
     "db": " mongod --dbpath ./database",
     "stop": " mongod  --dbpath ./database",
     "config": ""
