@@ -4,8 +4,7 @@
  * Created by User on 2016/3/24.
  */
 
-require('source-map-support').install();
-require('babel-polyfill');
+
 
 const isDebug = true;
 const fakeAuthCode = true;
@@ -35,27 +34,29 @@ let MongoClient = require('mongodb').MongoClient;
 
 // Connection URL
 let mongoUrl = 'mongodb://localhost:27017/onigiri';
-let mongoDb = null;
+let mongoDb = null;//暂时没用
 let Database = require('./database.js');
-let db = null;
 
 
-let connectMongo = function (){
+let connectMongo = function (option) {
+    let db = null;
 
-    return new Promise( resolve=>{
-        if (mongoDb) {
-            resolve(mongoDb) ;
+    return new Promise(resolve=> {
+        if (db) {
+            resolve(db);
             return;
         }
+
+
         MongoClient.connect(mongoUrl).then(async _db=> {
             mongoDb = _db;
 
-            let myDb=  new Database(mongoDb);//不能提前赋值,因为js传递引用的副本
+            let myDb = new Database(mongoDb, option);//不能提前赋值,因为js传递引用的副本
             console.log('database connecting!');
 
-            await myDb.toMemory().then(r=>db=r).catch(e=>console.log(e.stack));
+            await myDb.toMemory().then(r=>db = r).catch(e=>console.log(e.stack));
 
-             console.log('database connected!');
+            console.log('database connected!');
 
             //清空空白团
             setInterval(()=> {
@@ -70,7 +71,7 @@ let connectMongo = function (){
                 }
             }, 5000);
 
-            resolve(mongoDb);
+            resolve(db);
 
         }).catch(e=> {
             console.log(e);
@@ -79,8 +80,7 @@ let connectMongo = function (){
     });
 };
 
-let Server =   function () {
-
+let Server = function (db) {
 
 
     let express = require('express');
@@ -582,8 +582,10 @@ let Server =   function () {
 
 
         if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
-            db.pushToDb('USER', newUser);
-            callback({success: true});
+            db.pushToDbPromise('USER', newUser).then(res=> {
+                callback({success: true});
+            });
+
         } else {
             callback({success: false});
         }
@@ -935,7 +937,6 @@ let Server =   function () {
 
         for (let order of orders) {
 
-            // if (order.ordStatus > 0) {
             // console.log("ordStatus:" + order.ordStatus);
             let tOrder = groupedOrders.find(gor=>gor.group.grpId === order.grpId);
 
@@ -951,13 +952,15 @@ let Server =   function () {
                     groupedOrders.push({group: group, orders: []});
                 } else if (order.ordStatus === -1) {
                     groupedOrders.push({group: group, orders: []});
-                } else {
+                } else if (order.ordStatus > 0) {
                     groupedOrders.push({group: group, orders: [order]});
+                } else {
+                    groupedOrders.push({group: group, orders: []});
                 }
-
             }
-            // }
+
         }
+
         return _.sortBy(groupedOrders, row=>-new Date(row.group.grpTime));
     };
 
@@ -1047,7 +1050,6 @@ let Server =   function () {
             let groupedOrders = [];
             let groupedOrderSums = [];
 
-
             let groupIds = db.GROUP.filter(grp=>grp.grpHostId === hostId);
             let orders = db.ORDER.filter(ord=> {
                 //ord.grpId === groupId
@@ -1074,9 +1076,6 @@ let Server =   function () {
 
             groupedOrders =
                 self.convertOrdersToGroupedOrders(orders);
-
-            // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
 
             self.formatOrders(groupedOrders, (result)=> {
                 groupedOrderSums = result;
@@ -1162,7 +1161,7 @@ let Server =   function () {
         for (let {group, orders} of groupedOrders) {
             let orderSums = [];
 
-            for (let {ordId, group, usrId, dish, ordNum, ordStatus} of orders) {
+            for (let {ordId, usrId, dish, ordNum, ordStatus} of orders) {
                 //如果存在直接加
                 let order = orderSums.find(orm=>orm.dish.dihId === dish.dihId);
 
@@ -1172,6 +1171,8 @@ let Server =   function () {
                     orderSums.push({group, dish, ordNum});
                 }
             }
+            console.log({orderSums});
+
 
             switch (group.grpStatus) {
                 case 0:
@@ -1550,9 +1551,5 @@ let Server =   function () {
 
 };
 
-module.exports = {Server,connectMongo};
+module.exports = {Server, connectMongo};
 
-(async  function(){
-    await connectMongo();
-    new Server();
-})();

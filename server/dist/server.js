@@ -8,9 +8,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
-require('source-map-support').install();
-require('babel-polyfill');
-
 var isDebug = true;
 var fakeAuthCode = true;
 
@@ -37,18 +34,20 @@ var MongoClient = require('mongodb').MongoClient;
 
 // Connection URL
 var mongoUrl = 'mongodb://localhost:27017/onigiri';
-var mongoDb = null;
+var mongoDb = null; //暂时没用
 var Database = require('./database.js');
-var db = null;
 
-var connectMongo = function connectMongo() {
+var connectMongo = function connectMongo(option) {
     var _this = this;
 
+    var db = null;
+
     return new Promise(function (resolve) {
-        if (mongoDb) {
-            resolve(mongoDb);
+        if (db) {
+            resolve(db);
             return;
         }
+
         MongoClient.connect(mongoUrl).then(function () {
             var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
                 var myDb;
@@ -58,7 +57,7 @@ var connectMongo = function connectMongo() {
                             case 0:
                                 mongoDb = _db;
 
-                                myDb = new Database(mongoDb); //不能提前赋值,因为js传递引用的副本
+                                myDb = new Database(mongoDb, option); //不能提前赋值,因为js传递引用的副本
 
                                 console.log('database connecting!');
 
@@ -115,7 +114,7 @@ var connectMongo = function connectMongo() {
                                     }
                                 }, 5000);
 
-                                resolve(mongoDb);
+                                resolve(db);
 
                             case 8:
                             case 'end':
@@ -135,7 +134,7 @@ var connectMongo = function connectMongo() {
     });
 };
 
-var Server = function Server() {
+var Server = function Server(db) {
 
     var express = require('express');
     var bodyParser = require('body-parser');
@@ -699,8 +698,9 @@ var Server = function Server() {
         };
 
         if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
-            db.pushToDb('USER', newUser);
-            callback({ success: true });
+            db.pushToDbPromise('USER', newUser).then(function (res) {
+                callback({ success: true });
+            });
         } else {
             callback({ success: false });
         }
@@ -1300,7 +1300,6 @@ var Server = function Server() {
                 var order = _step13.value;
 
 
-                // if (order.ordStatus > 0) {
                 // console.log("ordStatus:" + order.ordStatus);
                 var tOrder = groupedOrders.find(function (gor) {
                     return gor.group.grpId === order.grpId;
@@ -1318,11 +1317,12 @@ var Server = function Server() {
                         groupedOrders.push({ group: group, orders: [] });
                     } else if (order.ordStatus === -1) {
                         groupedOrders.push({ group: group, orders: [] });
-                    } else {
+                    } else if (order.ordStatus > 0) {
                         groupedOrders.push({ group: group, orders: [order] });
+                    } else {
+                        groupedOrders.push({ group: group, orders: [] });
                     }
                 }
-                // }
             };
 
             for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
@@ -1501,9 +1501,6 @@ var Server = function Server() {
 
             groupedOrders = self.convertOrdersToGroupedOrders(orders);
 
-            // console.log("ordersordersordersorders:" + JSON.stringify(orders));
-            // console.log("groupedOrdersgroupedOrdersgroupedOrders:" + JSON.stringify(groupedOrders));
-
             self.formatOrders(groupedOrders, function (result) {
                 groupedOrderSums = result;
             });
@@ -1621,7 +1618,6 @@ var Server = function Server() {
                     var _loop6 = function _loop6() {
                         var _step16$value = _step16.value;
                         var ordId = _step16$value.ordId;
-                        var group = _step16$value.group;
                         var usrId = _step16$value.usrId;
                         var dish = _step16$value.dish;
                         var ordNum = _step16$value.ordNum;
@@ -1656,6 +1652,8 @@ var Server = function Server() {
                         }
                     }
                 }
+
+                console.log({ orderSums: orderSums });
 
                 switch (group.grpStatus) {
                     case 0:
@@ -2210,23 +2208,4 @@ var Server = function Server() {
 };
 
 module.exports = { Server: Server, connectMongo: connectMongo };
-
-_asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-            switch (_context2.prev = _context2.next) {
-                case 0:
-                    _context2.next = 2;
-                    return connectMongo();
-
-                case 2:
-                    new Server();
-
-                case 3:
-                case 'end':
-                    return _context2.stop();
-            }
-        }
-    }, _callee2, this);
-}))();
 //# sourceMappingURL=server.js.map

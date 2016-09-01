@@ -6,19 +6,27 @@ class Database {
     static debug = false;
 
     //option : {debug:如果为true,不会存储到mongodb}
-    constructor (_mongoDb) {
+    constructor (_mongoDb,option) {
+        if(option&&option.debug) {
+            Database.debug = true;
+
+        }
 
         Database.mongoDb = _mongoDb;
 
         Database.db.pushToDb=function(table, value) {
 
             //jsonDb.push('/db/' + table + '[]', value);
-            console.log(Database.mongoDb);
-
-            !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(r=> {
-                value._id = r.insertedId;
+            if(Database.debug){
+                value._id = 'r'+new Date().getTime();
                 Database.db[table].push(value);
-            });
+
+            }else{
+                Database.mongoDb.collection(table).insertOne(value).then(r=> {
+                    value._id = r.insertedId;
+                    Database.db[table].push(value);
+                 }).catch(e=>console.log(e));
+            }
         }
 
         Database.db.delFromJsonDb=function(table, condition) {
@@ -44,11 +52,18 @@ class Database {
 
         Database.db.pushToDbPromise=function(table, value) {
             return new Promise((resolve, reject)=> {
-                !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(r=> {
-                    value._id = r.insertedId;
+                if(Database.debug){
+                    value._id = 'r'+new Date().getTime();
                     Database.db[table].push(value);
                     resolve();
-                }).catch(e=>reject(e));
+
+                }else{
+                    Database.mongoDb.collection(table).insertOne(value).then(r=> {
+                        value._id = r.insertedId;
+                        Database.db[table].push(value);
+                        resolve();
+                    }).catch(e=>reject(e));
+                }
             });
 
         }

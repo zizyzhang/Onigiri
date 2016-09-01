@@ -10,20 +10,29 @@ var Database = function () {
 
     //option : {debug:如果为true,不会存储到mongodb}
 
-    function Database(_mongoDb) {
+    function Database(_mongoDb, option) {
         _classCallCheck(this, Database);
+
+        if (option && option.debug) {
+            Database.debug = true;
+        }
 
         Database.mongoDb = _mongoDb;
 
         Database.db.pushToDb = function (table, value) {
 
             //jsonDb.push('/db/' + table + '[]', value);
-            console.log(Database.mongoDb);
-
-            !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(function (r) {
-                value._id = r.insertedId;
+            if (Database.debug) {
+                value._id = 'r' + new Date().getTime();
                 Database.db[table].push(value);
-            });
+            } else {
+                Database.mongoDb.collection(table).insertOne(value).then(function (r) {
+                    value._id = r.insertedId;
+                    Database.db[table].push(value);
+                }).catch(function (e) {
+                    return console.log(e);
+                });
+            }
         };
 
         Database.db.delFromJsonDb = function (table, condition) {
@@ -50,13 +59,19 @@ var Database = function () {
 
         Database.db.pushToDbPromise = function (table, value) {
             return new Promise(function (resolve, reject) {
-                !Database.debug && Database.mongoDb.collection(table).insertOne(value).then(function (r) {
-                    value._id = r.insertedId;
+                if (Database.debug) {
+                    value._id = 'r' + new Date().getTime();
                     Database.db[table].push(value);
                     resolve();
-                }).catch(function (e) {
-                    return reject(e);
-                });
+                } else {
+                    Database.mongoDb.collection(table).insertOne(value).then(function (r) {
+                        value._id = r.insertedId;
+                        Database.db[table].push(value);
+                        resolve();
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                }
             });
         };
 

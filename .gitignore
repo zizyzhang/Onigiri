@@ -5,3 +5,4 @@ bower_components
 /front/dist/**
 /server/dist/onigiri.json
 /database
+/**/coverage
