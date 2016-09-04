@@ -53,12 +53,10 @@ class IndexPage {
             });
 
             $$('#btnMyGroups').click(function () {
-
                 mainView.router.loadPage({url: 'my-groups.html'});
             });
 
             $$('#btnConfirm').click(function () {
-
                 mainView.router.loadPage({url: 'confirm-order.html'});
             });
 
@@ -108,7 +106,6 @@ class IndexPage {
                 homejschange.changeTabGroup();
             });
             $$('#tabOrders').click(function () {
-
                 homejschange.changeTabOrder();
                 //changeTabGroup();
             });
@@ -119,11 +116,15 @@ class IndexPage {
 
             $$('#btnLogout').click(function () {
                 location.reload();
-
                 // $$('#txtUsrPwd').val("");
+            });
+            
+            $$('#btnsetting').click(function () {
+                mainView.router.loadPage({url: 'user-modify.html'});
             });
 
         });
+        
 
 
     }

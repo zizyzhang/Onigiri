@@ -38,7 +38,7 @@ class Database {
         }
 
         Database.db.setValueToDb=function(table, condition, setKey, newValue) {
-            console.log(Database.db[table]);
+            // console.log(Database.db[table]);
             let index = Database.db[table].findIndex(condition);
             let oldObj = Database.db[table][index][setKey] = newValue;
             let set = {};
@@ -132,7 +132,7 @@ class Database {
     }
 
     setValueToDb(table, condition, setKey, newValue) {
-        console.log(Database.db[table]);
+        // console.log(Database.db[table]);
         let index = Database.db[table].findIndex(condition);
         let oldObj = Database.db[table][index][setKey] = newValue;
         let set = {};

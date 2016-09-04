@@ -286,6 +286,23 @@ var AjaxMethods = function () {
         });
     };
 
+    this.chamgeMailNotify = function (usrId, mailWhen, isNotify) {
+        return new Promise((resolve, reject)=> {
+            $$.getJSON(`${SERVER_ADS}/chamgeMailNotify/${usrId}/${mailWhen}/${isNotify}`,
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
+
+    this.updateUsrmail = function (usrId, usrMail) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + '/updateUsrmail',{data: JSON.stringify({usrId, usrMail})},
+                function (result) {
+                    resolve(result);
+                });
+        });
+    };
 
 };
 

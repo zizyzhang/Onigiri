@@ -67,6 +67,39 @@ let connectMongo = function (option) {
                     let deadLine = new Date(g.grpTime);
                     if (deadLine.getTime() - new Date().getTime() < 0) {
                         db.setValueToDb('GROUP', row=>row.grpId === g.grpId, 'grpStatus', -1);
+
+                        //團失敗通知團主、團員
+                        // let metName = db.MERCHANT.find(met=>met.metId === g.metId).metName;
+                        // let host = db.USER.find(u=>u.usrId === g.grpHostId);
+                        // let time = new Date(g.grpTime);
+                        // sendMail(host.usrMail, '販團 : ' + metName + ' - 您創建的團購已經開團失敗', `<p>超過截止時間-開團失敗,
+                        //         <p>店家: ${metName}</p>
+                        //         <p>截止時間: ${(time.getMonth() + 1)}/${time.getDate()} ${time.getHours()}:${(time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes())}</p>
+                        //         <p>領取地點: ${g.grpAddr}</p>
+                        //         <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
+                        //
+                        // let html = `<p>超過截止時間-開團失敗,
+                        //         <p>團主名稱為: ${host.usrName}</p>
+                        //         <p>店家: ${metName}</p>
+                        //         <p>截止時間: ${(time.getMonth() + 1)}/${time.getDate()} ${time.getHours()}:${(time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes())}</p>
+                        //         <p>領取地點: ${g.grpAddr}</p>
+                        //         <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`;
+                        //
+                        // let orders = db.ORDER.filter(ord=>ord.grpId === g.grpId  && _.includes([0,1,2] , ord.ordStatus));
+                        // let users = [];
+                        //
+                        // for (let order of orders) {
+                        //     let user = users.find(usr=>usr.usrId === order.usrId);
+                        //     if (!user) {
+                        //         users.push({usrId: order.usrId});
+                        //     }
+                        // }
+                        // console.log('=====users', JSON.stringify(users));
+                        // for(let usr of users){
+                        //     let usrMail = db.USER.find(u=>u.usrId === usr.usrId).usrMail;
+                        //     sendMail(host.usrMail, '販團 : ' + metName + ' - 您加入的團購已經開團失敗',html);
+                        // }
+
                     }
                 }
             }, 5000);
@@ -78,6 +111,22 @@ let connectMongo = function (option) {
             progress.exit(1);
         })
     });
+};
+
+let sendMail = function (usrMail, subject, html) {
+
+    if (usrMail && subject && html) {
+        mailTransport.sendMail({
+            from: 'o.grpbuy@gmail.com',
+            to: usrMail,
+            subject: subject,
+            html: html
+        }, function (err) {
+            if (err) {
+                console.log('Unable to send email: ' + err);
+            }
+        });
+    }
 };
 
 let Server = function (db) {
@@ -259,21 +308,30 @@ let Server = function (db) {
     });
 
     app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
+        //TODO ordId
         let grpId = Number(req.params.grpId);
         let usrId = Number(req.params.usrId);
-        let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+        // let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+        let usrOrds = db.ORDER.filter(o=>o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus));
 
-        //例外判断, 只有待审查的订单可以被取消
-        if (ordStatus === 0) {
-            db.setValueToDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
-            res.json({success: true});
-        } else {
-            if (ordStatus === -2) {
-                res.json({success: false, err: '訂單已被取消'});
+        for (let order of usrOrds) {
+            //例外判断, 只有待审查的订单可以被取消
+            if (order.ordStatus === 0) {
+                db.setValueToDb('ORDER', o=>o.grpId === grpId && o.usrId === usrId, 'ordStatus', -2);
+                res.json({success: true});
+            } else if (order.ordStatus === 3) {
+                db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'ordStatus', 1);
+                db.setValueToDb('ORDER', row=>row.ordId === order.ordId, 'updateOrdNum', undefined);
+                res.json({success: true});
             } else {
-                res.json({success: false, err: '訂單已被確認,無法取消'});
+                if (order.ordStatus === -2) {
+                    res.json({success: false, err: '訂單已被取消'});
+                } else {
+                    res.json({success: false, err: '訂單已被確認,無法取消'});
+                }
             }
         }
+
     });
 
 
@@ -487,6 +545,27 @@ let Server = function (db) {
         });
     });
 
+    app.get('/chamgeMailNotify/:usrId/:mailWhen/:isNotify', function (req, res) {
+        let usrId = Number(req.params.usrId);
+        let mailWhen = req.params.mailWhen;
+        let isNotify = req.params.isNotify;
+
+        // console.log('usrId mailWhen isNotify',usrId,mailWhen,isNotify);
+        self.chamgeMailNotify(usrId, mailWhen, isNotify, result=> {
+            res.json(result);
+        });
+    });
+
+    app.post('/updateUsrmail', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let usrId = Number(req.body.usrId);
+        let usrMail = req.body.usrMail;
+
+        self.updateUsrmail(usrId, usrMail, result=> {
+            res.json(result);
+        });
+    });
+
 
     app.listen(8080, function () {
         console.log('' +
@@ -577,7 +656,9 @@ let Server = function (db) {
             usrPwd: usrPwd,
             usrMail: usrMail,
             usrCreateTime: usrCreateTime,
-            usrMobi: usrMobi
+            usrMobi: usrMobi,
+            mailWhenJoin: true,
+            mailWhenRefused: true,
         };
 
 
@@ -620,7 +701,10 @@ let Server = function (db) {
                     user: {
                         usrName: db.USER[index].usrName,
                         usrId: db.USER[index].usrId,
-                        usrMobi: db.USER[index].usrMobi
+                        usrMobi: db.USER[index].usrMobi,
+                        usrMail: db.USER[index].usrMail,
+                        mailWhenJoin: db.USER[index].mailWhenJoin,
+                        mailWhenRefused: db.USER[index].mailWhenRefused,
                     }
                 });
                 return;
@@ -803,7 +887,7 @@ let Server = function (db) {
 
             let orderedDishIds = _.chain(db.ORDER).filter(ord=>ord.usrId === usrId && ord.grpId === grpId).map(ord=>ord.dihId).value();
             // let selectRowByDishId = dihId => row=>row.dihId === dihId;
-            let isSend = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
+            // let isSend = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
 
             let g = db.GROUP.find(g=>g.grpId === grpId);
             let hostId = g.grpHostId;
@@ -912,9 +996,11 @@ let Server = function (db) {
 
 
             // console.log('snedornot'+snedornot);
-            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入、團員加購
-            if (usrId !== hostId && isSend) {
-                let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
+            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入
+            let usrhost = db.USER.find(usr=>usr.usrId === hostId);
+            if (usrId !== hostId && usrhost.mailWhenJoin) {
+                // let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
+                let hostMail = usrhost.usrMail;
                 let metName = m.metName;
                 let subject = '販團 : ' + metName + ' - 有新成員加入!';
                 let now = new Date();
@@ -1485,22 +1571,26 @@ let Server = function (db) {
     };
 
     this.refuseOrder = function (usrId, grpId, usrOrds, callback) {
-        //TODO  use ordId 、usrOrds
-        let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
-        console.log('====usrOrds', JSON.stringify(usrOrds));
-        if (orders) {
+        // let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
+        // console.log('====usrOrds', JSON.stringify(usrOrds));
+        let user = db.USER.find(usr=>usr.usrId === usrId);
+
+        if (usrOrds && user.mailWhenRefused) {
             let dishes = '';
-            for (let order of orders) {
+            let order;
+            for (let usrOrd of usrOrds) {
+                order = db.ORDER.find(ord=>ord.ordId === usrOrd.ordId);
                 let dihName = db.DISH.find(dih=>dih.dihId === order.dihId).dihName;
                 dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>'
             }
             // console.log(JSON.stringify(orders));
             console.log('====dishes', dishes);
 
+
             let g = db.GROUP.find(g=>g.grpId === grpId);
             let metId = g.metId;
             let metName = db.MERCHANT.find(m=>m.metId === metId).metName;
-            let ordCreateTime = orders[0].ordCreateTime;
+            let ordCreateTime = order.ordCreateTime;
             let hostName = db.USER.find(usr=>usr.usrId === g.grpHostId).usrName;
 
             // 通知團員訂單被拒絕
@@ -1524,6 +1614,23 @@ let Server = function (db) {
             callback({success: 0});
         }
     };
+
+    this.chamgeMailNotify = function (usrId, mailWhen, isNotify, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        isNotify = isNotify === 'true' ? true : false;
+        console.log('====usrId mailWhen isNotify', usrId, mailWhen, isNotify);
+        db.setValueToDb("USER", usr=>usr.usrId === usrId, mailWhen, isNotify);
+        callback({success: 1});
+
+    };
+
+    this.updateUsrmail = function (usrId, usrMail, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        console.log('====usrId usrMail', usrId, usrMail);
+        db.setValueToDb("USER", usr=>usr.usrId === usrId, 'usrMail', usrMail);
+        callback({success: 1});
+    };
+
 
     ///////////////////後臺
 

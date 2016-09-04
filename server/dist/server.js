@@ -49,7 +49,7 @@ var connectMongo = function connectMongo(option) {
         }
 
         MongoClient.connect(mongoUrl).then(function () {
-            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
+            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
                 var myDb;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
@@ -92,6 +92,38 @@ var connectMongo = function connectMongo(option) {
                                                 db.setValueToDb('GROUP', function (row) {
                                                     return row.grpId === g.grpId;
                                                 }, 'grpStatus', -1);
+
+                                                //團失敗通知團主、團員
+                                                // let metName = db.MERCHANT.find(met=>met.metId === g.metId).metName;
+                                                // let host = db.USER.find(u=>u.usrId === g.grpHostId);
+                                                // let time = new Date(g.grpTime);
+                                                // sendMail(host.usrMail, '販團 : ' + metName + ' - 您創建的團購已經開團失敗', `<p>超過截止時間-開團失敗,
+                                                //         <p>店家: ${metName}</p>
+                                                //         <p>截止時間: ${(time.getMonth() + 1)}/${time.getDate()} ${time.getHours()}:${(time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes())}</p>
+                                                //         <p>領取地點: ${g.grpAddr}</p>
+                                                //         <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`);
+                                                //
+                                                // let html = `<p>超過截止時間-開團失敗,
+                                                //         <p>團主名稱為: ${host.usrName}</p>
+                                                //         <p>店家: ${metName}</p>
+                                                //         <p>截止時間: ${(time.getMonth() + 1)}/${time.getDate()} ${time.getHours()}:${(time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes())}</p>
+                                                //         <p>領取地點: ${g.grpAddr}</p>
+                                                //         <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>`;
+                                                //
+                                                // let orders = db.ORDER.filter(ord=>ord.grpId === g.grpId  && _.includes([0,1,2] , ord.ordStatus));
+                                                // let users = [];
+                                                //
+                                                // for (let order of orders) {
+                                                //     let user = users.find(usr=>usr.usrId === order.usrId);
+                                                //     if (!user) {
+                                                //         users.push({usrId: order.usrId});
+                                                //     }
+                                                // }
+                                                // console.log('=====users', JSON.stringify(users));
+                                                // for(let usr of users){
+                                                //     let usrMail = db.USER.find(u=>u.usrId === usr.usrId).usrMail;
+                                                //     sendMail(host.usrMail, '販團 : ' + metName + ' - 您加入的團購已經開團失敗',html);
+                                                // }
                                             }
                                         };
 
@@ -125,13 +157,29 @@ var connectMongo = function connectMongo(option) {
             }));
 
             return function (_x) {
-                return ref.apply(this, arguments);
+                return _ref.apply(this, arguments);
             };
         }()).catch(function (e) {
             console.log(e);
             progress.exit(1);
         });
     });
+};
+
+var sendMail = function sendMail(usrMail, subject, html) {
+
+    if (usrMail && subject && html) {
+        mailTransport.sendMail({
+            from: 'o.grpbuy@gmail.com',
+            to: usrMail,
+            subject: subject,
+            html: html
+        }, function (err) {
+            if (err) {
+                console.log('Unable to send email: ' + err);
+            }
+        });
+    }
 };
 
 var Server = function Server(db) {
@@ -333,23 +381,60 @@ var Server = function Server(db) {
     });
 
     app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
+        //TODO ordId
         var grpId = Number(req.params.grpId);
         var usrId = Number(req.params.usrId);
-        var ordStatus = db.ORDER.find(function (o) {
-            return o.grpId === grpId && o.usrId === usrId;
-        }).ordStatus;
+        // let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+        var usrOrds = db.ORDER.filter(function (o) {
+            return o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus);
+        });
 
-        //例外判断, 只有待审查的订单可以被取消
-        if (ordStatus === 0) {
-            db.setValueToDb('ORDER', function (o) {
-                return o.grpId === grpId && o.usrId === usrId;
-            }, 'ordStatus', -2);
-            res.json({ success: true });
-        } else {
-            if (ordStatus === -2) {
-                res.json({ success: false, err: '訂單已被取消' });
-            } else {
-                res.json({ success: false, err: '訂單已被確認,無法取消' });
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+            var _loop2 = function _loop2() {
+                var order = _step3.value;
+
+                //例外判断, 只有待审查的订单可以被取消
+                if (order.ordStatus === 0) {
+                    db.setValueToDb('ORDER', function (o) {
+                        return o.grpId === grpId && o.usrId === usrId;
+                    }, 'ordStatus', -2);
+                    res.json({ success: true });
+                } else if (order.ordStatus === 3) {
+                    db.setValueToDb('ORDER', function (row) {
+                        return row.ordId === order.ordId;
+                    }, 'ordStatus', 1);
+                    db.setValueToDb('ORDER', function (row) {
+                        return row.ordId === order.ordId;
+                    }, 'updateOrdNum', undefined);
+                    res.json({ success: true });
+                } else {
+                    if (order.ordStatus === -2) {
+                        res.json({ success: false, err: '訂單已被取消' });
+                    } else {
+                        res.json({ success: false, err: '訂單已被確認,無法取消' });
+                    }
+                }
+            };
+
+            for (var _iterator3 = usrOrds[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                _loop2();
+            }
+        } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                    _iterator3.return();
+                }
+            } finally {
+                if (_didIteratorError3) {
+                    throw _iteratorError3;
+                }
             }
         }
     });
@@ -454,7 +539,7 @@ var Server = function Server(db) {
 
     app.get('/follow/:usrId/:hostId', function (req, res) {
         try {
-            var _ret2 = function () {
+            var _ret3 = function () {
                 var usrId = Number(req.params.usrId);
                 var hostId = Number(req.params.hostId);
 
@@ -482,7 +567,7 @@ var Server = function Server(db) {
                 });
             }();
 
-            if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+            if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
         } catch (e) {
             console.log(e.toString());
             res.json({ success: false, err: e.toString() });
@@ -562,6 +647,27 @@ var Server = function Server(db) {
         });
     });
 
+    app.get('/chamgeMailNotify/:usrId/:mailWhen/:isNotify', function (req, res) {
+        var usrId = Number(req.params.usrId);
+        var mailWhen = req.params.mailWhen;
+        var isNotify = req.params.isNotify;
+
+        // console.log('usrId mailWhen isNotify',usrId,mailWhen,isNotify);
+        self.chamgeMailNotify(usrId, mailWhen, isNotify, function (result) {
+            res.json(result);
+        });
+    });
+
+    app.post('/updateUsrmail', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrId = Number(req.body.usrId);
+        var usrMail = req.body.usrMail;
+
+        self.updateUsrmail(usrId, usrMail, function (result) {
+            res.json(result);
+        });
+    });
+
     app.listen(8080, function () {
         console.log('' + 'app listening on port 8080!');
     });
@@ -569,28 +675,28 @@ var Server = function Server(db) {
     this.addDishPromise = function (dishes) {
 
         return new Promise(function (resolve, reject) {
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
             try {
-                for (var _iterator3 = dishes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var dish = _step3.value;
+                for (var _iterator4 = dishes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var dish = _step4.value;
 
                     dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
                     db.pushToDb('DISH', dish);
                 }
             } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
                     }
                 } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
                     }
                 }
             }
@@ -659,13 +765,13 @@ var Server = function Server(db) {
     this.addUser = function (usrName, usrPwd, usrMail, usrMobi, callback) {
         var usrId = 0;
 
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-            for (var _iterator4 = db.USER[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var user = _step4.value;
+            for (var _iterator5 = db.USER[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                var user = _step5.value;
 
                 if (user.usrId > usrId) {
                     usrId = user.usrId;
@@ -673,16 +779,16 @@ var Server = function Server(db) {
                 usrId = Number(usrId) + 1;
             }
         } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                    _iterator4.return();
+                if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                    _iterator5.return();
                 }
             } finally {
-                if (_didIteratorError4) {
-                    throw _iteratorError4;
+                if (_didIteratorError5) {
+                    throw _iteratorError5;
                 }
             }
         }
@@ -694,7 +800,9 @@ var Server = function Server(db) {
             usrPwd: usrPwd,
             usrMail: usrMail,
             usrCreateTime: usrCreateTime,
-            usrMobi: usrMobi
+            usrMobi: usrMobi,
+            mailWhenJoin: true,
+            mailWhenRefused: true
         };
 
         if (newUser.usrName.length !== 0 && newUser.usrPwd.length !== 0 && newUser.usrMobi.length === 10) {
@@ -734,7 +842,10 @@ var Server = function Server(db) {
                     user: {
                         usrName: db.USER[index].usrName,
                         usrId: db.USER[index].usrId,
-                        usrMobi: db.USER[index].usrMobi
+                        usrMobi: db.USER[index].usrMobi,
+                        usrMail: db.USER[index].usrMail,
+                        mailWhenJoin: db.USER[index].mailWhenJoin,
+                        mailWhenRefused: db.USER[index].mailWhenRefused
                     }
                 });
                 return;
@@ -780,46 +891,12 @@ var Server = function Server(db) {
     this.allGroup = function (callback) {
         var result = [];
 
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
-
-        try {
-            for (var _iterator5 = db.GROUP[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                var _group = _step5.value;
-
-                var group = this.createClassGroupByGroupId(_group.grpId);
-                result.push(group);
-            }
-        } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                    _iterator5.return();
-                }
-            } finally {
-                if (_didIteratorError5) {
-                    throw _iteratorError5;
-                }
-            }
-        }
-
-        callback(result);
-    };
-
-    this.allAvailableGroup = function (callback) {
-        var result = [];
-
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
         var _iteratorError6 = undefined;
 
         try {
-            for (var _iterator6 = db.GROUP.filter(function (g) {
-                return g.grpStatus === 0 || g.grpStatus === 1;
-            })[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            for (var _iterator6 = db.GROUP[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
                 var _group = _step6.value;
 
                 var group = this.createClassGroupByGroupId(_group.grpId);
@@ -840,28 +917,24 @@ var Server = function Server(db) {
             }
         }
 
-        callback(_.sortBy(result, function (row) {
-            return -new Date(row.grpTime);
-        }));
+        callback(result);
     };
 
-    this.getGroupById = function (id, callback) {
-        var group = this.createClassGroupByGroupId(id);
-        callback(group);
-    };
-
-    this.allMerchant = function (callback) {
+    this.allAvailableGroup = function (callback) {
         var result = [];
+
         var _iteratorNormalCompletion7 = true;
         var _didIteratorError7 = false;
         var _iteratorError7 = undefined;
 
         try {
-            for (var _iterator7 = db.MERCHANT[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                var _merchant = _step7.value;
+            for (var _iterator7 = db.GROUP.filter(function (g) {
+                return g.grpStatus === 0 || g.grpStatus === 1;
+            })[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                var _group = _step7.value;
 
-                var merchant = this.createClassMerchantById(_merchant.metId);
-                result.push(merchant);
+                var group = this.createClassGroupByGroupId(_group.grpId);
+                result.push(group);
             }
         } catch (err) {
             _didIteratorError7 = true;
@@ -874,6 +947,44 @@ var Server = function Server(db) {
             } finally {
                 if (_didIteratorError7) {
                     throw _iteratorError7;
+                }
+            }
+        }
+
+        callback(_.sortBy(result, function (row) {
+            return -new Date(row.grpTime);
+        }));
+    };
+
+    this.getGroupById = function (id, callback) {
+        var group = this.createClassGroupByGroupId(id);
+        callback(group);
+    };
+
+    this.allMerchant = function (callback) {
+        var result = [];
+        var _iteratorNormalCompletion8 = true;
+        var _didIteratorError8 = false;
+        var _iteratorError8 = undefined;
+
+        try {
+            for (var _iterator8 = db.MERCHANT[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                var _merchant = _step8.value;
+
+                var merchant = this.createClassMerchantById(_merchant.metId);
+                result.push(merchant);
+            }
+        } catch (err) {
+            _didIteratorError8 = true;
+            _iteratorError8 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                    _iterator8.return();
+                }
+            } finally {
+                if (_didIteratorError8) {
+                    throw _iteratorError8;
                 }
             }
         }
@@ -902,13 +1013,13 @@ var Server = function Server(db) {
 
             //minAmount: minAmount
         });
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
 
         try {
-            for (var _iterator8 = dishes[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                var dihId = _step8.value;
+            for (var _iterator9 = dishes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                var dihId = _step9.value;
 
                 var lastDish = _.maxBy(db.GROUP_DISHES, 'gdeId');
                 var gdh = {
@@ -921,16 +1032,16 @@ var Server = function Server(db) {
 
             //发送信息给follow的人
         } catch (err) {
-            _didIteratorError8 = true;
-            _iteratorError8 = err;
+            _didIteratorError9 = true;
+            _iteratorError9 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                    _iterator8.return();
+                if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                    _iterator9.return();
                 }
             } finally {
-                if (_didIteratorError8) {
-                    throw _iteratorError8;
+                if (_didIteratorError9) {
+                    throw _iteratorError9;
                 }
             }
         }
@@ -941,13 +1052,13 @@ var Server = function Server(db) {
         console.log('usrIds grpHostId', JSON.stringify(usrIds), grpHostId);
         if (usrIds.length !== 0) {
             // for (let usr of db.USER.filter(u=>_.includes(usrIds, u.usrId))) {
-            var _iteratorNormalCompletion9 = true;
-            var _didIteratorError9 = false;
-            var _iteratorError9 = undefined;
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
 
             try {
-                var _loop2 = function _loop2() {
-                    var usr = _step9.value;
+                var _loop3 = function _loop3() {
+                    var usr = _step10.value;
 
                     var usrMail = db.USER.find(function (u) {
                         return u.usrId === usr.usrId;
@@ -960,20 +1071,20 @@ var Server = function Server(db) {
                     }).metName + '</p>\n                <p>截止時間: ' + (time.getMonth() + 1) + '/' + time.getDate() + ' ' + time.getHours() + ':' + (time.getMinutes() < 10 ? '0' + time.getMinutes() : time.getMinutes()) + '</p>\n                <p>領取地點: ' + addr + '</p>\n                <br><br><br><p>信件由販團系統自動發送: <a href="http://bit.do/groupbuy">http://bit.do/groupbuy</a> </p>');
                 };
 
-                for (var _iterator9 = usrIds[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-                    _loop2();
+                for (var _iterator10 = usrIds[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                    _loop3();
                 }
             } catch (err) {
-                _didIteratorError9 = true;
-                _iteratorError9 = err;
+                _didIteratorError10 = true;
+                _iteratorError10 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion9 && _iterator9.return) {
-                        _iterator9.return();
+                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                        _iterator10.return();
                     }
                 } finally {
-                    if (_didIteratorError9) {
-                        throw _iteratorError9;
+                    if (_didIteratorError10) {
+                        throw _iteratorError10;
                     }
                 }
             }
@@ -1007,27 +1118,27 @@ var Server = function Server(db) {
                     return d.dihId === dih.dihId;
                 };
             };
-            var _iteratorNormalCompletion10 = true;
-            var _didIteratorError10 = false;
-            var _iteratorError10 = undefined;
+            var _iteratorNormalCompletion11 = true;
+            var _didIteratorError11 = false;
+            var _iteratorError11 = undefined;
 
             try {
-                for (var _iterator10 = dishes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-                    var dih = _step10.value;
+                for (var _iterator11 = dishes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+                    var dih = _step11.value;
 
                     amountThisTime += db.DISH.find(funcFindDish(dih)).dihPrice * dih.num;
                 }
             } catch (err) {
-                _didIteratorError10 = true;
-                _iteratorError10 = err;
+                _didIteratorError11 = true;
+                _iteratorError11 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
-                        _iterator10.return();
+                    if (!_iteratorNormalCompletion11 && _iterator11.return) {
+                        _iterator11.return();
                     }
                 } finally {
-                    if (_didIteratorError10) {
-                        throw _iteratorError10;
+                    if (_didIteratorError11) {
+                        throw _iteratorError11;
                     }
                 }
             }
@@ -1088,9 +1199,7 @@ var Server = function Server(db) {
                 return ord.dihId;
             }).value();
             // let selectRowByDishId = dihId => row=>row.dihId === dihId;
-            var isSend = !db.GROUP_MEMBER.find(function (usr) {
-                return usr.usrId === usrId && usr.grpId === grpId;
-            }); //加購不通知
+            // let isSend = !db.GROUP_MEMBER.find(usr => usr.usrId === usrId && usr.grpId === grpId);   //加購不通知
 
             var g = db.GROUP.find(function (g) {
                 return g.grpId === grpId;
@@ -1119,15 +1228,15 @@ var Server = function Server(db) {
             // });
             console.log('joinGroupPromise====orders' + JSON.stringify(orders));
 
-            var _iteratorNormalCompletion11 = true;
-            var _didIteratorError11 = false;
-            var _iteratorError11 = undefined;
+            var _iteratorNormalCompletion12 = true;
+            var _didIteratorError12 = false;
+            var _iteratorError12 = undefined;
 
             try {
-                var _loop3 = function _loop3() {
-                    var _step11$value = _step11.value;
-                    var dihId = _step11$value.dihId;
-                    var num = _step11$value.num;
+                var _loop4 = function _loop4() {
+                    var _step12$value = _step12.value;
+                    var dihId = _step12$value.dihId;
+                    var num = _step12$value.num;
 
                     if (num === 0 || !_.isNumber(num)) {
                         return 'continue';
@@ -1175,22 +1284,22 @@ var Server = function Server(db) {
                     }
                 };
 
-                for (var _iterator11 = dishes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-                    var _ret6 = _loop3();
+                for (var _iterator12 = dishes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                    var _ret7 = _loop4();
 
-                    if (_ret6 === 'continue') continue;
+                    if (_ret7 === 'continue') continue;
                 }
             } catch (err) {
-                _didIteratorError11 = true;
-                _iteratorError11 = err;
+                _didIteratorError12 = true;
+                _iteratorError12 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion11 && _iterator11.return) {
-                        _iterator11.return();
+                    if (!_iteratorNormalCompletion12 && _iterator12.return) {
+                        _iterator12.return();
                     }
                 } finally {
-                    if (_didIteratorError11) {
-                        throw _iteratorError11;
+                    if (_didIteratorError12) {
+                        throw _iteratorError12;
                     }
                 }
             }
@@ -1226,13 +1335,13 @@ var Server = function Server(db) {
                 // console.log("groupOrderSum", groupOrderSum);
 
                 if (groupOrderSum) {
-                    var _iteratorNormalCompletion12 = true;
-                    var _didIteratorError12 = false;
-                    var _iteratorError12 = undefined;
+                    var _iteratorNormalCompletion13 = true;
+                    var _didIteratorError13 = false;
+                    var _iteratorError13 = undefined;
 
                     try {
-                        for (var _iterator12 = groupOrderSum.orderSums[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-                            var orderSum = _step12.value;
+                        for (var _iterator13 = groupOrderSum.orderSums[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+                            var orderSum = _step13.value;
 
                             var price = orderSum.dish.dihPrice;
                             var num = orderSum.ordNum;
@@ -1240,16 +1349,16 @@ var Server = function Server(db) {
                             amount += total;
                         }
                     } catch (err) {
-                        _didIteratorError12 = true;
-                        _iteratorError12 = err;
+                        _didIteratorError13 = true;
+                        _iteratorError13 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion12 && _iterator12.return) {
-                                _iterator12.return();
+                            if (!_iteratorNormalCompletion13 && _iterator13.return) {
+                                _iterator13.return();
                             }
                         } finally {
-                            if (_didIteratorError12) {
-                                throw _iteratorError12;
+                            if (_didIteratorError13) {
+                                throw _iteratorError13;
                             }
                         }
                     }
@@ -1270,11 +1379,13 @@ var Server = function Server(db) {
             });
 
             // console.log('snedornot'+snedornot);
-            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入、團員加購
-            if (usrId !== hostId && isSend) {
-                var hostMail = db.USER.find(function (usr) {
-                    return usr.usrId === hostId;
-                }).usrMail;
+            // 通知團主 : 有新成員加入  ;  不通知 : 團主加入
+            var usrhost = db.USER.find(function (usr) {
+                return usr.usrId === hostId;
+            });
+            if (usrId !== hostId && usrhost.mailWhenJoin) {
+                // let hostMail = db.USER.find(usr=>usr.usrId === hostId).usrMail;
+                var hostMail = usrhost.usrMail;
                 var metName = m.metName;
                 var subject = '販團 : ' + metName + ' - 有新成員加入!';
                 var now = new Date();
@@ -1291,13 +1402,13 @@ var Server = function Server(db) {
 
         var groupedOrders = [];
 
-        var _iteratorNormalCompletion13 = true;
-        var _didIteratorError13 = false;
-        var _iteratorError13 = undefined;
+        var _iteratorNormalCompletion14 = true;
+        var _didIteratorError14 = false;
+        var _iteratorError14 = undefined;
 
         try {
-            var _loop4 = function _loop4() {
-                var order = _step13.value;
+            var _loop5 = function _loop5() {
+                var order = _step14.value;
 
 
                 // console.log("ordStatus:" + order.ordStatus);
@@ -1325,20 +1436,20 @@ var Server = function Server(db) {
                 }
             };
 
-            for (var _iterator13 = orders[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-                _loop4();
+            for (var _iterator14 = orders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+                _loop5();
             }
         } catch (err) {
-            _didIteratorError13 = true;
-            _iteratorError13 = err;
+            _didIteratorError14 = true;
+            _iteratorError14 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion13 && _iterator13.return) {
-                    _iterator13.return();
+                if (!_iteratorNormalCompletion14 && _iterator14.return) {
+                    _iterator14.return();
                 }
             } finally {
-                if (_didIteratorError13) {
-                    throw _iteratorError13;
+                if (_didIteratorError14) {
+                    throw _iteratorError14;
                 }
             }
         }
@@ -1352,13 +1463,13 @@ var Server = function Server(db) {
         var _this3 = this;
 
         var groupedOrders = [];
-        var _iteratorNormalCompletion14 = true;
-        var _didIteratorError14 = false;
-        var _iteratorError14 = undefined;
+        var _iteratorNormalCompletion15 = true;
+        var _didIteratorError15 = false;
+        var _iteratorError15 = undefined;
 
         try {
-            var _loop5 = function _loop5() {
-                var order = _step14.value;
+            var _loop6 = function _loop6() {
+                var order = _step15.value;
 
 
                 var tOrder = groupedOrders.find(function (gor) {
@@ -1412,20 +1523,20 @@ var Server = function Server(db) {
                 }
             };
 
-            for (var _iterator14 = orders[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-                _loop5();
+            for (var _iterator15 = orders[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                _loop6();
             }
         } catch (err) {
-            _didIteratorError14 = true;
-            _iteratorError14 = err;
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion14 && _iterator14.return) {
-                    _iterator14.return();
+                if (!_iteratorNormalCompletion15 && _iterator15.return) {
+                    _iterator15.return();
                 }
             } finally {
-                if (_didIteratorError14) {
-                    throw _iteratorError14;
+                if (_didIteratorError15) {
+                    throw _iteratorError15;
                 }
             }
         }
@@ -1598,30 +1709,30 @@ var Server = function Server(db) {
         //console.log('groups',db.GROUP);
         //console.log('groupedOrdersgroupedOrdersgroupedOrders:', JSON.stringify(groupedOrders));
 
-        var _iteratorNormalCompletion15 = true;
-        var _didIteratorError15 = false;
-        var _iteratorError15 = undefined;
+        var _iteratorNormalCompletion16 = true;
+        var _didIteratorError16 = false;
+        var _iteratorError16 = undefined;
 
         try {
-            for (var _iterator15 = groupedOrders[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-                var _step15$value = _step15.value;
-                var group = _step15$value.group;
-                var orders = _step15$value.orders;
+            for (var _iterator16 = groupedOrders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                var _step16$value = _step16.value;
+                var group = _step16$value.group;
+                var orders = _step16$value.orders;
 
                 var orderSums = [];
 
-                var _iteratorNormalCompletion16 = true;
-                var _didIteratorError16 = false;
-                var _iteratorError16 = undefined;
+                var _iteratorNormalCompletion17 = true;
+                var _didIteratorError17 = false;
+                var _iteratorError17 = undefined;
 
                 try {
-                    var _loop6 = function _loop6() {
-                        var _step16$value = _step16.value;
-                        var ordId = _step16$value.ordId;
-                        var usrId = _step16$value.usrId;
-                        var dish = _step16$value.dish;
-                        var ordNum = _step16$value.ordNum;
-                        var ordStatus = _step16$value.ordStatus;
+                    var _loop7 = function _loop7() {
+                        var _step17$value = _step17.value;
+                        var ordId = _step17$value.ordId;
+                        var usrId = _step17$value.usrId;
+                        var dish = _step17$value.dish;
+                        var ordNum = _step17$value.ordNum;
+                        var ordStatus = _step17$value.ordStatus;
 
                         //如果存在直接加
                         var order = orderSums.find(function (orm) {
@@ -1635,20 +1746,20 @@ var Server = function Server(db) {
                         }
                     };
 
-                    for (var _iterator16 = orders[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-                        _loop6();
+                    for (var _iterator17 = orders[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+                        _loop7();
                     }
                 } catch (err) {
-                    _didIteratorError16 = true;
-                    _iteratorError16 = err;
+                    _didIteratorError17 = true;
+                    _iteratorError17 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion16 && _iterator16.return) {
-                            _iterator16.return();
+                        if (!_iteratorNormalCompletion17 && _iterator17.return) {
+                            _iterator17.return();
                         }
                     } finally {
-                        if (_didIteratorError16) {
-                            throw _iteratorError16;
+                        if (_didIteratorError17) {
+                            throw _iteratorError17;
                         }
                     }
                 }
@@ -1688,16 +1799,16 @@ var Server = function Server(db) {
                 groupedOrderSums.push({ group: group, orderSums: orderSums });
             }
         } catch (err) {
-            _didIteratorError15 = true;
-            _iteratorError15 = err;
+            _didIteratorError16 = true;
+            _iteratorError16 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion15 && _iterator15.return) {
-                    _iterator15.return();
+                if (!_iteratorNormalCompletion16 && _iterator16.return) {
+                    _iterator16.return();
                 }
             } finally {
-                if (_didIteratorError15) {
-                    throw _iteratorError15;
+                if (_didIteratorError16) {
+                    throw _iteratorError16;
                 }
             }
         }
@@ -1762,13 +1873,13 @@ var Server = function Server(db) {
             return g.grpId === grpId;
         });
 
-        var _iteratorNormalCompletion17 = true;
-        var _didIteratorError17 = false;
-        var _iteratorError17 = undefined;
+        var _iteratorNormalCompletion18 = true;
+        var _didIteratorError18 = false;
+        var _iteratorError18 = undefined;
 
         try {
-            for (var _iterator17 = grpCom[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                var gc = _step17.value;
+            for (var _iterator18 = grpCom[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+                var gc = _step18.value;
 
                 if (gc.comments) {
                     grpComments.push({
@@ -1781,16 +1892,16 @@ var Server = function Server(db) {
                 }
             }
         } catch (err) {
-            _didIteratorError17 = true;
-            _iteratorError17 = err;
+            _didIteratorError18 = true;
+            _iteratorError18 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion17 && _iterator17.return) {
-                    _iterator17.return();
+                if (!_iteratorNormalCompletion18 && _iterator18.return) {
+                    _iterator18.return();
                 }
             } finally {
-                if (_didIteratorError17) {
-                    throw _iteratorError17;
+                if (_didIteratorError18) {
+                    throw _iteratorError18;
                 }
             }
         }
@@ -1959,24 +2070,24 @@ var Server = function Server(db) {
         };
         // console.log('====result:' + JSON.stringify(result.groupedOrders));
 
-        var _iteratorNormalCompletion18 = true;
-        var _didIteratorError18 = false;
-        var _iteratorError18 = undefined;
+        var _iteratorNormalCompletion19 = true;
+        var _didIteratorError19 = false;
+        var _iteratorError19 = undefined;
 
         try {
-            for (var _iterator18 = result.groupedOrders[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
-                var grpOrd = _step18.value;
+            for (var _iterator19 = result.groupedOrders[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+                var grpOrd = _step19.value;
 
                 var uos = [];
                 var grpComments = grpOrd.group.grpComments;
 
-                var _iteratorNormalCompletion19 = true;
-                var _didIteratorError19 = false;
-                var _iteratorError19 = undefined;
+                var _iteratorNormalCompletion20 = true;
+                var _didIteratorError20 = false;
+                var _iteratorError20 = undefined;
 
                 try {
-                    var _loop7 = function _loop7() {
-                        var order = _step19.value;
+                    var _loop8 = function _loop8() {
+                        var order = _step20.value;
 
                         // console.log(_.includes(ordStatus, order.ordStatus));
                         if (_.includes(ordStatus, order.ordStatus)) {
@@ -2028,20 +2139,20 @@ var Server = function Server(db) {
                         }
                     };
 
-                    for (var _iterator19 = grpOrd.orders[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
-                        _loop7();
+                    for (var _iterator20 = grpOrd.orders[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
+                        _loop8();
                     }
                 } catch (err) {
-                    _didIteratorError19 = true;
-                    _iteratorError19 = err;
+                    _didIteratorError20 = true;
+                    _iteratorError20 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion19 && _iterator19.return) {
-                            _iterator19.return();
+                        if (!_iteratorNormalCompletion20 && _iterator20.return) {
+                            _iterator20.return();
                         }
                     } finally {
-                        if (_didIteratorError19) {
-                            throw _iteratorError19;
+                        if (_didIteratorError20) {
+                            throw _iteratorError20;
                         }
                     }
                 }
@@ -2054,16 +2165,16 @@ var Server = function Server(db) {
 
             // console.log('====GrpUsersOrders:' + JSON.stringify(GrpUsersOrders));
         } catch (err) {
-            _didIteratorError18 = true;
-            _iteratorError18 = err;
+            _didIteratorError19 = true;
+            _iteratorError19 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion18 && _iterator18.return) {
-                    _iterator18.return();
+                if (!_iteratorNormalCompletion19 && _iterator19.return) {
+                    _iterator19.return();
                 }
             } finally {
-                if (_didIteratorError18) {
-                    throw _iteratorError18;
+                if (_didIteratorError19) {
+                    throw _iteratorError19;
                 }
             }
         }
@@ -2088,43 +2199,48 @@ var Server = function Server(db) {
     };
 
     this.refuseOrder = function (usrId, grpId, usrOrds, callback) {
-        //TODO  use ordId 、usrOrds
-        var orders = db.ORDER.filter(function (ord) {
-            return ord.usrId === usrId && ord.grpId === grpId;
+        // let orders = db.ORDER.filter(ord => ord.usrId === usrId && ord.grpId === grpId);
+        // console.log('====usrOrds', JSON.stringify(usrOrds));
+        var user = db.USER.find(function (usr) {
+            return usr.usrId === usrId;
         });
-        console.log('====usrOrds', JSON.stringify(usrOrds));
-        if (orders) {
+
+        if (usrOrds && user.mailWhenRefused) {
             (function () {
                 var dishes = '';
-                var _iteratorNormalCompletion20 = true;
-                var _didIteratorError20 = false;
-                var _iteratorError20 = undefined;
+                var order = void 0;
+                var _iteratorNormalCompletion21 = true;
+                var _didIteratorError21 = false;
+                var _iteratorError21 = undefined;
 
                 try {
-                    var _loop8 = function _loop8() {
-                        var order = _step20.value;
+                    var _loop9 = function _loop9() {
+                        var usrOrd = _step21.value;
 
+                        order = db.ORDER.find(function (ord) {
+                            return ord.ordId === usrOrd.ordId;
+                        });
                         var dihName = db.DISH.find(function (dih) {
                             return dih.dihId === order.dihId;
                         }).dihName;
                         dishes += '<li>' + dihName + '  ' + order.ordNum + '份</li>';
                     };
 
-                    for (var _iterator20 = orders[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-                        _loop8();
+                    for (var _iterator21 = usrOrds[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
+                        _loop9();
                     }
                     // console.log(JSON.stringify(orders));
                 } catch (err) {
-                    _didIteratorError20 = true;
-                    _iteratorError20 = err;
+                    _didIteratorError21 = true;
+                    _iteratorError21 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion20 && _iterator20.return) {
-                            _iterator20.return();
+                        if (!_iteratorNormalCompletion21 && _iterator21.return) {
+                            _iterator21.return();
                         }
                     } finally {
-                        if (_didIteratorError20) {
-                            throw _iteratorError20;
+                        if (_didIteratorError21) {
+                            throw _iteratorError21;
                         }
                     }
                 }
@@ -2138,7 +2254,7 @@ var Server = function Server(db) {
                 var metName = db.MERCHANT.find(function (m) {
                     return m.metId === metId;
                 }).metName;
-                var ordCreateTime = orders[0].ordCreateTime;
+                var ordCreateTime = order.ordCreateTime;
                 var hostName = db.USER.find(function (usr) {
                     return usr.usrId === g.grpHostId;
                 }).usrName;
@@ -2163,6 +2279,25 @@ var Server = function Server(db) {
         }
     };
 
+    this.chamgeMailNotify = function (usrId, mailWhen, isNotify, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        isNotify = isNotify === 'true' ? true : false;
+        console.log('====usrId mailWhen isNotify', usrId, mailWhen, isNotify);
+        db.setValueToDb("USER", function (usr) {
+            return usr.usrId === usrId;
+        }, mailWhen, isNotify);
+        callback({ success: 1 });
+    };
+
+    this.updateUsrmail = function (usrId, usrMail, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        console.log('====usrId usrMail', usrId, usrMail);
+        db.setValueToDb("USER", function (usr) {
+            return usr.usrId === usrId;
+        }, 'usrMail', usrMail);
+        callback({ success: 1 });
+    };
+
     ///////////////////後臺
 
     //給資料表新增壹個row
@@ -2174,27 +2309,27 @@ var Server = function Server(db) {
         try {
             req.body = JSON.parse(req.body.data);
             var rows = req.body.rows;
-            var _iteratorNormalCompletion21 = true;
-            var _didIteratorError21 = false;
-            var _iteratorError21 = undefined;
+            var _iteratorNormalCompletion22 = true;
+            var _didIteratorError22 = false;
+            var _iteratorError22 = undefined;
 
             try {
-                for (var _iterator21 = rows[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
-                    var row = _step21.value;
+                for (var _iterator22 = rows[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
+                    var row = _step22.value;
 
                     db.pushToDb(req.params.tableName, row);
                 }
             } catch (err) {
-                _didIteratorError21 = true;
-                _iteratorError21 = err;
+                _didIteratorError22 = true;
+                _iteratorError22 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion21 && _iterator21.return) {
-                        _iterator21.return();
+                    if (!_iteratorNormalCompletion22 && _iterator22.return) {
+                        _iterator22.return();
                     }
                 } finally {
-                    if (_didIteratorError21) {
-                        throw _iteratorError21;
+                    if (_didIteratorError22) {
+                        throw _iteratorError22;
                     }
                 }
             }

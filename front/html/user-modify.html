@@ -1,0 +1,127 @@
+<div data-page="userModify" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="home.html" class=" link icon-only"><i class="icon icon-back"></i></a>
+            </div>
+            <div class="center">會員資料修改</div>
+        </div>
+    </div>
+    <div class="toolbar toolbar-bottom ">
+        <div class="toolbar-inner">
+            <a href="#" id="btnSave" class="button button-fill button color-red toolbar-button">
+                儲存
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content ">
+        <div class="list-block  " style="margin-top: 0px;!important;">
+
+
+            <ul>
+                <li class="item-content">
+                    <div class="item-inner">
+                        <div class="item-title floating-label">帳號</div>
+                        <div class="item-input">
+                            <input type="text" class="" id="UsrName" name="usrName"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </li>
+                <li class="item-content">
+                    <div class="item-inner ">
+                        <div class="item-title floating-label">電話號碼</div>
+                        <div class="item-input">
+                            <input type="tel" class="" id="UsrMobi" name="usrMobi"
+                                   readonly="readonly">
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content-block-title" style="color:red">會員資料修改</div>
+
+        <div class="list-block  " style="margin-top: 0px;!important;">
+
+            <ul>
+                <!--<li class="item-content">-->
+                    <!--<div class="item-inner ">-->
+                        <!--<div class="item-title floating-label">原密碼</div>-->
+                        <!--<div class="item-input">-->
+                            <!--<input type="password" class="" id="UsrPwd" name="usrPwd"-->
+                                   <!--placeholder="輸入原密碼">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</li>-->
+                <!--<li class="item-content">-->
+                    <!--<div class="item-inner ">-->
+                        <!--<div class="item-title floating-label">新密碼</div>-->
+                        <!--<div class="item-input">-->
+                            <!--<input type="password" class="" id="NewUsrPwd" name="usrPwd"-->
+                                   <!--placeholder="輸入新密碼">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</li>-->
+                <!--<li class="item-content">-->
+                    <!--<div class="item-inner ">-->
+                        <!--<div class="item-title floating-label">確認新密碼</div>-->
+                        <!--<div class="item-input">-->
+                            <!--<input type="password" class="" id="NewUsrPwdConfirm" name="usrPwd"-->
+                                   <!--placeholder="再次輸入新密碼">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</li>-->
+                <li class="item-content">
+                    <div class="item-inner ">
+                        <div class="item-title floating-label">信箱</div>
+                        <div class="item-input">
+                            <input type="email" class="" id="UsrMail" name="usrMail"
+                                   placeholder="信箱">
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content-block-title" style="color:red">Email通知設定(不需點儲存)</div>
+
+        <div class="list-block  " style="margin-top: 0px;!important;">
+            <ul>
+                <li>
+                    <div  class="item-content"><div class="item-media" style="font-size :10px; color:cornflowerblue;">團主:</div></div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-toggle"></i>有團員申請加入時</div>
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <label class="label-switch">
+                                    <input type="checkbox" id="mailWhenJoin" checked="checked">
+                                    <div class="checkbox"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div  class="item-content"><div class="item-media" style="font-size :10px; color:cornflowerblue;">團員:</div></div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="icon icon-form-toggle"></i>訂單被拒絕時</div>
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <label class="label-switch">
+                                    <input type="checkbox" id="mailWhenRefused" checked="checked">
+                                    <div class="checkbox"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
