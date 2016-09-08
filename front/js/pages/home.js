@@ -129,6 +129,7 @@ class Home { //TODO first
 
                 cookies.set('selectedGroupId', grpId);
 
+                window.location.hash = "#group-detail";
                 mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
 
             });
@@ -155,7 +156,6 @@ class Home { //TODO first
     changeTabGroup() {
         //console.log("asdfasdfas");
         myApp.showTab("#tabGroups");
-
     }
 
     changeTabOrder() {

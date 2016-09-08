@@ -48,7 +48,7 @@ class CreateMenuPage { //TODO first
                         myApp.alert('未選擇商品');
                     }
 
-
+                    window.location.hash = "#group-setting-simple";
                     mainView.router.loadPage({url: 'group-setting-simple.html', query: {arrayOfSelectedDishIds,date:new Date()}});
                 });
 
