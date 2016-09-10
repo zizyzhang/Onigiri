@@ -129,6 +129,8 @@ class Home { //TODO first
 
                 cookies.set('selectedGroupId', grpId);
 
+                window.location.hash = "#group-detail";
+
                 mainView.router.loadPage(`./html/group-detail.html?grpId=${grpId}`);
 
             });
@@ -138,12 +140,15 @@ class Home { //TODO first
                 console.log(`grpId : ${grpId}`);
 
                 cookies.set('selectedGroupId', grpId);
+                window.location.hash = "#group-detail";
 
                 mainView.router.loadPage(`./html/group-detail.html?grpId=${grpId}`);
             });
             $$('.orderDetail').on('click', function () {
 
                 let grpId = $$(this).dataset().grpId;
+                window.location.hash = "#group-detail";
+
                 mainView.router.loadPage({url: `./html/order-detail.html?grpId=${grpId}`});
 
             });
@@ -155,7 +160,6 @@ class Home { //TODO first
     changeTabGroup() {
         //console.log("asdfasdfas");
         myApp.showTab("#tabGroups");
-
     }
 
     changeTabOrder() {

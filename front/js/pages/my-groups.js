@@ -43,6 +43,7 @@ class MyGroups { //TODO first
                         //Get group
 
                         let group = result.groupedOrderSums.find(obj=>obj.group.grpId === Number(grpId)).group;
+                        window.location.hash = "#group-setting";
                         mainView.router.load({
                             url: './html/group-setting.html',
                             query: {group}
@@ -65,13 +66,14 @@ class MyGroups { //TODO first
                     // console.log(JSON.stringify(product));
 
                     //TODO deliver product to product-detail.js
+                    window.location.hash = "#proudct-detail";
                     mainView.router.loadPage({
                         url: './html/proudct-detail.html'
                     });
                 });
 
                 $$('#ConfirmMsg').click(function () {
-
+                    window.location.hash = "#confirm-order";
                     mainView.router.loadPage({
                         url: './html/confirm-order.html'
                     });

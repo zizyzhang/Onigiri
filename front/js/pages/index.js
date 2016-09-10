@@ -28,12 +28,28 @@ class IndexPage {
             // window.history.replaceState("#");
             // window.history.pushState(json,"","/Onigiri/front/html/index.html");
             // window.history.pushState(json,"","#");
+
             //控制返回鍵
-            window.location.hash = "no-back-button";
-            window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
-            window.onhashchange = function () {
-                window.location.hash = "no-back-button";
-            };
+            // window.location.hash = "no-back-button";
+            // window.location.hash = "Again-No-back-button";//again because google chrome don't insert first hash into history
+            // window.onhashchange = function () {
+            //     window.location.hash = "no-back-button";
+            // };
+
+            //新版返回點
+            window.location.hash = "#index";
+            var hash = window.location.hash;
+            setInterval(function () {
+                if(window.location.hash==='#home'){
+                    window.location.hash = "#no-back-button";
+                    return;
+                }
+                if (window.location.hash != hash) {
+                    hash = window.location.hash;
+                    $$('.icon-back').click();
+                    // alert("User went back or forward to application state represented by " + hash);
+                }
+            }, 100);
 
             if (!!cookies.getJSON('user') && cookies.get('usrPwdSha')) {
 
@@ -45,19 +61,23 @@ class IndexPage {
                 $$('#txtUsrName').val(cookies.getJSON('user').usrName);
                 $$('#txtUsrPwd').val(cookies.get('usrPwdSha'));
                 //自動登入
-                // setTimeout(()=>$$('#btn-login').click(), 100);
+                setTimeout(()=>$$('#btn-login').click(), 100);
             }
 
             $$('#btnCreateGroup').click(function () {
+                window.location.hash = "#how-to-create";
+
                 mainView.router.loadPage({url: './html/how-to-create.html'});
             });
 
             $$('#btnMyGroups').click(function () {
+                window.location.hash = "#my-groups";
 
                 mainView.router.loadPage({url: './html/my-groups.html'});
             });
 
             $$('#btnConfirm').click(function () {
+                window.location.hash = "#confirm-order";
 
                 mainView.router.loadPage({url: './html/confirm-order.html'});
             });
@@ -72,6 +92,7 @@ class IndexPage {
             });
 
             $$('#btn-sign-up').click(function () {
+                window.location.hash = "#sign-up";
                 myApp.closeModal();
                 mainView.router.loadPage({url: './html/sign-up.html'});
             });
@@ -94,7 +115,7 @@ class IndexPage {
                     if (!usrPwdSha) {
                         cookies.set('usrPwdSha', SHA256($$('#txtUsrPwd').val()).toString());
                     }
-
+                    window.location.hash = "#home";
                     myApp.closeModal();
                     tool.loadPage('./html/home.html', mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
                     //mainView.router.loadPage({url: 'home.html'});
@@ -105,10 +126,11 @@ class IndexPage {
             });
 
             $$('#tabNearGroups').click(function () {
+                window.location.hash = "#tabNearGroups";
                 homejschange.changeTabGroup();
             });
             $$('#tabOrders').click(function () {
-
+                window.location.hash = "#tabOrders";
                 homejschange.changeTabOrder();
                 //changeTabGroup();
             });
@@ -118,9 +140,15 @@ class IndexPage {
             });
 
             $$('#btnLogout').click(function () {
+                // cookies.remove('user');
+                cookies.remove('usrPwdSha');
                 location.reload();
-
                 // $$('#txtUsrPwd').val("");
+            });
+
+            $$('#btnsetting').click(function () {
+                window.location.hash = "#user-modify";
+                mainView.router.loadPage({url: 'user-modify.html'});
             });
 
         });

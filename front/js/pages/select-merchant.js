@@ -39,6 +39,7 @@ class SelectMerchantPage {
                         myApp.alert('未選擇商家');
                         return;
                     }
+                    window.location.hash = "#create-menu";
 
                      mainView.router.loadPage(`./html/create-menu.html?metId=${metId}`); //傳 id
                     cookies.set('selectedMerchantId', metId);

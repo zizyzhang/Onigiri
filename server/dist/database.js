@@ -44,7 +44,7 @@ var Database = function () {
         };
 
         Database.db.setValueToDb = function (table, condition, setKey, newValue) {
-            console.log(Database.db[table]);
+            // console.log(Database.db[table]);
             var index = Database.db[table].findIndex(condition);
             var oldObj = Database.db[table][index][setKey] = newValue;
             var set = {};
@@ -113,7 +113,7 @@ var Database = function () {
             var _this = this;
 
             return new Promise(function () {
-                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(resolve) {
+                var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(resolve) {
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                             switch (_context.prev = _context.next) {
@@ -183,7 +183,7 @@ var Database = function () {
                 }));
 
                 return function (_x2) {
-                    return ref.apply(this, arguments);
+                    return _ref.apply(this, arguments);
                 };
             }());
         }
@@ -211,7 +211,7 @@ var Database = function () {
     }, {
         key: 'setValueToDb',
         value: function setValueToDb(table, condition, setKey, newValue) {
-            console.log(Database.db[table]);
+            // console.log(Database.db[table]);
             var index = Database.db[table].findIndex(condition);
             var oldObj = Database.db[table][index][setKey] = newValue;
             var set = {};
