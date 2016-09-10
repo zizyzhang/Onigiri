@@ -49,7 +49,7 @@ class CreateMenuPage { //TODO first
                     }
 
 
-                    mainView.router.loadPage({url: 'group-setting-simple.html', query: {arrayOfSelectedDishIds,date:new Date()}});
+                    mainView.router.loadPage({url: './html/group-setting-simple.html', query: {arrayOfSelectedDishIds,date:new Date()}});
                 });
 
 

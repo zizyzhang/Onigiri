@@ -50,7 +50,7 @@ class Home { //TODO first
                     extraOrder: function (grpId) {
                         window.selectedGroupId = grpId;
                         tool.loadPage({
-                            url: 'order.html',
+                            url: './html/order.html',
                             query: {isExtraOrder: true}
                         }, mainView, ajaxMethod.getGroupById(grpId));
                     }

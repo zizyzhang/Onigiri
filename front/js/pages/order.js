@@ -106,7 +106,7 @@ class OrderPage {
 
                     ajaxMethod.joinGroupPromise(usrId, dishes, grpId,comments).then((data)=> {
                         myApp.alert('加購成功', function () {
-                            tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
+                            tool.loadPage('./html/home.html',mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
                     }).catch(e=> myApp.alert(JSON.stringify(e)+'加購失敗!'));
 

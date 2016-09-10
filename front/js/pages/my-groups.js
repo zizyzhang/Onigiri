@@ -44,7 +44,7 @@ class MyGroups { //TODO first
 
                         let group = result.groupedOrderSums.find(obj=>obj.group.grpId === Number(grpId)).group;
                         mainView.router.load({
-                            url: 'group-setting.html',
+                            url: './html/group-setting.html',
                             query: {group}
                         });
 
@@ -66,14 +66,14 @@ class MyGroups { //TODO first
 
                     //TODO deliver product to product-detail.js
                     mainView.router.loadPage({
-                        url: 'proudct-detail.html'
+                        url: './html/proudct-detail.html'
                     });
                 });
 
                 $$('#ConfirmMsg').click(function () {
 
                     mainView.router.loadPage({
-                        url: 'confirm-order.html'
+                        url: './html/confirm-order.html'
                     });
                 });
                 $$('.btn-share-friend').click(function () {

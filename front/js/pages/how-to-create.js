@@ -28,11 +28,11 @@ class HowToCreate { //TODO first
                 data: {
                     items: [{
                         content: '手動輸入商家/商品資訊',
-                        url:'group-setting.html'
+                        url:'./html/group-setting.html'
 
                     }, {
                         content: '選擇已有的商家/商品資訊',
-                        url:'select-merchant.html'
+                        url:'./html/select-merchant.html'
                     }]
                 },
                 methods: {}

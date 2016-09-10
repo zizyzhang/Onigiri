@@ -33,7 +33,7 @@ class OrderDetailPage { //TODO first
                 $$('.js-btn-cancel-order').click(function () {
                     ajaxMethod.cancelOrderPromise(grpId, usrId).then(()=>{
                         myApp.alert('取消成功','販團',()=>{
-                            tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
+                            tool.loadPage('./html/home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
 
                     }).catch(e=>{

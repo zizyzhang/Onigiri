@@ -55,7 +55,7 @@ class GroupSettingSimple { //TODO first
                         ajaxMethod.postGroup(grpHostId, that.dishes, metId, addr, gorTime,grpAmountLimit).then(()=> {
                             //完成新增
                             myApp.alert('開團完成!', function () {
-                                tool.loadPage('home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
+                                tool.loadPage('./html/home.html',mainView, ajaxMethod.getHomePageDataPromise(cookies.getJSON('user').usrId));
                             });
                         }).catch(e=>myApp.alert('開團失敗: ' + e.toString()));
 

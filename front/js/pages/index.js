@@ -49,17 +49,17 @@ class IndexPage {
             }
 
             $$('#btnCreateGroup').click(function () {
-                mainView.router.loadPage({url: 'how-to-create.html'});
+                mainView.router.loadPage({url: './html/how-to-create.html'});
             });
 
             $$('#btnMyGroups').click(function () {
 
-                mainView.router.loadPage({url: 'my-groups.html'});
+                mainView.router.loadPage({url: './html/my-groups.html'});
             });
 
             $$('#btnConfirm').click(function () {
 
-                mainView.router.loadPage({url: 'confirm-order.html'});
+                mainView.router.loadPage({url: './html/confirm-order.html'});
             });
 
             $$('#txtUsrName').on('focus', function () {
@@ -73,7 +73,7 @@ class IndexPage {
 
             $$('#btn-sign-up').click(function () {
                 myApp.closeModal();
-                mainView.router.loadPage({url: 'sign-up.html'});
+                mainView.router.loadPage({url: './html/sign-up.html'});
             });
 
             $$('#txtUsrPwd').on('keyup', function () {
@@ -96,7 +96,7 @@ class IndexPage {
                     }
 
                     myApp.closeModal();
-                    tool.loadPage('home.html', mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
+                    tool.loadPage('./html/home.html', mainView, ajaxMethod.getHomePageDataPromise(result.user.usrId));
                     //mainView.router.loadPage({url: 'home.html'});
                 }).catch(function (e) {
                     myApp.alert('登入失敗:' + e);

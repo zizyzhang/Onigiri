@@ -54,12 +54,12 @@ let mainView = myApp.addView('.view-main', {
         myApp.closeModal();
 
         //mainView.router.loadPage('home.html');//
-        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
+        tool.loadPage('./html/home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
         // tool.loadPage('my-groups.html',mainView,ajaxMethod.getGroupedOrdersAndSumsByHostIdPromise(1));
 
 
         //mainView.router.loadPage('home.html');
-        tool.loadPage('home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
+        tool.loadPage('./html/home.html',mainView,ajaxMethod.getHomePageDataPromise(1));
 
 
         //mainView.router.loadPage({url: 'group-setting.html', query: {arrayOfSelectedDishIds:[1,2]}});

@@ -29,7 +29,7 @@ class GroupDetailPage {
                 console.log('group',JSON.stringify(group));
                 $$('#btnJoin').on('click', function () {
 
-                    tool.loadPage('order.html', mainView, ajaxMethod.getGroupById(that .grpId));
+                    tool.loadPage('./html/order.html', mainView, ajaxMethod.getGroupById(that .grpId));
                 });
 
                 $$('.js-btn-host').on('click',function(){
