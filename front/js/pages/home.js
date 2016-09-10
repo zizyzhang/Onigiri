@@ -139,12 +139,13 @@ class Home { //TODO first
                 console.log(`grpId : ${grpId}`);
 
                 cookies.set('selectedGroupId', grpId);
-
+                window.location.hash = "#group-detail";
                 mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
             });
             $$('.orderDetail').on('click', function () {
 
                 let grpId = $$(this).dataset().grpId;
+                window.location.hash = "#group-detail";
                 mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
 
             });
