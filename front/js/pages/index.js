@@ -148,7 +148,7 @@ class IndexPage {
 
             $$('#btnsetting').click(function () {
                 window.location.hash = "#user-modify";
-                mainView.router.loadPage({url: 'user-modify.html'});
+                mainView.router.loadPage({url: './html/user-modify.html'});
             });
 
         });

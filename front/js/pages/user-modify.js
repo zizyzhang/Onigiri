@@ -54,7 +54,7 @@ class userModify { //TODO first
                     }
                     myApp.alert('設定信箱為:' + $$('#UsrMail').val());
                     ajaxMethod.updateUsrmail(usrCookie.usrId, $$('#UsrMail').val());
-                    mainView.router.loadPage({url: 'home.html'});
+                    mainView.router.loadPage({url: './html/home.html'});
                 }
             });
 
