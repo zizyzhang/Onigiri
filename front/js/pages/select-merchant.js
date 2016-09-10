@@ -40,7 +40,7 @@ class SelectMerchantPage {
                         return;
                     }
 
-                     mainView.router.loadPage(`create-menu.html?metId=${metId}`); //傳 id
+                     mainView.router.loadPage(`./html/create-menu.html?metId=${metId}`); //傳 id
                     cookies.set('selectedMerchantId', metId);
 
                 });

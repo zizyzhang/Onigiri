@@ -112,7 +112,7 @@ class Home { //TODO first
                 cookies.set('selectedGroupId', grpId);
 
 
-                tool.loadPage(`order.html?grpId=${grpId}`, mainView, ajaxMethod.getGroupById(grpId));
+                tool.loadPage(`./html/order.html?grpId=${grpId}`, mainView, ajaxMethod.getGroupById(grpId));
 
 
             });
@@ -129,7 +129,7 @@ class Home { //TODO first
 
                 cookies.set('selectedGroupId', grpId);
 
-                mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+                mainView.router.loadPage(`./html/group-detail.html?grpId=${grpId}`);
 
             });
             $$('.card-img').on('click', function () {
@@ -139,12 +139,12 @@ class Home { //TODO first
 
                 cookies.set('selectedGroupId', grpId);
 
-                mainView.router.loadPage(`group-detail.html?grpId=${grpId}`);
+                mainView.router.loadPage(`./html/group-detail.html?grpId=${grpId}`);
             });
             $$('.orderDetail').on('click', function () {
 
                 let grpId = $$(this).dataset().grpId;
-                mainView.router.loadPage({url: `order-detail.html?grpId=${grpId}`});
+                mainView.router.loadPage({url: `./html/order-detail.html?grpId=${grpId}`});
 
             });
 
