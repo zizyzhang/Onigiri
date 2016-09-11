@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+const cookies = require('js-cookie');
 var SHA256 = require("crypto-js/sha256");
 let randomMobiAuth;
 
@@ -37,14 +38,24 @@ class SignUpPage { //TODO first
 
                 ajaxMethod.addUserPromise($$('#signUsrName').val(), SHA256($$('#signUsrPwd').val()).toString(), $$('#signUsrMail').val(), $$('#signUsrMobi').val(),$$('#signTwilio').val()).then(result=> {
                     myApp.alert('註冊成功', function () {
+                        cookies.set('user', {
+                            usrName: $$('#signUsrName').val(),
+                            usrMobi: $$('#signUsrMobi').val(),
+                            usrMail: $$('#signUsrMail').val(),
+                        });
+                        cookies.set('usrPwdSha', SHA256($$('#signUsrPwd').val()).toString());
+
                         $$('#signUsrName').val("");
                         $$('#signUsrPwd').val("");
                         $$('#signUsrPwdConfirm').val("");
                         $$('#signUsrMail').val("");
                         $$('#signUsrMobi').val("");
                         $$('#signTwilio').val("");
-                        mainView.router.refreshPage();
-                        myApp.loginScreen();
+
+                        // mainView.router.loadPage({url: '../index.html'});
+                        // mainView.router.refreshPage();
+                        location.reload();
+                        // myApp.loginScreen();
                     });
                 }).catch(e=> {
                     myApp.alert('註冊失敗:'+e);
