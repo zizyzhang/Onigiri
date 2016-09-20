@@ -12,7 +12,8 @@
 
     <div class="toolbar toolbar-bottom ">
         <div class="toolbar-inner">
-            <a href="#tab-1"  data-grp-host-mobi="{{grpHost.usrMobi}}" class="button button-fill button color-green toolbar-button js-btn-contact-host">
+            <a href="#tab-1" data-grp-host-mobi="{{grpHost.usrMobi}}"
+               class="button button-fill button color-green toolbar-button js-btn-contact-host">
                 聯繫團主
             </a>
             <a href="#" id="btnJoin" class="button button-fill color-red toolbar-button js-btn-cancel-order">
@@ -22,19 +23,31 @@
         </div>
     </div>
 
-    <div class="page-content swiper-slide " style="padding-top: 60px !important;">
+    <div class="page-content swiper-slide " style="padding-top: 60px !important;" id="orderDteail">
         <div class="card">
             <div class="card-header">團購資訊</div>
             <div class="card-content">
+
+
                 <div class="card-content-inner">
-                    <p><span class="ficon" >Z</span>截止時間:  {{grpTime}}</p>
+                    <p><span class="ficon">Z</span>截止時間: {{grpTime}}</p>
 
-                    <p><span class="ficon icon-user-8">L</span>團主:  {{grpHostName}}</p>
+                    <p><span class="ficon icon-user-8">L</span>團主: {{grpHostName}}</p>
 
-                    <p><span class="ficon ">M</span>領取地點:  {{grpAddr}}</p></div>
+                    <p><span class="ficon ">M</span>領取地點: {{grpAddr}}</p>
+
+                    <p v-for="uc in grpComments">
+                        <span  v-if="$index ===0"><span class=" ficon">(</span>備註:</span>
+                        <span style="visibility:hidden" v-else><span class=" ficon">(</span>備註:</span>
+                        {{uc.comments}}
+                    </p>
+
+                </div>
+
 
             </div>
 
-                    </div>
+
+        </div>
     </div>
 </div>

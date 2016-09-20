@@ -6,6 +6,7 @@ let ajaxMethod = require('../ajaxMethods.js');
 let $$ = Dom7;
 let myApp = null, mainView = null;
 let tool = require('../tool.js');
+let Vue = require('vue');
 let cookies = require('js-cookie');
 
 
@@ -21,9 +22,19 @@ class OrderDetailPage { //TODO first
             let grpId = page.query.grpId || this.grpId;
             let usrId = cookies.getJSON('user').usrId;
 
-            console.log(grpId);
+            // console.log(grpId);
 
-            tool.loadTemplateFromJsonPromise(myApp,ajaxMethod.getGroupById(grpId), page, ()=> {
+            ajaxMethod.getGroupById(grpId).then(function (result) {
+
+                // console.log('order-detail result before', JSON.stringify(result));
+                result.grpComments = result.grpComments.filter(uc=>uc.usrId === usrId);
+                console.log('order-detail result after', JSON.stringify(result));
+                // console.log('order-detail result grpComments', JSON.stringify(result.grpComments));
+                
+                let vueOrderDteail = new Vue({
+                    el: '#orderDteail',
+                    data: result
+                });
 
                 $$('.js-btn-contact-host').click(function () {
                     console.log("1");
@@ -31,27 +42,43 @@ class OrderDetailPage { //TODO first
                 });
 
                 $$('.js-btn-cancel-order').click(function () {
-                    ajaxMethod.cancelOrderPromise(grpId, usrId).then(()=>{
-                        myApp.alert('取消成功','販團',()=>{
+                    ajaxMethod.cancelOrderPromise(grpId, usrId).then(()=> {
+                        myApp.alert('取消成功', '販團', ()=> {
                             tool.loadPage('./html/home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
                         });
 
-                    }).catch(e=>{
+                    }).catch(e=> {
                         myApp.alert(e);
                     });
-                 });
+                });
+                
 
             });
 
-
+            // tool.loadTemplateFromJsonPromise(myApp, ajaxMethod.getGroupById(grpId), page, ()=> {
+            //     // console.log('order-detail page',page);
+            //
+            //     $$('.js-btn-contact-host').click(function () {
+            //         console.log("1");
+            //         window.location.href = 'tel:' + $$(this).data('grp-host-mobi');
+            //     });
+            //
+            //     $$('.js-btn-cancel-order').click(function () {
+            //         ajaxMethod.cancelOrderPromise(grpId, usrId).then(()=> {
+            //             myApp.alert('取消成功', '販團', ()=> {
+            //                 tool.loadPage('./html/home.html', mainView, ajaxMethod.getHomePageDataPromise(usrId));
+            //             });
+            //
+            //         }).catch(e=> {
+            //             myApp.alert(e);
+            //         });
+            //     });
+            //
+            // });
 
 
         });
 
-        myApp.onPageInit('order-detail', (page) => {
-
-            console.log('order-detail Init');
-        });
     }
 
 }

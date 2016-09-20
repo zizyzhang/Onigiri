@@ -381,12 +381,12 @@ var Server = function Server(db) {
     });
 
     app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
-        //TODO ordId
         var grpId = Number(req.params.grpId);
         var usrId = Number(req.params.usrId);
         // let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
+        // let usrOrds = db.ORDER.filter(o=>o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus));
         var usrOrds = db.ORDER.filter(function (o) {
-            return o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus);
+            return o.grpId === grpId && o.usrId === usrId;
         });
 
         var _iteratorNormalCompletion3 = true;
@@ -664,6 +664,17 @@ var Server = function Server(db) {
         var usrMail = req.body.usrMail;
 
         self.updateUsrmail(usrId, usrMail, function (result) {
+            res.json(result);
+        });
+    });
+
+    app.post('/updatePwd', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        var usrId = Number(req.body.usrId);
+        var usrPwd = req.body.usrPwd;
+        var NewUsrPwd = req.body.NewUsrPwd;
+
+        self.updatePwd(usrId, usrPwd, NewUsrPwd, function (result) {
             res.json(result);
         });
     });
@@ -2296,6 +2307,23 @@ var Server = function Server(db) {
             return usr.usrId === usrId;
         }, 'usrMail', usrMail);
         callback({ success: 1 });
+    };
+
+    this.updatePwd = function (usrId, usrPwd, NewUsrPwd, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        // console.log('====usrId usrMail', usrId, usrPwd);
+        var user = db.USER.find(function (usr) {
+            return usr.usrId === usrId;
+        });
+
+        if (user.usrPwd !== usrPwd) {
+            callback({ success: false, err: '原密碼錯誤' });
+        } else {
+            db.setValueToDb("USER", function (usr) {
+                return usr.usrId === usrId;
+            }, 'usrPwd', NewUsrPwd);
+            callback({ success: 1 });
+        }
     };
 
     ///////////////////後臺

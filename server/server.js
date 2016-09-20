@@ -308,11 +308,11 @@ let Server = function (db) {
     });
 
     app.get('/cancelOrder/:grpId/:usrId', function (req, res) {
-        //TODO ordId
         let grpId = Number(req.params.grpId);
         let usrId = Number(req.params.usrId);
         // let ordStatus = db.ORDER.find(o=>o.grpId === grpId && o.usrId === usrId).ordStatus;
-        let usrOrds = db.ORDER.filter(o=>o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus));
+        // let usrOrds = db.ORDER.filter(o=>o.grpId === grpId && o.usrId === usrId && _.includes([-2, 0, 3], o.ordStatus));
+        let usrOrds = db.ORDER.filter(o=>o.grpId === grpId && o.usrId === usrId);
 
         for (let order of usrOrds) {
             //例外判断, 只有待审查的订单可以被取消
@@ -566,6 +566,16 @@ let Server = function (db) {
         });
     });
 
+    app.post('/updatePwd', function (req, res) {
+        req.body = JSON.parse(req.body.data);
+        let usrId = Number(req.body.usrId);
+        let usrPwd = req.body.usrPwd;
+        let NewUsrPwd = req.body.NewUsrPwd;
+
+        self.updatePwd(usrId, usrPwd, NewUsrPwd, result=> {
+            res.json(result);
+        });
+    });
 
     app.listen(8080, function () {
         console.log('' +
@@ -1629,6 +1639,19 @@ let Server = function (db) {
         console.log('====usrId usrMail', usrId, usrMail);
         db.setValueToDb("USER", usr=>usr.usrId === usrId, 'usrMail', usrMail);
         callback({success: 1});
+    };
+
+    this.updatePwd = function (usrId, usrPwd, NewUsrPwd, callback) {
+        // let user = db.USER.find(usr=>usr.usrId === usrId);
+        // console.log('====usrId usrMail', usrId, usrPwd);
+        let user = db.USER.find(usr=>usr.usrId === usrId);
+
+        if (user.usrPwd !== usrPwd) {
+            callback({success: false, err: '原密碼錯誤'})
+        } else {
+            db.setValueToDb("USER", usr=>usr.usrId === usrId, 'usrPwd', NewUsrPwd);
+            callback({success: 1});
+        }
     };
 
 

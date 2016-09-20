@@ -297,9 +297,24 @@ var AjaxMethods = function () {
 
     this.updateUsrmail = function (usrId, usrMail) {
         return new Promise((resolve, reject)=> {
-            $$.post(SERVER_ADS + '/updateUsrmail',{data: JSON.stringify({usrId, usrMail})},
+            $$.post(SERVER_ADS + '/updateUsrmail', {data: JSON.stringify({usrId, usrMail})},
                 function (result) {
                     resolve(result);
+                });
+        });
+    };
+
+    this.updatePwd = function (usrId, usrPwd, NewUsrPwd) {
+        return new Promise((resolve, reject)=> {
+            $$.post(SERVER_ADS + '/updatePwd', {data: JSON.stringify({usrId, usrPwd, NewUsrPwd})},
+                function (result) {
+                    if (JSON.parse(result).success === 1) {
+                        console.log('updatePwd success');
+
+                        resolve(JSON.parse(result));
+                    } else {
+                        reject(JSON.parse(result).err);
+                    }
                 });
         });
     };

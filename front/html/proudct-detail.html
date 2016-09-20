@@ -52,7 +52,8 @@
                                         v-for="usrDish in usrOrder.usrDishes">
                                         <div class="item-title">{{usrDish.dihName}}</div>
                                         <div class="center">{{usrDish.ordNum}}份</div>
-                                        <div class="item-after">NT {{usrDish.ordNum*usrDish.dihPrice}}<span></span>
+                                        <!--<div class="item-after">NT {{usrDish.ordNum*usrDish.dihPrice}}<span></span>-->
+                                        <div class="item-after">NT {{usrDish.dihPrice}}<span></span>
                                         </div>
                                     </li>
 

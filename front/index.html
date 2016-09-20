@@ -20,7 +20,7 @@
 
     <link rel="shortcut icon" href="./assets/img/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="60x60" href="./assets/img/apple-icon-60x60.png">
-    <link rel="icon" type="image/png" sizes="60x60"  href="./assets/img/apple-icon-60x60.png">
+    <link rel="icon" type="image/png" sizes="60x60" href="./assets/img/apple-icon-60x60.png">
 
 
 </head>
@@ -81,7 +81,7 @@
             <li>
                 <a href="#" id="btnsetting" class="close-panel item-link item-content">
                     <div class="item-inner">
-                        <div class="item-title">會員資料修改</div>
+                        <div class="item-title">設定</div>
                     </div>
                 </a>
             </li>
@@ -172,10 +172,12 @@
     <div class="popover-inner">
         <div class="list-block">
             <ul>
-                <li><a href="#" class="list-button item-link" @click="popNewGroup">最新的團購</a></li>
-                <li><a href="#" class="list-button item-link" @click="popCloseDeadline">最接近截止的團購</a></li>
-                <li><a href="#" class="list-button item-link" @click="popFarDeadline">最晚截止的團購</a></li>
-                <li><a href="#" class="list-button item-link" @click="popOldGroup">最舊的團購</a></li>
+                <li><a href="#" class="list-button item-link" id="popNewGroup" @click="popNewGroup">最新的團購</a></li>
+                <li><a href="#" class="list-button item-link" id="popCloseDeadline"
+                       @click="popCloseDeadline">最接近截止的團購</a></li>
+                <li><a href="#" class="list-button item-link" id="popFarDeadline" @click="popFarDeadline">最晚截止的團購</a>
+                </li>
+                <li><a href="#" class="list-button item-link" id="popOldGroup" @click="popOldGroup">最舊的團購</a></li>
             </ul>
 
 
@@ -188,9 +190,9 @@
         <div class="content-block">
             <div class="list-block">
                 <ul>
-                    <li><a href="#" class="list-button item-link" @click="allTypes">所有類型</a></li>
-                    <li><a href="#" class="list-button item-link" @click="filter('餐廳')">餐廳</a></li>
-                    <li><a href="#" class="list-button item-link" @click="filter('其他')">其他</a></li>
+                    <li><a href="#" class="list-button item-link" id="allTypes" @click="allTypes">所有類型</a></li>
+                    <li><a href="#" class="list-button item-link" id="filter-餐廳" @click="filter('餐廳')">餐廳</a></li>
+                    <li><a href="#" class="list-button item-link" id="filter-其他" @click="filter('其他')">其他</a></li>
 
                     <!--<li v-for="type in merchantTypes"><a href="#" class="list-button item-link" @click="filter(type)">{{type}}</a></li>-->
                 </ul>
@@ -215,22 +217,26 @@
 
         <div class="toolbar toolbar-bottom">
             <div class="toolbar-inner">
-
-
                 <a id="btnSend" href="#"
                    class="button button-fill color-green close-popup  toolbar-button">
                     確定
                 </a>
-
             </div>
         </div>
 
         <!--<input type="text" id="comments" style="width: 100%;  border:solid 1px #dadada; padding:2px; height:100%; "/>-->
-        <div class="content-block" style="margin-top: 60px ;height: 100%; ">
 
-                            <textarea id="comments" placeholder="請輸入文字"
-                                      style="height: 100%;width: 100%;border: none;font-size: 14pt; resize: none;"></textarea>
 
+        <div class="content-block" style="margin-top: 60px; height: 70%; ">
+            <div class="item-inner" style="height: 20px;">
+                <div class="item-input" >
+                    <input class="button" type="text" style="width:100%;font-size:14pt;" placeholder="冰塊 甜度" readonly
+                           id="picker-device">
+                </div>
+            </div>
+
+            <textarea id="comments" placeholder="請輸入文字"
+                      style="height: 100%;width: 100%;border: none;font-size: 14pt; resize: none; margin-top: 20px;"></textarea>
         </div>
 
 
