@@ -32,8 +32,14 @@ class Home { //TODO first
              console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
 
             // console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
-            //console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
+            console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
 
+            let now = new Date();
+            for(let g of page.query.ajaxResult.groups ){
+                //TODO 時間差 剩多少時間
+                let endTime = new Date(g.grpTime);
+                console.log(endTime.getTime()-now.getTime());
+            }
 
             window.vueGroups = new Vue({
                 el: '#tabGroups',
@@ -155,6 +161,12 @@ class Home { //TODO first
                 window.location.hash = "#group-detail";
                 mainView.router.loadPage({url: `./html/order-detail.html?grpId=${grpId}`});
 
+            });
+
+            $$('.btnCreateGroup').click(function () {
+                window.location.hash = "#how-to-create";
+
+                mainView.router.loadPage({url: './html/how-to-create.html'});
             });
 
         });

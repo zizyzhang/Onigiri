@@ -63,7 +63,18 @@ box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.16);">
                     </div>
                 </div>
 
+                <div class="card demo-card-header-pic" v-if="groups.length === 0">
 
+                    <div class="card-content">
+                        <div class="card-content-inner">
+                            <p>目前沒有團購喔，趕緊創建一個吧</p>
+                            <a href="#" class="link btnCreateGroup button button-fill color-green" style="width:100%">創建團購</a>
+
+                        </div>
+                    </div>
+                    <!--<div class="card-footer">-->
+                    <!--</div>-->
+                </div>
 
             </div>
             <div id="tabMyOrders" class="page-content tab swiper-slide with-subnavbar " style="width: 420px;">
