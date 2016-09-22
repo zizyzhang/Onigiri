@@ -28,18 +28,31 @@ class Home { //TODO first
                 page.query.ajaxResult = window.homeAjaxResult;
             }
 
-             // console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
-             console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
+            // console.log('page.query.ajaxResult in homejs', page.query.ajaxResult);
+            console.log('page.query.ajaxResult. page.query.ajaxResult', JSON.stringify(page.query.ajaxResult));
 
             // console.log('page.query.ajaxResult.groups', page.query.ajaxResult.groups);
+            // console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
+
+            for (let g of page.query.ajaxResult.groups) {
+                //TODO 時間差 剩多少時間
+                let leftTime = Math.round((new Date(g.grpTime).getTime() - new Date().getTime()) / 1000 / 60, 0);
+
+                if (leftTime >= 1440) {
+                    leftTime = Math.floor(leftTime / 60 / 24) + " 天";
+                } else if (leftTime >= 60 && leftTime < 1440) {
+                    // leftTime = Math.floor(leftTime / 60) + " : " + leftTime % 60;
+                    leftTime = Math.floor(leftTime / 60) + " 小時";
+                } else if (leftTime < 60) {
+                    leftTime = leftTime + " 分鐘";
+                }
+                g.leftTime = leftTime;
+                // console.log(leftTime);
+
+            }
+
             console.log('page.query.ajaxResult.groups test', JSON.stringify(page.query.ajaxResult.groups));
 
-            let now = new Date();
-            for(let g of page.query.ajaxResult.groups ){
-                //TODO 時間差 剩多少時間
-                let endTime = new Date(g.grpTime);
-                console.log(endTime.getTime()-now.getTime());
-            }
 
             window.vueGroups = new Vue({
                 el: '#tabGroups',
@@ -73,13 +86,13 @@ class Home { //TODO first
                 methods: {
                     filter: function (typeName) {
                         window.vueGroups.groups = _.cloneDeep(window.vueGroups.groups).map(o=> _.assign({}, o, o.hidden = o.merchant.metType === typeName ? false : true));
-                        $$('#popFilter').html($$('#filter-'+typeName).text()+`<span class="ficon">5</span>`);
+                        $$('#popFilter').html($$('#filter-' + typeName).text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
 
                     },
                     allTypes: function () {
                         window.vueGroups.groups = _.cloneDeep(window.vueGroups.groups).map(o=> _.assign({}, o, o.hidden = false));
-                        $$('#popFilter').html($$('#allTypes').text()+`<span class="ficon">5</span>`);
+                        $$('#popFilter').html($$('#allTypes').text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
 
                     }
@@ -93,31 +106,32 @@ class Home { //TODO first
                 methods: {
                     popNewGroup: function () {
                         window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>-Number(new Date(row.grpCreateTime).getTime())));
-                        $$('#popOrder').html($$('#popNewGroup').text()+`<span class="ficon">5</span>`);
+                        $$('#popOrder').html($$('#popNewGroup').text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
                     },
                     popCloseDeadline: function () {
                         window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>Number(new Date(row.grpTime).getTime())));
-                        $$('#popOrder').html($$('#popCloseDeadline').text()+`<span class="ficon">5</span>`);
+                        $$('#popOrder').html($$('#popCloseDeadline').text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
                     },
                     popFarDeadline: function () {
                         window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>-Number(new Date(row.grpTime).getTime())));
-                        $$('#popOrder').html($$('#popFarDeadline').text()+`<span class="ficon">5</span>`);
+                        $$('#popOrder').html($$('#popFarDeadline').text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
                     },
                     popOldGroup: function () {
                         window.vueGroups.$set('groups', _.sortBy(window.homeAjaxResult.groups, row=>Number(new Date(row.grpCreateTime).getTime())));
-                        $$('#popOrder').html($$('#popOldGroup').text()+`<span class="ficon">5</span>`);
+                        $$('#popOrder').html($$('#popOldGroup').text() + `<span class="ficon">5</span>`);
                         myApp.closeModal(this.el);
-                    }                },
+                    }
+                },
                 ready: function () {
                     console.log('vueMyOrders created', window.homeAjaxResult);
 
                 }
 
             });
-            
+
 
             $$('.btn-join-in-group-page').on('click', function () {
 
