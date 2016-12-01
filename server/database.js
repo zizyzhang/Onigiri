@@ -28,6 +28,22 @@ class Database {
                  }).catch(e=>console.log(e));
             }
         }
+		
+		Database.db.pushManyToDb=function(table, value) {
+
+            //jsonDb.push('/db/' + table + '[]', value);
+            if(Database.debug){
+                value._id = 'r'+new Date().getTime();
+                Database.db[table].push(value);
+
+            }else{
+				Database.db[table].push(value);
+                Database.mongoDb.collection(table).insertOne(value).then(r=> {
+                    value._id = r.insertedId;
+                    
+                 }).catch(e=>console.log(e));
+            }
+        }
 
         Database.db.delFromJsonDb=function(table, condition) {
             let index = Database.db[table].findIndex(condition);

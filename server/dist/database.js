@@ -35,6 +35,22 @@ var Database = function () {
             }
         };
 
+        Database.db.pushManyToDb = function (table, value) {
+
+            //jsonDb.push('/db/' + table + '[]', value);
+            if (Database.debug) {
+                value._id = 'r' + new Date().getTime();
+                Database.db[table].push(value);
+            } else {
+                Database.db[table].push(value);
+                Database.mongoDb.collection(table).insertOne(value).then(function (r) {
+                    value._id = r.insertedId;
+                }).catch(function (e) {
+                    return console.log(e);
+                });
+            }
+        };
+
         Database.db.delFromJsonDb = function (table, condition) {
             var index = Database.db[table].findIndex(condition);
             Database.db[table].splice(index, 1);
@@ -113,7 +129,7 @@ var Database = function () {
             var _this = this;
 
             return new Promise(function () {
-                var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(resolve) {
+                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(resolve) {
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                             switch (_context.prev = _context.next) {
@@ -183,7 +199,7 @@ var Database = function () {
                 }));
 
                 return function (_x2) {
-                    return _ref.apply(this, arguments);
+                    return ref.apply(this, arguments);
                 };
             }());
         }

@@ -49,7 +49,7 @@ var connectMongo = function connectMongo(option) {
         }
 
         MongoClient.connect(mongoUrl).then(function () {
-            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
+            var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(_db) {
                 var myDb;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
@@ -157,7 +157,7 @@ var connectMongo = function connectMongo(option) {
             }));
 
             return function (_x) {
-                return _ref.apply(this, arguments);
+                return ref.apply(this, arguments);
             };
         }()).catch(function (e) {
             console.log(e);
@@ -695,7 +695,8 @@ var Server = function Server(db) {
                     var dish = _step4.value;
 
                     dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
-                    db.pushToDb('DISH', dish);
+                    //db.pushToDb('DISH', dish);
+                    db.pushManyToDb('DISH', dish);
                 }
             } catch (err) {
                 _didIteratorError4 = true;
@@ -1191,7 +1192,7 @@ var Server = function Server(db) {
             var addOrd = function addOrd(usrName, dihId, num, ordStatus) {
                 var lastOrder = _.maxBy(db.ORDER, 'ordId');
 
-                db.pushToDb("ORDER", {
+                db.pushManyToDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,

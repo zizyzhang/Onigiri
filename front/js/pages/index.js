@@ -164,6 +164,14 @@ class IndexPage {
                 window.location.hash = "#user-modify";
                 mainView.router.loadPage({url: './html/user-modify.html'});
             });
+			
+			 $$('#btnPayDetail').click(function () {
+                //TODO deliver product to product-detail.js
+                window.location.hash = "#proudct-detail";
+                mainView.router.loadPage({
+                    url: './html/proudct-detail.html'
+                });
+            });
 
 
         });

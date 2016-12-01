@@ -587,7 +587,8 @@ let Server = function (db) {
         return new Promise((resolve, reject)=> {
             for (let dish of dishes) {
                 dish.dihId = _.maxBy(db.DISH, "dihId").dihId + 1;
-                db.pushToDb('DISH', dish);
+                //db.pushToDb('DISH', dish);
+				db.pushManyToDb('DISH', dish);
             }
             resolve(dishes);
         });
@@ -882,7 +883,7 @@ let Server = function (db) {
             let addOrd = function (usrName, dihId, num, ordStatus) {
                 let lastOrder = _.maxBy(db.ORDER, 'ordId');
 
-                db.pushToDb("ORDER", {
+                db.pushManyToDb("ORDER", {
                     ordId: lastOrder ? lastOrder.ordId + 1 : 1,
                     grpId: grpId,
                     usrId: usrId,

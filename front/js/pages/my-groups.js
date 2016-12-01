@@ -59,7 +59,7 @@ class MyGroups { //TODO first
                     });
 
                 });
-
+/*
                 $$('.btn-product-detail').click(function () {
                     //product 抓到orders的  usrId 、dish.dihPrice、ordNum
                     // let product = result.groupedOrders.find(obj=>obj.group.grpId===grpId);
@@ -78,6 +78,7 @@ class MyGroups { //TODO first
                         url: './html/confirm-order.html'
                     });
                 });
+*/				
                 $$('.btn-share-friend').click(function () {
 
 
